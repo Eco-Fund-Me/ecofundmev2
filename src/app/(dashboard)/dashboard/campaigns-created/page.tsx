@@ -15,7 +15,18 @@ import Link from "next/link";
 
 export default function CampaignsCreatedPage() {
   // Mock data - replace with real data
-  const createdCampaigns = [
+  const createdCampaigns:{
+    id: string;
+    title: string;
+    image: string;
+    goal: number;
+    raised: number;
+    backers: number;
+    daysLeft: number;
+    status: "active" | "draft" | "completed" | "failed";
+  
+}[]
+ = [
     {
       id: "1",
       title: "Sustainable Energy Project",
