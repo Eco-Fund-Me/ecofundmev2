@@ -14,6 +14,23 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { pluralityHelpers } from "@/lib/plurality";
 import { PluralitySocialConnect } from "@plurality-network/smart-profile-wallet";
 
+interface LoginInfo {
+  status?: string;
+  pluralityToken?: string;
+}
+
+interface ProfileData {
+  data: {
+    rows: {
+      username?: string;
+      avatar?: string;
+      bio?: string;
+      connectedPlatforms?: string[];
+    }[];
+  };
+}
+
+
 export function AuthPopover() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -31,12 +48,12 @@ export function AuthPopover() {
       try {
         setIsLoading(true);
         // First check login status
-        const loginInfo = await PluralitySocialConnect.getLoginInfo();
+      const loginInfo: LoginInfo | null = await PluralitySocialConnect.getLoginInfo() as LoginInfo | null;
 
         if (loginInfo?.status && loginInfo?.pluralityToken) {
           // Then get profile data
-          const profileData =
-            await PluralitySocialConnect.getSmartProfileData();
+        const profileData: ProfileData | null =
+            await PluralitySocialConnect.getSmartProfileData()  as ProfileData | null;;
           console.log("Profile Data in AuthPopover:", profileData);
 
           if (profileData?.data?.rows?.[0]) {
