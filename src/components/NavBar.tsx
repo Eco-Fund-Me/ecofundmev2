@@ -13,7 +13,9 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
-import { AuthPopover } from "./AuthPopover/AuthPopover";
+// import { AuthPopover } from "./AuthPopover/AuthPopover";
+import EmailLogin from "./login/withEmail"
+
 
 function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,7 +77,8 @@ function NavBar() {
               {link.label}
             </Link>
           ))}
-          <AuthPopover />
+          {/* <AuthPopover /> */}
+          <EmailLogin/>
         </div>
 
         {/* Mobile Navigation */}
@@ -117,7 +120,8 @@ function NavBar() {
                   </Link>
                 ))}
                 <div className="pt-6 w-full flex justify-center">
-                  <AuthPopover />
+                  {/* <AuthPopover /> */}
+                  <EmailLogin/>
                 </div>
               </div>
             </SheetContent>

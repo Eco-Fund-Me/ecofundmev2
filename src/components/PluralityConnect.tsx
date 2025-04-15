@@ -5,7 +5,7 @@ import { PluralitySocialConnect } from "@plurality-network/smart-profile-wallet"
 import { pluralityConfig } from "@/lib/plurality";
 
 const PluralityConnect = () => {
-  const handleDataReturned = (data: any) => {
+  const handleDataReturned = (data: unknown) => {
     const receivedData = JSON.parse(JSON.stringify(data));
     console.log("Login info callback data (Inside dApp)::", receivedData);
   };
