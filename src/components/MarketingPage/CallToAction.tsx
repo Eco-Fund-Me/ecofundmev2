@@ -50,7 +50,7 @@ export default function CallToAction() {
             <Link href="/create-campaign">
               <Button
                 variant="outline"
-                className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 hover:scale-105 
+                className="w-full sm:w-auto border-white/30 text-green-600 hover:bg-white/10 hover:scale-105 
                   transition-all duration-300 px-8 py-6 text-lg font-semibold rounded-full 
                   backdrop-blur-sm flex items-center justify-center"
               >
