@@ -12,6 +12,7 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";
+import { ThirdwebProvider } from "thirdweb/react";
 
 export default function DashboardLayout({
   children,
@@ -48,6 +49,7 @@ export default function DashboardLayout({
   };
 
   return (
+    <ThirdwebProvider>
     <UserProvider
       userType={mockUserData.userType}
       userData={mockUserData.userData}
@@ -72,5 +74,6 @@ export default function DashboardLayout({
         </SidebarInset>
       </SidebarProvider>
     </UserProvider>
+    </ThirdwebProvider>
   );
 }

@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import { ThirdwebProvider } from "thirdweb/react";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,6 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+        <ThirdwebProvider>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
@@ -34,6 +37,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
+      </ThirdwebProvider>
     </html>
   );
 }
