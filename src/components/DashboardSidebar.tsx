@@ -146,7 +146,7 @@ export function DashboardSidebar() {
               <div className="flex items-center gap-3 px-3 py-2.5 text-gray-400">
                 <Settings className="h-4 w-4" />
                 {/* <PluralityConnect /> */}
-                <EmailLogin label="login"/>
+                <EmailLogin label="Sign In"/>
               </div>
             </SidebarMenuItem>
           </SidebarMenu>

@@ -8,7 +8,7 @@ import {
   Sheet,
   SheetContent,
   SheetHeader,
-  SheetTitle,
+
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
@@ -78,7 +78,7 @@ function NavBar() {
             </Link>
           ))}
           {/* <AuthPopover /> */}
-          <EmailLogin/>
+       <EmailLogin label="Sign In"/>
         </div>
 
         {/* Mobile Navigation */}
@@ -121,7 +121,7 @@ function NavBar() {
                 ))}
                 <div className="pt-6 w-full flex justify-center">
                   {/* <AuthPopover /> */}
-                  <EmailLogin/>
+                  <EmailLogin label="Sign In"/>
                 </div>
               </div>
             </SheetContent>
