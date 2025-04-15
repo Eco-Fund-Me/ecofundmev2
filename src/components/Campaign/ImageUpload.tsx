@@ -123,7 +123,7 @@ import { useState } from "react"
 import { Upload } from "lucide-react"
 
 interface ImageUploadProps {
-  onChange: (file: File | null) => void
+  onChange?: (file: File | null) => void
   value?: File | null
 }
 
@@ -149,7 +149,10 @@ export function ImageUpload({ onChange, value }: ImageUploadProps) {
       setPreview(null)
     }
 
-    onChange(file)
+    if(onChange){
+      onChange(file)
+    }
+   
   }
 
   return (
