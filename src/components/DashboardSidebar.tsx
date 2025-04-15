@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, FileText, Settings, LogOut, Wallet, Flag } from "lucide-react";
+import { Home, FileText, Settings,  Wallet, Flag } from "lucide-react";
 import { useUser } from "@/hooks/userProvider";
 // import PluralityConnect from "@/components/PluralityConnect";
 
@@ -146,7 +146,7 @@ export function DashboardSidebar() {
               <div className="flex items-center gap-3 px-3 py-2.5 text-gray-400">
                 <Settings className="h-4 w-4" />
                 {/* <PluralityConnect /> */}
-                <EmailLogin/>
+                <EmailLogin label="login"/>
               </div>
             </SidebarMenuItem>
           </SidebarMenu>
