@@ -44,7 +44,7 @@ export default function NavBar() {
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center hover:text-[#00EE7D]/80 text-[#00EE7D] space-x-2">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-PvSiUb5w6DN0pq7VCebkZnf8N7jvbb.png"
+              src="logo.png"
               alt="Logo"
               width={64}
               height={40}
