@@ -45,7 +45,7 @@ export default function HeroCampaigns() {
       {/* Tree decoration */}
       <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
         <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/tree-JwPcj61B3yTSVZa306PmKcMiIFUdtJ.png"
+          src="tree.png"
           alt="Decorative tree"
           width={300}
           height={300}

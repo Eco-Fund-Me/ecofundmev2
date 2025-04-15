@@ -20,7 +20,7 @@ function HeroContent() {
     <div className="relative min-h-[90vh] container overflow-hidden">
       <div className="absolute inset-0 bg-[#040B08]" style={{ minHeight: "90vh" }} />
       <Image
-        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/hero-banner-IdzKCRG8YsfDo4cjGM4GSg5oH5qkz4.png"
+        src="hero-banner.png"
         alt="Hero Banner"
         fill
         className="object-cover brightness-75"
