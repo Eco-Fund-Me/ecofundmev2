@@ -1,25 +1,25 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 interface Campaign {
-  id: string;
-  title: string;
-  category: string;
-  creatorName: string;
-  targetAmount: number;
-  currentAmount: number;
-  daysLeft: number;
-  imageUrl: string;
+  id: string
+  title: string
+  category: string
+  creatorName: string
+  targetAmount: number
+  currentAmount: number
+  daysLeft: number
+  imageUrl: string
 }
 
 interface CampaignStore {
-  campaigns: Campaign[];
-  selectedCategory: string;
-  categories: string[];
-  filteredCampaigns: Campaign[];
-  setSelectedCategory: (category: string) => void;
-  fetchCampaigns: () => Promise<void>;
-  filterCampaigns: () => void;
+  campaigns: Campaign[]
+  selectedCategory: string
+  categories: string[]
+  filteredCampaigns: Campaign[]
+  setSelectedCategory: (category: string) => void
+  fetchCampaigns: () => Promise<void>
+  filterCampaigns: () => void
 }
 
 export const useCampaignStore = create<CampaignStore>()(
@@ -39,18 +39,16 @@ export const useCampaignStore = create<CampaignStore>()(
       ],
       filteredCampaigns: [],
       setSelectedCategory: (category) => {
-        set({ selectedCategory: category });
-        get().filterCampaigns();
+        set({ selectedCategory: category })
+        get().filterCampaigns()
       },
       filterCampaigns: () => {
-        const { campaigns, selectedCategory } = get();
+        const { campaigns, selectedCategory } = get()
         const filtered =
           selectedCategory === "All Categories"
             ? campaigns
-            : campaigns.filter(
-                (campaign) => campaign.category === selectedCategory
-              );
-        set({ filteredCampaigns: filtered });
+            : campaigns.filter((campaign) => campaign.category === selectedCategory)
+        set({ filteredCampaigns: filtered })
       },
       fetchCampaigns: async () => {
         try {
@@ -86,15 +84,15 @@ export const useCampaignStore = create<CampaignStore>()(
               daysLeft: 20,
               imageUrl: "/placeholder.jpg",
             },
-          ];
-          set({ campaigns: mockCampaigns, filteredCampaigns: mockCampaigns });
+          ]
+          set({ campaigns: mockCampaigns, filteredCampaigns: mockCampaigns })
         } catch (error) {
-          console.error("Error fetching campaigns:", error);
+          console.error("Error fetching campaigns:", error)
         }
       },
     }),
     {
       name: "campaign-store",
-    }
-  )
-);
+    },
+  ),
+)

@@ -1,175 +1,119 @@
-// "use client";
-
-// import Link from "next/link";
-// import { useEffect } from "react";
-// import { useCampaignStore } from "@/hooks/useCampignStore";
-// import { CampaignCard } from "@/components/Campaign/CampaignCard";
-
-// const categories = [
-//   "All Categories",
-//   "Renewable Energy",
-//   "Blue economy",
-//   "Circular economy",
-//   "green infrastructure",
-//   "Waste Management and Recycling",
-//   "De-Fi",
-//   "NFTs & Collectibles",
-// ];
-
-// export default function HeroCampaigns() {
-//   const { campaigns, selectedCategory, setSelectedCategory, fetchCampaigns } =
-//     useCampaignStore();
-
-//   useEffect(() => {
-//     fetchCampaigns();
-//   }, [fetchCampaigns]);
-
-//   // Filter campaigns based on selected category and limit to 3
-//   const filteredCampaigns =
-//     selectedCategory === "All Categories"
-//       ? campaigns.slice(0, 3)
-//       : campaigns
-//           .filter((campaign) => campaign.category === selectedCategory)
-//           .slice(0, 3);
-
-//   return (
-//     <div id="how-it-works" className="bg-white py-16 md:py-24">
-//       <div className="container px-4 sm:px-6">
-//         <div className="text-center mb-12">
-//           <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
-//             Campaigns
-//           </h2>
-//         </div>
-
-//         {/* Categories */}
-//         <div className="relative overflow-x-auto mb-8 -mx-4 px-4">
-//           <div className="flex flex-nowrap space-x-4 sm:space-x-6 pb-2">
-//             {categories.map((category) => (
-//               <button
-//                 key={category}
-//                 onClick={() => setSelectedCategory(category)}
-//                 className={`px-3 sm:px-4 py-2 rounded-full whitespace-nowrap text-sm sm:text-base transition-all duration-200 hover:scale-105 ${
-//                   selectedCategory === category
-//                     ? "bg-[#00EE7D] text-black font-medium shadow-lg"
-//                     : "text-[#00EE7D] hover:bg-[#00EE7D]/10 border border-[#00EE7D]/20"
-//                 }`}
-//               >
-//                 {category}
-//               </button>
-//             ))}
-//           </div>
-//         </div>
-
-//         {/* Campaign Cards */}
-//         {filteredCampaigns.length === 0 ? (
-//           <div className="text-center py-12">
-//             <p className="text-gray-500">No campaigns found in this category</p>
-//           </div>
-//         ) : (
-//           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-//             {filteredCampaigns.map((campaign) => (
-//               <div key={campaign.id} className="w-full h-full">
-//                 <CampaignCard {...campaign} />
-//               </div>
-//             ))}
-//           </div>
-//         )}
-
-//         {/* See more campaigns link */}
-//         <div className="text-center mt-12">
-//           <Link
-//             href="/campaigns"
-//             className="text-[#00EE7D] hover:text-[#00EE7D]/80 font-medium border-b-2 border-[#00EE7D] pb-1"
-//           >
-//             See more campaigns
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import Link from "next/link"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useCampaignStore } from "@/hooks/useCampignStore"
 import { CampaignCard } from "@/components/Campaign/CampaignCard"
 import { motion } from "framer-motion"
-import { ArrowRight } from "lucide-react"
-
-const categories = [
-  "All Categories",
-  "Renewable Energy",
-  "Blue economy",
-  "Circular economy",
-  "green infrastructure",
-  "Waste Management and Recycling",
-  "De-Fi",
-  "NFTs & Collectibles",
-]
+import { ArrowRight, Leaf, Droplets, Recycle, Building2, Trash2, Coins, Palette } from "lucide-react"
+import Image from "next/image"
 
 export default function HeroCampaigns() {
   const { campaigns, selectedCategory, setSelectedCategory, fetchCampaigns } = useCampaignStore()
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     fetchCampaigns()
+    const timer = setTimeout(() => setIsLoaded(true), 500)
+    return () => clearTimeout(timer)
   }, [fetchCampaigns])
 
-  // Filter campaigns based on selected category and limit to 3
+  // Filter campaigns based on selected category and limit to 6
   const filteredCampaigns =
     selectedCategory === "All Categories"
-      ? campaigns.slice(0, 3)
-      : campaigns.filter((campaign) => campaign.category === selectedCategory).slice(0, 3)
+      ? campaigns.slice(0, 6)
+      : campaigns.filter((campaign: { category: any }) => campaign.category === selectedCategory).slice(0, 6)
+
+  const categoryIcons = {
+    "Renewable Energy": <Leaf className="h-5 w-5" />,
+    "Blue economy": <Droplets className="h-5 w-5" />,
+    "Circular economy": <Recycle className="h-5 w-5" />,
+    "green infrastructure": <Building2 className="h-5 w-5" />,
+    "Waste Management and Recycling": <Trash2 className="h-5 w-5" />,
+    "De-Fi": <Coins className="h-5 w-5" />,
+    "NFTs & Collectibles": <Palette className="h-5 w-5" />,
+  }
 
   return (
-    <div id="how-it-works" className="bg-white py-24 md:py-32 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-gray-100 to-transparent" />
+    <div id="featured-campaigns" className="py-24 md:py-32 relative overflow-hidden bg-[#040B08]">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-[#040B08]/80 to-transparent" />
       <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#00EE7D]/5 rounded-full blur-3xl" />
       <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#00EE7D]/5 rounded-full blur-3xl" />
+
+      {/* Tree decoration */}
+      <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
+        <Image
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/tree-JwPcj61B3yTSVZa306PmKcMiIFUdtJ.png"
+          alt="Decorative tree"
+          width={300}
+          height={300}
+          className="object-contain"
+        />
+      </div>
 
       <div className="container px-4 sm:px-6 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
           <span className="inline-block px-3 py-1 bg-[#00EE7D]/10 text-[#00EE7D] text-sm font-medium rounded-full mb-4">
             Discover Projects
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">Featured Campaigns</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Featured Campaigns</h2>
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Explore innovative green projects that are making a real impact on our planet&apos;s future.
           </p>
         </motion.div>
 
-        {/* Categories */}
+        {/* Category Selection - New Design */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative overflow-x-auto mb-12 -mx-4 px-4"
+          className="mb-16"
         >
-          <div className="flex flex-nowrap space-x-4 sm:space-x-6 pb-2 justify-center">
-            {categories.map((category, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            <motion.button
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              onClick={() => setSelectedCategory("All Categories")}
+              className={`relative overflow-hidden rounded-xl p-4 h-24 flex flex-col items-center justify-center transition-all duration-300 ${
+                selectedCategory === "All Categories"
+                  ? "bg-gradient-to-br from-[#00EE7D] to-[#00EE7D]/70 text-black"
+                  : "bg-[#0A1A12] text-white hover:bg-[#0A1A12]/80"
+              }`}
+            >
+              <div className="absolute inset-0 opacity-10">
+                <Image
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/hero-banner-IdzKCRG8YsfDo4cjGM4GSg5oH5qkz4.png"
+                  alt="Nature"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <span className="font-semibold text-center z-10">All Projects</span>
+            </motion.button>
+
+            {Object.entries(categoryIcons).map(([category, icon], index) => (
               <motion.button
                 key={category}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.1 * index }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.4, delay: 0.1 * (index + 1) }}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 sm:px-5 py-2.5 rounded-full whitespace-nowrap text-sm sm:text-base transition-all duration-200 hover:scale-105 ${
+                className={`relative overflow-hidden rounded-xl p-4 h-24 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${
                   selectedCategory === category
-                    ? "bg-[#00EE7D] text-black font-medium shadow-lg"
-                    : "text-[#00EE7D] hover:bg-[#00EE7D]/10 border border-[#00EE7D]/20"
+                    ? "bg-gradient-to-br from-[#00EE7D] to-[#00EE7D]/70 text-black"
+                    : "bg-[#0A1A12] text-white hover:bg-[#0A1A12]/80"
                 }`}
               >
-                {category}
+                <div className="z-10">{icon}</div>
+                <span className="text-xs text-center z-10">{category}</span>
               </motion.button>
             ))}
           </div>
@@ -177,38 +121,88 @@ export default function HeroCampaigns() {
 
         {/* Campaign Cards */}
         {filteredCampaigns.length === 0 ? (
-          <div className="text-center py-16 bg-gray-50 rounded-2xl">
-            <p className="text-gray-500">No campaigns found in this category</p>
+          <div className="text-center py-16 bg-[#0A1A12] rounded-2xl">
+            <p className="text-gray-300">No campaigns found in this category</p>
           </div>
         ) : (
           <motion.div
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            animate={isLoaded ? { opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {filteredCampaigns.map((campaign, index) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredCampaigns.map((campaign:any, index: number) => (
+                <motion.div
+                  key={campaign.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, delay: 0.2 * index }}
+                  className="w-full h-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+                >
+                  <CampaignCard {...campaign} />
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Featured campaign spotlight */}
+            {filteredCampaigns.length > 0 && (
               <motion.div
-                key={campaign.id}
                 initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 * index }}
-                className="w-full h-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+                animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className="mt-16 bg-gradient-to-r from-[#0A1A12] to-[#0A1A12]/80 rounded-2xl overflow-hidden"
               >
-                <CampaignCard {...campaign} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="relative h-64 md:h-auto">
+                    <Image
+                      src={filteredCampaigns[0].imageUrl || "/placeholder.svg"}
+                      alt={filteredCampaigns[0].title}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#040B08] to-transparent opacity-60"></div>
+                  </div>
+                  <div className="p-8 flex flex-col justify-center">
+                    <span className="text-[#00EE7D] text-sm font-medium mb-2">{filteredCampaigns[0].category}</span>
+                    <h3 className="text-2xl font-bold text-white mb-4">{filteredCampaigns[0].title}</h3>
+                    <p className="text-gray-300 mb-6">
+                      Support this featured project and help make a significant impact on our environment.
+                    </p>
+                    <div className="mb-6">
+                      <div className="w-full bg-gray-700 h-2 rounded-full">
+                        <div
+                          className="bg-[#00EE7D] h-2 rounded-full"
+                          style={{
+                            width: `${(filteredCampaigns[0].currentAmount / filteredCampaigns[0].targetAmount) * 100}%`,
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-sm mt-2">
+                        <span className="text-gray-300">
+                          {Math.round((filteredCampaigns[0].currentAmount / filteredCampaigns[0].targetAmount) * 100)}%
+                          funded
+                        </span>
+                        <span className="text-[#00EE7D]">{filteredCampaigns[0].daysLeft} days left</span>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/campaigns/${filteredCampaigns[0].id}`}
+                      className="inline-flex items-center justify-center px-6 py-3 bg-[#00EE7D] text-black font-medium rounded-full hover:bg-[#00EE7D]/90 transition-colors"
+                    >
+                      Support This Project
+                    </Link>
+                  </div>
+                </div>
               </motion.div>
-            ))}
+            )}
           </motion.div>
         )}
 
         {/* See more campaigns link */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.8 }}
           className="text-center mt-16"
         >
           <Link

@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface CampaignTabsProps {
-  story: string;
-  faq: string[];
+  story: string
+  faq: string[]
   rewards: {
-    title: string;
-    description: string;
-    amount: number;
-  }[];
+    title: string
+    description: string
+    amount: number
+  }[]
 }
 
 export function CampaignTabs({ story, faq, rewards }: CampaignTabsProps) {
@@ -48,9 +48,7 @@ export function CampaignTabs({ story, faq, rewards }: CampaignTabsProps) {
         <div className="flex-1">
           <TabsContent value="story" className="mt-6">
             <div className="prose max-w-none">
-              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                {story}
-              </p>
+              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{story}</p>
             </div>
           </TabsContent>
 
@@ -68,15 +66,10 @@ export function CampaignTabs({ story, faq, rewards }: CampaignTabsProps) {
           <TabsContent value="rewards" className="mt-6">
             <div className="grid gap-6">
               {rewards.map((reward, index) => (
-                <div
-                  key={index}
-                  className="p-6 border rounded-lg hover:border-[#00EE7D] transition-colors"
-                >
+                <div key={index} className="p-6 border rounded-lg hover:border-[#00EE7D] transition-colors">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="font-semibold text-lg">{reward.title}</h3>
-                    <span className="text-[#00EE7D] font-semibold">
-                      {reward.amount} ETH
-                    </span>
+                    <span className="text-[#00EE7D] font-semibold">{reward.amount} ETH</span>
                   </div>
                   <p className="text-gray-600">{reward.description}</p>
                 </div>
@@ -86,5 +79,5 @@ export function CampaignTabs({ story, faq, rewards }: CampaignTabsProps) {
         </div>
       </Tabs>
     </div>
-  );
+  )
 }
