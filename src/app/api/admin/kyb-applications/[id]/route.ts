@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server"
 import {db } from "@/lib/db"
 
+// interface ParamsProps {
+//     params: {
+//       id: string;
+//     };
+//   }
+
 export async function GET(request: Request, {
   params,
 }: {

@@ -50,7 +50,7 @@ export async function uploadKybDocument(
       uploadStream.end(buffer);
     });
 
-    // revalidatePath(`/signup/success`);
+    revalidatePath(`/business-verification/success`);
     return result;
   } catch (error) {
     console.error('Error uploading document:', error);

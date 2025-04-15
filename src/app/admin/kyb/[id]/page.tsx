@@ -1,5 +1,5 @@
 "use client"
-import { use } from "react"
+// import { use } from "react"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -34,13 +34,18 @@ interface KYBApplication {
   updatedAt?: string
 }
 
+interface ParamsProps {
+  params: {
+    id: string;
+  };
+}
+
 // Next.js 15 compatible page component
-export default function KYBApplicationDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const resolvedParams = use(params)
+export default function KYBApplicationDetailPage(
+    { params }: ParamsProps
+  ) 
+  {
+  const resolvedParams = params
   const router = useRouter()
   const [application, setApplication] = useState<KYBApplication | null>(null)
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false)
@@ -76,7 +81,7 @@ export default function KYBApplicationDetailPage({
     }
 
     fetchApplicationDetails()
-  }, [mockApplication, resolvedParams.id])
+  }, [ resolvedParams.id])
 
   const handleApprove = async () => {
     if (!application) return
