@@ -139,9 +139,9 @@ import type React from "react"
 
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, X, UserPlus } from "lucide-react"
+import { Menu,  UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTrigger, SheetClose } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet"
 import { useState, useEffect } from "react"
 import EmailLogin from "@/components/login/withEmail"
 import { useActiveAccount } from "thirdweb/react"
@@ -245,15 +245,15 @@ export default function NavBar() {
                 className="w-[85%] max-h-screen overflow-y-auto bg-[#1E3A29] border-[#4CAF50]/20"
               >
                 <SheetHeader className="absolute top-6 right-4">
-                  <SheetClose asChild>
-                    <Button
+                
+                    {/* <Button
                       variant="ghost"
                       className="text-[#4CAF50] hover:text-[#4CAF50]/80 hover:bg-transparent"
                       onClick={() => setIsOpen(false)}
                     >
                       <X className="h-6 w-6" />
-                    </Button>
-                  </SheetClose>
+                    </Button> */}
+                 
                 </SheetHeader>
                 <div className="flex flex-col items-start justify-center space-y-6 w-full px-4 pt-16">
                   <Link href="/" className="flex items-center hover:text-[#4CAF50]/80 text-[#4CAF50] space-x-2 mb-6">
