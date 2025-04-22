@@ -44,7 +44,7 @@ export default function NavBar() {
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center hover:text-[#00EE7D]/80 text-[#00EE7D] space-x-2">
             <Image
-              src="logo.png"
+              src="/logo.png"
               alt="Logo"
               width={64}
               height={40}
