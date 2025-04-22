@@ -45,9 +45,10 @@ export default function Home() {
         </Suspense>
       </div>
       <Suspense fallback={<Loading />}>
+        <HeroCampaigns />
         <HowItWorks />
         <Services />
-        <HeroCampaigns />
+       
         {/* HeroFeaturedCreators temporarily removed */}
         <Testimonials />
         <CallToAction />
