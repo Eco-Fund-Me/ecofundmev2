@@ -48,7 +48,7 @@
 //           </span>
 //           <h2 className="text-4xl md:text-5xl font-bold mb-6">How It Works</h2>
 //           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-//             EcofundMe makes it easy to support green initiatives with a simple, transparent process.
+//             EcoFundMe makes it easy to support green initiatives with a simple, transparent process.
 //           </p>
 //         </motion.div>
 
@@ -152,7 +152,7 @@ export default function HowItWorks() {
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#1E3A29]">How It Works</h2>
           <p className="text-lg text-[#5A7D6A] max-w-2xl mx-auto">
-            EcofundMe makes it easy to support green initiatives with a simple, transparent process.
+            EcoFundMe makes it easy to support green initiatives with a simple, transparent process.
           </p>
         </motion.div>
 

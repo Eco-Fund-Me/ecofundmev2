@@ -51,7 +51,7 @@
 //               className="object-contain"
 //               priority
 //             />
-//             <span className="text-xl font-semibold">EcofundMe</span>
+//             <span className="text-xl font-semibold">EcoFundMe</span>
 //           </Link>
 
 //           {/* Desktop Navigation */}
@@ -144,11 +144,15 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { useState, useEffect } from "react"
 import EmailLogin from "@/components/login/withEmail"
+import { useActiveAccount } from "thirdweb/react"
+import { isAddress } from "thirdweb"
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const account = useActiveAccount()
+  const address = account? account.address :""
 
   useEffect(() => {
     setMounted(true)
@@ -211,6 +215,8 @@ export default function NavBar() {
               </Link>
             ))}
             <div className="flex items-center space-x-3">
+              {
+                !isAddress(address) &&
               <Link href="/business-verification">
                 <Button
                   variant="outline"
@@ -220,6 +226,8 @@ export default function NavBar() {
                   Sign Up
                 </Button>
               </Link>
+
+}
               <EmailLogin label="Sign In" />
             </div>
           </div>

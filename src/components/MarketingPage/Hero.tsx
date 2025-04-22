@@ -72,7 +72,7 @@
 //             transition={{ duration: 0.8, delay: 0.4 }}
 //             className="text-xl md:text-2xl text-white/90 leading-relaxed"
 //           >
-//             EcofundMe is a Web3-powered, tokenized climate financing platform that connects donors with impactful carbon
+//             EcoFundMe is a Web3-powered, tokenized climate financing platform that connects donors with impactful carbon
 //             mitigation projects—ensuring transparency, accountability, and rewards for every contribution.
 //           </motion.p>
 

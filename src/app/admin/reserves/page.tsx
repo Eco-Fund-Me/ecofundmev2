@@ -72,7 +72,7 @@ export default function ReservesPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Proof of Reserves</h1>
         <p className="mt-1 text-sm text-gray-500">
-          View the current reserves backing the EcofundMe ecosystem. This data is verified through a secure proof
+          View the current reserves backing the EcoFundMe ecosystem. This data is verified through a secure proof
           mechanism.
         </p>
       </div>
@@ -191,7 +191,7 @@ export default function ReservesPage() {
               <div className="bg-[#00EE7D] h-2.5 rounded-full" style={{ width: "102.5%" }}></div>
             </div>
             <p className="mt-4 text-sm text-gray-500">
-              EcofundMe maintains a reserve ratio above 100% to ensure all tokens are fully backed by real assets.
+              EcoFundMe maintains a reserve ratio above 100% to ensure all tokens are fully backed by real assets.
             </p>
           </div>
         </div>

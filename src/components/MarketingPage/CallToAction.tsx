@@ -32,7 +32,7 @@
 //             Ready to Make a <span className="text-[#00EE7D]">Difference?</span>
 //           </h2>
 //           <p className="text-xl text-white/80 mb-10">
-//             Whether you&apos;re a project creator or a contributor, EcofundMe provides the platform you need to make a
+//             Whether you&apos;re a project creator or a contributor, EcoFundMe provides the platform you need to make a
 //             positive impact on our planet.
 //           </p>
 
@@ -138,7 +138,7 @@ export default function CallToAction() {
             Ready to Make a <span className="text-[#4CAF50]">Difference?</span>
           </h2>
           <p className="text-xl text-white/80 mb-10">
-            Whether you&apos;re a project creator or a contributor, EcofundMe provides the platform you need to make a
+            Whether you&apos;re a project creator or a contributor, EcoFundMe provides the platform you need to make a
             positive impact on our planet.
           </p>
 

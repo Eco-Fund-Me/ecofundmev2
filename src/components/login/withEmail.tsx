@@ -30,11 +30,17 @@ export default function EmailLogin({label}: Email) {
                   className: "email-wallet",
                   label: label,
                   style: {
-                      background: "#059669",
-                      alignItems: "center",
-                      position: "relative",
-                      height: "38px",
-                     width:"106.4px"
+                    border: "1px solid #4CAF50",
+                    color: "#4CAF50",
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    borderRadius: "9999px", // rounded-full
+                    paddingLeft: "1.25rem", // px-5
+                    paddingRight: "1.25rem",
+                    alignItems: "center",
+                    position: "relative",
+                    height: "38px",
+                    width: "106.4px",
+                    transition: "all 0.3s ease", // for hover effects
 
                   }
               }}

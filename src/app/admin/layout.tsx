@@ -53,9 +53,9 @@ function AdminLayoutContent({
         >
           <div className="flex items-center justify-between h-16 px-4 border-b">
             <div className="flex items-center">
-              <Image src="/logo.svg" alt="EcofundMe Logo" width={32} height={32} />
+              <Image src="/logo.svg" alt="EcoFundMe Logo" width={32} height={32} />
               <Link href={"/"}>
-                <span className="ml-2 text-lg font-semibold text-[#00EE7D]">EcofundMe Admin</span>
+                <span className="ml-2 text-lg font-semibold text-[#00EE7D]">EcoFundMe Admin</span>
               </Link>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="text-gray-500 hover:text-gray-700">
@@ -92,8 +92,8 @@ function AdminLayoutContent({
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
           <div className="flex items-center h-16 px-4 border-b">
-            <Image src="/logo.svg" alt="EcofundMe Logo" width={32} height={32} />
-            <span className="ml-2 text-lg font-semibold text-[#00EE7D]">EcofundMe Admin</span>
+            <Image src="/logo.svg" alt="EcoFundMe Logo" width={32} height={32} />
+            <span className="ml-2 text-lg font-semibold text-[#00EE7D]">EcoFundMe Admin</span>
           </div>
           <nav className="flex-1 px-2 py-4 space-y-1">
             {navigation.map((item) => (
@@ -132,8 +132,8 @@ function AdminLayoutContent({
             <Menu className="h-6 w-6" />
           </button>
           <div className="flex-1 flex justify-center">
-            <Image src="/logo.svg" alt="EcofundMe Logo" width={32} height={32} />
-            <span className="ml-2 text-lg font-semibold text-[#00EE7D]">EcofundMe Admin</span>
+            <Image src="/logo.svg" alt="EcoFundMe Logo" width={32} height={32} />
+            <span className="ml-2 text-lg font-semibold text-[#00EE7D]">EcoFundMe Admin</span>
           </div>
           <div className="w-14"></div> {/* Spacer to center the logo */}
         </div>

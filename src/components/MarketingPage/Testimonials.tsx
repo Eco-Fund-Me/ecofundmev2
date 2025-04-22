@@ -9,7 +9,7 @@
 //   {
 //     id: 1,
 //     quote:
-//       "EcofundMe has transformed how we connect with donors. The transparency of blockchain technology has built incredible trust with our supporters.",
+//       "EcoFundMe has transformed how we connect with donors. The transparency of blockchain technology has built incredible trust with our supporters.",
 //     name: "Sarah Johnson",
 //     title: "Project Lead, Renewable Energy Initiative",
 //     avatar: "/placeholder-avatar-1.jpg",
@@ -62,7 +62,7 @@
 //           </span>
 //           <h2 className="text-4xl md:text-5xl font-bold mb-6">What People Say</h2>
 //           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-//             Hear from project creators and contributors about their experience with EcofundMe.
+//             Hear from project creators and contributors about their experience with EcoFundMe.
 //           </p>
 //         </motion.div>
 
@@ -148,7 +148,7 @@ const testimonials = [
   {
     id: 1,
     quote:
-      "EcofundMe has transformed how we connect with donors. The transparency of blockchain technology has built incredible trust with our supporters.",
+      "EcoFundMe has transformed how we connect with donors. The transparency of blockchain technology has built incredible trust with our supporters.",
     name: "Sarah Johnson",
     title: "Project Lead, Renewable Energy Initiative",
     avatar: "/sarah.jpg",
@@ -213,7 +213,7 @@ export default function Testimonials() {
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#1E3A29]">What People Say</h2>
           <p className="text-lg text-[#5A7D6A] max-w-2xl mx-auto">
-            Hear from project creators and contributors about their experience with EcofundMe.
+            Hear from project creators and contributors about their experience with EcoFundMe.
           </p>
         </motion.div>
 
