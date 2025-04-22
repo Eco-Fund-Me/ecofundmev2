@@ -62,7 +62,7 @@ export const useCampaignStore = create<CampaignStore>()(
               targetAmount: 0.006,
               currentAmount: 0.00066,
               daysLeft: 9,
-              imageUrl: "/placeholder.jpg",
+              imageUrl: "/solar-panel.jpg",
             },
             {
               id: "2",
@@ -72,7 +72,7 @@ export const useCampaignStore = create<CampaignStore>()(
               targetAmount: 0.008,
               currentAmount: 0.003,
               daysLeft: 15,
-              imageUrl: "/placeholder.jpg",
+              imageUrl: "/clean-ocean.jpeg",
             },
             {
               id: "3",
@@ -82,7 +82,7 @@ export const useCampaignStore = create<CampaignStore>()(
               targetAmount: 0.01,
               currentAmount: 0.005,
               daysLeft: 20,
-              imageUrl: "/placeholder.jpg",
+              imageUrl: "/recycling-plant.jpeg",
             },
           ]
           set({ campaigns: mockCampaigns, filteredCampaigns: mockCampaigns })
