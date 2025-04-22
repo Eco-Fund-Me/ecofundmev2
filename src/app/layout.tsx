@@ -18,8 +18,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Eco Fund Me",
-  description: "EcofundMe is a Web3-powered, tokenized climate financing platform that connects donors with impactful carbon mitigation projects—ensuring transparency, accountability, and rewards for every contribution.",
+  title: "EcoFundMe",
+  description: "EcoFundMe is a Web3-powered, tokenized climate financing platform that connects donors with impactful carbon mitigation projects—ensuring transparency, accountability, and rewards for every contribution.",
 };
 
 export default function RootLayout({

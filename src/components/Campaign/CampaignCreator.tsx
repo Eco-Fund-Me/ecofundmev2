@@ -12,7 +12,7 @@ export function CampaignCreator({ name, imageUrl }: CampaignCreatorProps) {
         <AvatarImage src={imageUrl || "/placeholder.svg"} />
         <AvatarFallback className="bg-[#00EE7D]/10 text-[#00EE7D]">{name[0]}</AvatarFallback>
       </Avatar>
-      <span className="font-medium text-sm text-gray-300">{name}</span>
+      <span className="font-medium text-sm text-gray-400">{name}</span>
     </div>
   )
 }

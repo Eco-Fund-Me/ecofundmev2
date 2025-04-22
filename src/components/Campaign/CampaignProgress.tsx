@@ -11,7 +11,7 @@ export function CampaignProgress({ targetAmount, currentAmount, backers, daysLef
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <span className="text-xl font-bold text-white">{targetAmount} USD</span>
+        <span className="text-xl font-bold text-gray-500">{targetAmount} USD</span>
         <span className="text-sm text-gray-400">{backers} backers</span>
       </div>
 
@@ -20,7 +20,7 @@ export function CampaignProgress({ targetAmount, currentAmount, backers, daysLef
       </div>
 
       <div className="flex justify-between text-sm">
-        <span className="text-gray-300">{Math.round(progress)}% funded</span>
+        <span className="text-gray-400">{Math.round(progress)}% funded</span>
         <span className="text-[#00EE7D]">{daysLeft} days left</span>
       </div>
     </div>
