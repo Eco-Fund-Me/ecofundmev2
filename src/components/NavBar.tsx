@@ -143,7 +143,7 @@ import { Menu,  UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet"
 import { useState, useEffect } from "react"
-// import EmailLogin from "@/components/login/withEmail"
+import EmailLogin from "@/components/login/withEmail"
 import { useActiveAccount } from "thirdweb/react"
 import { isAddress } from "thirdweb"
 
@@ -228,7 +228,7 @@ export default function NavBar() {
               </Link>
 
 }
-              {/* <EmailLogin label="Sign In" /> */}
+              { address? <EmailLogin label="Sign In" />: 
               <Link href="/signin">
                 <Button
                   variant="outline"
@@ -237,7 +237,7 @@ export default function NavBar() {
                  
                   Sign In
                 </Button>
-              </Link>
+              </Link> }
             </div>
           </div>
 
@@ -298,7 +298,7 @@ export default function NavBar() {
                       </Button>
                     </Link>
                     <div className="flex justify-center w-full">
-                      {/* <EmailLogin label="Sign In" /> */}
+                     { address? <EmailLogin label="Sign In" />:
                       <Link href="/signin">
                         <Button
                           variant="outline"
@@ -308,6 +308,8 @@ export default function NavBar() {
                         Sign In
                       </Button>
                     </Link>
+
+                     }
                     </div>
                   </div>
                 </div>
