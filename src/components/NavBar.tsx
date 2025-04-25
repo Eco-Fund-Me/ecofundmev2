@@ -217,7 +217,7 @@ export default function NavBar() {
             <div className="flex items-center space-x-3">
               {
                 !isAddress(address) &&
-              <Link href="/business-verification">
+              <Link href="/signup">
                 <Button
                   variant="outline"
                   className="border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50]/10 hover:text-[#4CAF50] rounded-full px-5 bg-white/5"
@@ -228,7 +228,16 @@ export default function NavBar() {
               </Link>
 
 }
-              <EmailLogin label="Sign In" />
+              {/* <EmailLogin label="Sign In" /> */}
+              <Link href="/signin">
+                <Button
+                  variant="outline"
+                  className="border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50]/10 hover:text-[#4CAF50] rounded-full px-5 bg-white/5"
+                >
+                 
+                  Sign In
+                </Button>
+              </Link>
             </div>
           </div>
 
