@@ -29,8 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-       <AuthContextProvider>
+  
         <ThirdwebProvider>
+        <AuthContextProvider>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
@@ -38,8 +39,9 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
-      </ThirdwebProvider>
       </AuthContextProvider>
+      </ThirdwebProvider>
+     
     </html>
   );
 }
