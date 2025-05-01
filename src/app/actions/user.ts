@@ -99,16 +99,12 @@ export async function addUser(params: UserParams) {
 }
 
 export async function checkEmailExists(email: string): Promise<boolean> {
-  const { data, error } = await supabase
-    .from("auth.users")
-    .select("id")
-    .eq("email", email.toLowerCase())
-    .maybeSingle()
+  const { data, error } = await supabase.auth.admin.listUsers()
 
-  if (error && error.code !== "PGRST116") {
-    console.error("Email check error:", error)
+  if (error) {
+    console.error("Admin user list error:", error)
     return false
   }
 
-  return !!data
+  return data.users.some(user => user.email?.toLowerCase() === email.toLowerCase())
 }
