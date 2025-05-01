@@ -358,7 +358,7 @@ export default function BusinessSignupPage() {
                   <p className="font-medium">{error || thirdwebError}</p>
                   {(error?.includes("already registered") || error?.includes("already in use")) && (
                     <div className="mt-2">
-                      <p className="text-sm">Would you like to:</p>
+                      <p className="text-sm text-blue-700">Would you like to:</p>
                       <div className="mt-2 flex gap-3">
                         <Link href="/signin" className="text-sm text-[#00EE7D] hover:underline">
                           Sign in instead

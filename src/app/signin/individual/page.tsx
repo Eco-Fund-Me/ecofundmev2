@@ -338,7 +338,7 @@ export default function IndividualSigninPage() {
                   {error || thirdwebError}
                   {(error?.includes("Email not confirmed") || error?.includes("not confirmed")) && (
                     <div className="mt-2">
-                      <p className="text-sm">Would you like to:</p>
+                      <p className="text-sm text-blue-700">Would you like to:</p>
                       <div className="mt-2 flex gap-3">
                         <Link href={`/signup/verify?email=${encodeURIComponent(email)}`} className="text-sm text-[#00EE7D] hover:underline">
                           Comfirm Email
