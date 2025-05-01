@@ -199,9 +199,9 @@ import { Eye, EyeOff, User, Briefcase } from "lucide-react"
 import { AuthHero } from "@/components/auth/AuthHero"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { supabase } from "@/lib/supabaseClient"
-import { checkEmailExists } from "@/lib/checkEmailExists"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
+import { checkEmailExists, isBusinessEmail } from "@/app/actions/user"
 
 
 export default function BusinessSignupPage() {
@@ -240,8 +240,13 @@ export default function BusinessSignupPage() {
     setError(null)
 
     try {
+      if (!isBusinessEmail(email)) {
+        setError("Please use a valid business email address to sign up.")
+        return
+      }
       // Check if email already exists BEFORE attempting sign-up
       const emailExists = await checkEmailExists(email)
+
 
       if (emailExists) {
         setError("This email is already registered. Please sign in instead.")

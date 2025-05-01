@@ -108,3 +108,15 @@ export async function checkEmailExists(email: string): Promise<boolean> {
 
   return data.users.some(user => user.email?.toLowerCase() === email.toLowerCase())
 }
+
+
+const personalEmailDomains = [
+  "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com",
+  "icloud.com", "protonmail.com", "live.com", "msn.com", "ymail.com",
+  "mail.com", "gmx.com"
+]
+
+export async function isBusinessEmail(email: string):Promise<boolean> {
+  const domain = email.split("@")[1]?.toLowerCase()
+  return !!domain && !personalEmailDomains.includes(domain)
+}

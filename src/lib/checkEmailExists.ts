@@ -9,3 +9,5 @@ export async function checkEmailExists(email: string): Promise<boolean> {
 
    return check
   }
+
+  
