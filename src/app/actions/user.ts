@@ -7,7 +7,7 @@ type UserType = "individual" | "business"
 
 interface UserParams {
   user_type: UserType
- userID : string
+  userID : string
   address?: string  // This is the wallet address from Thirdweb
   email: string
   first_name?: string

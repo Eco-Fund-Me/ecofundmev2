@@ -201,7 +201,7 @@ import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { supabase } from "@/lib/supabaseClient"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
-import { checkEmailExists, isBusinessEmail } from "@/app/actions/user"
+import { addUser, checkEmailExists, isBusinessEmail } from "@/app/actions/user"
 
 
 export default function BusinessSignupPage() {
@@ -220,6 +220,10 @@ export default function BusinessSignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!isBusinessEmail(email)) {
+      setError("Please use a valid business email address to sign up.")
+      return
+    }
     // Form validation
     if (!businessName || !email || !password) {
       setError("All fields are required")
@@ -240,10 +244,7 @@ export default function BusinessSignupPage() {
     setError(null)
 
     try {
-      if (!isBusinessEmail(email)) {
-        setError("Please use a valid business email address to sign up.")
-        return
-      }
+     
       // Check if email already exists BEFORE attempting sign-up
       const emailExists = await checkEmailExists(email)
 
@@ -269,6 +270,21 @@ export default function BusinessSignupPage() {
         throw new Error(result.error || "Failed to create account")
       }
 
+        
+      const userId = result.data?.user?.id
+      if (!userId) {
+        throw new Error("Missing user ID after sign-up")
+      }
+
+            await addUser({
+              user_type: "business",
+              userID: userId,
+              email,
+              business_name:businessName,
+              first_name: "",
+              last_name: "",
+              address: "", // Wallet will be assigned after login
+            })
       // Store user type in metadata
       await supabase.auth.updateUser({
         data: {
