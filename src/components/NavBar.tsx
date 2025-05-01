@@ -214,6 +214,7 @@ const wallet = useActiveWallet()
 
                     {/* User Dropdown */}
                     <UserDropdown
+                      walletAddress={address}
                       type={userType as "individual" | "business"}
                       verificationStatus={verificationStatus}
                       name={displayName || fallbackName}
