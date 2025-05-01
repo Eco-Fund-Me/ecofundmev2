@@ -271,14 +271,13 @@ import { motion } from "framer-motion"
 import { Eye, EyeOff, User, Briefcase } from "lucide-react"
 import { AuthHero } from "@/components/auth/AuthHero"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
-import { checkEmailExists } from "@/lib/checkEmailExists"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { useUserAuth } from "@/context/AuthContext"
-import { addUser } from "@/app/actions/user"
+import { addUser, checkEmailExists } from "@/app/actions/user"
 
 export default function IndividualSignupPage() {
   const router = useRouter()
-  const { signUpNewUser,session } = useUserAuth()
+  const { signUpNewUser} = useUserAuth()
   const {  connectWithThirdweb,isConnecting, error: thirdwebError } = useThirdwebAuth()
   const walletAddress =useUserAddress()
   const [firstName, setFirstName] = useState("")
@@ -290,52 +289,58 @@ export default function IndividualSignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
-
-  if (!firstName || !lastName || !email || !password) {
-    setError("All fields are required")
-    return
-  }
-
-  setIsSubmitting(true)
-  setError(null)
-
-  try {
-    const emailExists = await checkEmailExists(email)
-    if (emailExists) {
-      setError("This email is already registered. Please sign in instead.")
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+  
+    if (!firstName || !lastName || !email || !password) {
+      setError("All fields are required")
       return
     }
-
-    // 1. Sign up with Supabase
-    const result = await signUpNewUser(email, password)
-    if (!result.success) {
-      throw new Error(result.error || "Failed to create account")
-    }
-
-    // 2. Add user to DB (without wallet)
   
-    await addUser({
-      user_type: "individual",
-      userID: session ? session?.user.id : result.data.user.id,
-      email,
-      first_name: firstName,
-      last_name: lastName,
-      address: "", // wallet address
-    })
-    
-
-    // 3. Redirect to verify email page
-    router.push(`/signup/verify?email=${encodeURIComponent(email)}`)
-  } catch (err) {
-    console.error("Signup error:", err)
-    setError(err instanceof Error ? err.message : "An unexpected error occurred")
-  } finally {
-    setIsSubmitting(false)
+    setIsSubmitting(true)
+    setError(null)
+  
+    try {
+      // 1. Check if email is already in auth.users
+      const emailExists = await checkEmailExists(email)
+      if (emailExists) {
+        setError("This email is already registered. Please sign in instead.")
+        setIsSubmitting(false)
+        return
+      }
+  
+      // 2. Sign up via Supabase
+      const result = await signUpNewUser(email, password)
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create account")
+      }
+  
+      const userId = result.data?.user?.id
+      if (!userId) {
+        throw new Error("Missing user ID after sign-up")
+      }
+  
+      // 3. Add user to your custom users table (without wallet)
+      await addUser({
+        user_type: "individual",
+        userID: userId,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        address: "", // Wallet will be assigned after login
+      })
+  
+      // 4. Redirect to verification page
+      router.push(`/signup/verify?email=${encodeURIComponent(email)}`)
+  
+    } catch (err) {
+      console.error("Signup error:", err)
+      setError(err instanceof Error ? err.message : "An unexpected error occurred")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
-}
-
+  
 
   const handleGoogleSignup = async () => {
     try {
