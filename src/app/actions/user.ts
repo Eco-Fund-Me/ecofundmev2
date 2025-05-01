@@ -116,7 +116,7 @@ const personalDomains = [
   "mail.com", "gmx.com"
 ]
 
-export function isBusinessEmail(email: string): boolean {
+export async function isBusinessEmail(email: string): Promise<boolean> {
   const domain = email.split("@")[1]?.toLowerCase()
   return !!domain && !personalDomains.includes(domain)
 }
