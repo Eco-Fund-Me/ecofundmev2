@@ -278,7 +278,7 @@ import { addUser } from "@/app/actions/user"
 
 export default function IndividualSignupPage() {
   const router = useRouter()
-  const { signUpNewUser } = useUserAuth()
+  const { signUpNewUser,session } = useUserAuth()
   const {  connectWithThirdweb,isConnecting, error: thirdwebError } = useThirdwebAuth()
   const walletAddress =useUserAddress()
   const [firstName, setFirstName] = useState("")
@@ -315,9 +315,10 @@ const handleSubmit = async (e: React.FormEvent) => {
     }
 
     // 2. Add user to DB (without wallet)
+  
     await addUser({
       user_type: "individual",
-      userID: result.data.user.id,
+      userID: session ? session?.user.id : result.data.user.id,
       email,
       first_name: firstName,
       last_name: lastName,

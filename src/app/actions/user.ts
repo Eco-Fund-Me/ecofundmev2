@@ -96,3 +96,18 @@ export async function addUser(params: UserParams) {
     }
   }
 }
+
+
+export async function checkEmailExists(email: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("users") // not "auth.users", use the actual users table if you mirror emails there
+    .select("user_id", { count: "exact", head: true })
+    .eq("email", email.toLowerCase());
+
+  if (error) {
+    console.error("Error checking users table for email:", error);
+    return false;
+  }
+
+  return (data?.length ?? 0) > 0;
+}

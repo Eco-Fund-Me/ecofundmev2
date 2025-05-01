@@ -259,6 +259,7 @@ export default function IndividualSigninPage() {
       const result = await signInUser(email, password)
 
       if (!result.success) {
+        console.log("failed to sign in email and pass:individual")
         throw new Error(result.error || "Failed to sign in")
       }
 
