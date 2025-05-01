@@ -207,7 +207,7 @@ import { useUserAddress } from "@/hooks/useUserAddress"
 export default function BusinessSignupPage() {
   const router = useRouter()
   const { signUpNewUser } = useUserAuth()
-  const { connectWithThirdweb, isConnecting, error: thirdwebError } = useThirdwebAuth()
+  const { isConnecting, error: thirdwebError } = useThirdwebAuth()
   const walletAddress =useUserAddress()
   const [businessName, setBusinessName] = useState("")
   const [email, setEmail] = useState("")
@@ -273,16 +273,10 @@ export default function BusinessSignupPage() {
       })
 
       // Generate a unique business ID
-      const businessId = crypto.randomUUID()
+      
 
       // Connect with Thirdweb and add user to database
-      await connectWithThirdweb("custom", email, password, {
-        user_type: "business",
-        email,
-        business_name: businessName,
-        business_id: businessId,
-      })
-
+ 
       // Get the wallet address
       const address = walletAddress
       if (!address) {

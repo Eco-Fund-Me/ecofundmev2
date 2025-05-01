@@ -3,8 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import { ThirdwebProvider } from "thirdweb/react";
+
 import { AuthContextProvider } from "@/context/AuthContext";
+import Web3Provider from "@/components/Web3Provider";
+
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,20 +30,26 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+ 
   return (
     <html lang="en">
   
-        <ThirdwebProvider>
-        <AuthContextProvider>
+    
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
+            <Web3Provider>
+         <AuthContextProvider>
+      
         <NavBar />
         <main className="flex-1">{children}</main>
         <Footer />
+       
+        </AuthContextProvider>
+        </Web3Provider>
       </body>
-      </AuthContextProvider>
-      </ThirdwebProvider>
+    
      
     </html>
   );

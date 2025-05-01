@@ -1,165 +1,170 @@
 "use client"
 
-import Link from "next/link"
-import { ChevronDown, LogOut, Settings, User, BarChart3, PlusCircle, FileText, CreditCard } from 'lucide-react'
-import { truncateAddress } from "@/lib/utils"
-import { supabase } from "@/lib/supabaseClient"
-import { useActiveWallet, useDisconnect } from "thirdweb/react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  ChevronDown,
+  LogOut,
+  Settings,
+  User,
+  Building,
+  BarChart3,
+  FileText,
+  PlusCircle,
+  CreditCard,
+} from "lucide-react"
+import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
 
 interface UserDropdownProps {
   type: "individual" | "business"
-  verificationStatus?: "pending" | "verified" | "not_started" | "in_progress" | "rejected"
+  verificationStatus?: "verified" | "pending" | "not_started" | "in_progress" | "rejected"
   name: string
-  walletAddress?: string
-  balance?: string
+  profileImage?: string
+  onLogout?: () => Promise<void>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function UserDropdown({ type, verificationStatus, name, walletAddress, balance }: UserDropdownProps) {
-  const wallet = useActiveWallet()
-  const { disconnect } = useDisconnect()
+export function UserDropdown({ type, verificationStatus, name, profileImage, onLogout }: UserDropdownProps) {
+  const [open, setOpen] = useState(false)
 
-  // Determine the status emoji based on user type and verification status
-  const getStatusEmoji = () => {
-    if (type === "individual") return "🔵"
-    if (type === "business" && verificationStatus === "verified") return "🟢"
-    return "🟠" // Business pending or other states
+  // Get status emoji and color based on user type and verification status
+  const getStatusInfo = () => {
+    if (type === "business") {
+      if (verificationStatus === "verified") {
+        return { emoji: "🟢", color: "green" }
+      }
+      return { emoji: "🟠", color: "amber" }
+    }
+    return { emoji: "🔵", color: "blue" }
   }
 
-  // Handle logout - both Supabase and Thirdweb
+  const statusInfo = getStatusInfo()
+
+  // Get initials for avatar fallback
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2)
+  }
+
+  // Handle logout
   const handleLogout = async () => {
-    try {
-      // Sign out from Supabase
-      await supabase.auth.signOut()
-
-      // Disconnect from Thirdweb if wallet exists
-      if (wallet) await disconnect(wallet)
-
-      // Redirect to home page
-      window.location.href = "/"
-    } catch (error) {
-      console.error("Error during logout:", error)
+    if (onLogout) {
+      await onLogout()
     }
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-x-1.5 text-sm font-medium">
-          <span className="mr-1">{getStatusEmoji()}</span>
-          {name}
-          <ChevronDown className="h-4 w-4 opacity-60" aria-hidden="true" />
+        <Button variant="ghost" className="flex items-center gap-2 px-3 py-1 rounded-full hover:bg-[#4CAF50]/10">
+          <span className="text-lg mr-1">{statusInfo.emoji}</span>
+          <span className="font-medium text-sm text-white">{name}</span>
+          <ChevronDown className="h-4 w-4 text-[#4CAF50] opacity-70" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        {/* Always display wallet address if available */}
-        {walletAddress && (
-          <>
-            <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <p className="text-sm text-muted-foreground">Wallet</p>
-                <p className="font-mono">{truncateAddress(walletAddress)}</p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-          </>
-        )}
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="flex items-center gap-2">
+          <Avatar className="h-8 w-8">
+            {profileImage ? <AvatarImage src={profileImage || "/placeholder.svg"} alt={name} /> : null}
+            <AvatarFallback className={`bg-${statusInfo.color}-500/20 text-${statusInfo.color}-500`}>
+              {getInitials(name)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <p className="font-medium text-sm">{name}</p>
+            <Badge
+              variant="outline"
+              className={`bg-${statusInfo.color}-500/10 text-xs border-${statusInfo.color}-500/20 w-fit`}
+            >
+              {type === "business" ? "Business Account" : "Individual Account"}
+            </Badge>
+          </div>
+        </DropdownMenuLabel>
 
-        {/* Individual user menu items */}
-        {type === "individual" && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link href="/profile" className="flex items-center cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/contributions" className="flex items-center cursor-pointer">
-                <CreditCard className="mr-2 h-4 w-4" />
-                <span>My Contributions</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/settings" className="flex items-center cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="flex items-center cursor-pointer">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Logout</span>
-            </DropdownMenuItem>
-          </>
-        )}
+        <DropdownMenuSeparator />
 
-        {/* Business user menu items - verified */}
-        {type === "business" && verificationStatus === "verified" && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link href="/organization/profile" className="flex items-center cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
-                <span>Organization Profile</span>
+        <DropdownMenuGroup>
+          {/* Menu Items based on user type */}
+          {type === "individual" ? (
+            <>
+              <Link href="/profile">
+                <DropdownMenuItem className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
               </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/organization/dashboard" className="flex items-center cursor-pointer">
-                <BarChart3 className="mr-2 h-4 w-4" />
-                <span>Campaign Dashboard</span>
+              <Link href="/contributions">
+                <DropdownMenuItem className="cursor-pointer">
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  <span>My Contributions</span>
+                </DropdownMenuItem>
               </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/create-campaign" className="flex items-center cursor-pointer">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                <span>Create Campaign</span>
+            </>
+          ) : type === "business" && verificationStatus === "verified" ? (
+            <>
+              <Link href="/organization/profile">
+                <DropdownMenuItem className="cursor-pointer">
+                  <Building className="mr-2 h-4 w-4" />
+                  <span>Organization Profile</span>
+                </DropdownMenuItem>
               </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/organization/analytics" className="flex items-center cursor-pointer">
-                <FileText className="mr-2 h-4 w-4" />
-                <span>Analytics</span>
+              <Link href="/organization/dashboard">
+                <DropdownMenuItem className="cursor-pointer">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  <span>Campaign Dashboard</span>
+                </DropdownMenuItem>
               </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/settings" className="flex items-center cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+              <Link href="/create-campaign">
+                <DropdownMenuItem className="cursor-pointer">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  <span>Create Campaign</span>
+                </DropdownMenuItem>
               </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="flex items-center cursor-pointer">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Logout</span>
-            </DropdownMenuItem>
-          </>
-        )}
-
-        {/* Business user menu items - not verified */}
-        {type === "business" && verificationStatus !== "verified" && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link href="/business-verification" className="flex items-center cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
+              <Link href="/organization/analytics">
+                <DropdownMenuItem className="cursor-pointer">
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>Analytics</span>
+                </DropdownMenuItem>
+              </Link>
+            </>
+          ) : (
+            <Link href="/business-verification">
+              <DropdownMenuItem className="cursor-pointer">
+                <Building className="mr-2 h-4 w-4" />
                 <span>Business Profile</span>
-              </Link>
+              </DropdownMenuItem>
+            </Link>
+          )}
+
+          {/* Common menu items */}
+          <Link href="/settings">
+            <DropdownMenuItem className="cursor-pointer">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="flex items-center cursor-pointer">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Logout</span>
-            </DropdownMenuItem>
-          </>
-        )}
+          </Link>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 focus:text-red-500">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Logout</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

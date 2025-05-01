@@ -110,6 +110,7 @@ export function useThirdwebAuth() {
             strategy: "auth_endpoint",
             payload: JSON.stringify({ userId }),
             chain:chain
+             
           })
           return wallet
         })
@@ -133,9 +134,11 @@ export function useThirdwebAuth() {
         await connect(async () => {
           const wallet = inAppWallet()
           await wallet.connect({
+
             client,
             strategy: method,
             chain:chain
+
           })
           return wallet
         })

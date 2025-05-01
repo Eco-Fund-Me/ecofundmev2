@@ -176,9 +176,10 @@ import { motion } from "framer-motion"
 
 function HeroContent() {
   const [mounted, setMounted] = useState(false)
-
+ 
   useEffect(() => {
     setMounted(true)
+ 
   }, [])
 
   if (!mounted) return null
@@ -227,6 +228,7 @@ function HeroContent() {
             className="inline-block px-4 py-1.5 bg-[#4CAF50]/10 text-[#4CAF50] text-sm font-medium rounded-full"
           >
             Sustainable Investing Platform
+          
           </motion.span>
 
           <motion.h1
@@ -277,6 +279,7 @@ function HeroContent() {
                   backdrop-blur-sm flex items-center justify-center bg-white/5"
               >
                 Start a Project
+
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
