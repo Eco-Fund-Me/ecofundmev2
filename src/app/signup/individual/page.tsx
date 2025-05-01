@@ -463,19 +463,7 @@ export default function IndividualSignupPage() {
                     </div>
                   )}
 
-                  {(error?.includes("Email not confirmed") || error?.includes("not confirmed")) && (
-                    <div className="mt-2">
-                      <p className="text-sm">Would you like to:</p>
-                      <div className="mt-2 flex gap-3">
-                        <Link href={`/signup/verify?email=${encodeURIComponent(email)}`} className="text-sm text-[#00EE7D] hover:underline">
-                          Comfirm Email
-                        </Link>
-                        <Link href="/signin/individual" className="text-sm text-[#00EE7D] hover:underline">
-                          Sign in with another email
-                        </Link>
-                      </div>
-                    </div>
-                  )}
+                 
                 </div>
               )}
 
