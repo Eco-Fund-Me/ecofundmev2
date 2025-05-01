@@ -38,7 +38,8 @@ export async function addUser(params: UserParams) {
     // Prepare user data based on user type
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userData: Record<string, any> = {
-      address: params.address,  // This is the wallet address from Thirdweb
+      user_id: params.userID, // <-- this is critical
+      address: params.address,
       user_type: params.user_type,
       email: params.email.toLowerCase(),
       created_at: new Date().toISOString(),
