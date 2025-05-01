@@ -1,6 +1,6 @@
 "use server"
 
-import { supabase } from "@/lib/supabaseClient"
+import { db as supabase } from "@/lib/db"
 
 // Define the types for the function parameters
 type UserType = "individual" | "business"
