@@ -290,7 +290,7 @@ export default function BusinessSigninPage() {
                         <Link href={`/signup/verify?email=${encodeURIComponent(email)}`} className="text-sm text-[#00EE7D] hover:underline">
                           Comfirm Email
                         </Link>
-                        <Link href="/singin/business" className="text-sm text-[#00EE7D] hover:underline">
+                        <Link href="/signin/business" className="text-sm text-[#00EE7D] hover:underline">
                           Sign in with another email
                         </Link>
                       </div>
