@@ -7,7 +7,8 @@ type UserType = "individual" | "business"
 
 interface UserParams {
   user_type: UserType
-  address: string  // This is the wallet address from Thirdweb
+ userID : string
+  address?: string  // This is the wallet address from Thirdweb
   email: string
   first_name?: string
   last_name?: string
@@ -21,7 +22,7 @@ export async function addUser(params: UserParams) {
     const { data: existingUser, error: checkError } = await supabase
       .from("users")
       .select("*")
-      .eq("address", params.address)
+      .eq("user_id", params.userID)
       .single()
 
     if (checkError && checkError.code !== "PGRST116") {

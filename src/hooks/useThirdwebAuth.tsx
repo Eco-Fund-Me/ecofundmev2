@@ -120,6 +120,7 @@ export function useThirdwebAuth() {
         if (address && userData) {
           // Add user to database with wallet address
           await addUser({
+            userID:session.user.id,
             user_type: userData.user_type,
             address,
             email: userData.email,
@@ -131,6 +132,7 @@ export function useThirdwebAuth() {
         }
       } else {
         // Google or Apple
+        let walletId 
         await connect(async () => {
           const wallet = inAppWallet()
           await wallet.connect({
@@ -140,7 +142,9 @@ export function useThirdwebAuth() {
             chain:chain
 
           })
+           walletId =wallet.id
           return wallet
+         
         })
 
         // Get wallet address after connection
@@ -148,6 +152,7 @@ export function useThirdwebAuth() {
         if (address && userData) {
           // Add user to database with wallet address
           await addUser({
+            userID:  walletId || "",
             user_type: userData.user_type,
             address,
             email: userData.email || `${method}_user@example.com`, // Placeholder if email not available

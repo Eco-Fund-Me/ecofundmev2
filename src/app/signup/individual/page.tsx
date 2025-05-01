@@ -317,11 +317,13 @@ const handleSubmit = async (e: React.FormEvent) => {
     // 2. Add user to DB (without wallet)
     await addUser({
       user_type: "individual",
+      userID: result.data.user.id,
       email,
       first_name: firstName,
       last_name: lastName,
-      address: "", // Leave wallet empty for now
+      address: "", // wallet address
     })
+    
 
     // 3. Redirect to verify email page
     router.push(`/signup/verify?email=${encodeURIComponent(email)}`)
