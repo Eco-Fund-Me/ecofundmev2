@@ -110,13 +110,13 @@ export async function checkEmailExists(email: string): Promise<boolean> {
 }
 
 
-const personalEmailDomains = [
+const personalDomains = [
   "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com",
   "icloud.com", "protonmail.com", "live.com", "msn.com", "ymail.com",
   "mail.com", "gmx.com"
 ]
 
-export async function isBusinessEmail(email: string):Promise<boolean> {
+export function isBusinessEmail(email: string): boolean {
   const domain = email.split("@")[1]?.toLowerCase()
-  return !!domain && !personalEmailDomains.includes(domain)
+  return !!domain && !personalDomains.includes(domain)
 }

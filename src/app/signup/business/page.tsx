@@ -248,6 +248,10 @@ export default function BusinessSignupPage() {
       // Check if email already exists BEFORE attempting sign-up
       const emailExists = await checkEmailExists(email)
 
+      if (!isBusinessEmail(email)) {
+        setError("Please use a valid business email address to sign up.")
+        return
+      }
 
       if (emailExists) {
         setError("This email is already registered. Please sign in instead.")
