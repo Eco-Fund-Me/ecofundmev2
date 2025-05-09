@@ -1,12 +1,12 @@
 "use client"
 
-import { BackedCampaignsTable } from "@/components/dashboard/organization/BackedCampaignsTable"
-import { CampaignsTable } from "@/components/dashboard/organization/CampaignsTable"
-import { DraftsTable } from "@/components/dashboard/organization/DraftsTable"
-import { AccountSettings } from "@/components/dashboard/organization/settings/AccountSettings"
-import { OrganizationSidebar } from "@/components/dashboard/organization/Sidebar"
-import { StatsCards } from "@/components/dashboard/organization/StatsCards"
 import { useState } from "react"
+import { StatsCards } from '../../../components/dashboard/organization/StatsCards';
+import { OrganizationSidebar } from '../../../components/dashboard/organization/Sidebar';
+import { CampaignsTable } from '../../../components/dashboard/organization/CampaignsTable';
+import { DraftsTable } from '../../../components/dashboard/organization/DraftsTable';
+import { BackedCampaignsTable } from '../../../components/dashboard/organization/BackedCampaignsTable';
+import { AccountSettings } from '../../../components/dashboard/organization/settings/AccountSettings';
 
 
 // Dummy data for the dashboard
