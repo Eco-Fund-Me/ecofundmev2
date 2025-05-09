@@ -171,3 +171,59 @@ export async function getUserByAddress(address: string): Promise<{
     }
   }
 }
+
+
+export interface UpdateUserParams {
+  user_id: string // Required to identify the user
+  address?: string
+  email?: string
+  first_name?: string
+  last_name?: string
+  business_name?: string
+  business_id?: string
+  kyc_status?: string
+  kyc_verified_at?: string
+  kyc_verification_id?: string
+  kyc_rejection_reason?: string
+  document_type?: string
+  document_country?: string
+  document_number?: string
+  wallet_assigned_at?: string
+  oauth_provider?: string
+}
+
+export async function updateUser(params: UpdateUserParams): Promise<{
+  success: boolean
+  updatedUser?: User
+  error?: string
+  code?: string
+}> {
+  try {
+    const { user_id, ...updateFields } = params
+
+    if (!user_id) {
+      return { success: false, error: "Missing user_id", code: "MISSING_ID" }
+    }
+
+    const { data, error } = await supabase
+      .from("users")
+      .update(updateFields)
+      .eq("user_id", user_id)
+      .select()
+      .single()
+
+    if (error) {
+      console.error("Error updating user:", error)
+      return { success: false, error: "Error updating user", code: "UPDATE_ERROR" }
+    }
+
+    return { success: true, updatedUser: data as User }
+  } catch (err) {
+    console.error("Unexpected error updating user:", err)
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+      code: "UNEXPECTED_ERROR",
+    }
+  }
+}

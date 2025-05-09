@@ -167,6 +167,7 @@ import { AuthHero } from "@/components/auth/AuthHero"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { supabase } from "@/lib/supabaseClient"
 import { useUserAuth } from "@/context/AuthContext"
+import { updateUser } from "@/app/actions/user"
 
 export default function BusinessSigninPage() {
   const router = useRouter()
@@ -201,6 +202,15 @@ export default function BusinessSigninPage() {
 
       // Connect with Thirdweb
       await connectWithThirdweb("custom", email, password)
+      const updateResult = await updateUser({
+        address:
+      })
+
+      if (updateResult.success) {
+        console.log("User updated:", updateResult.updatedUser)
+      } else {
+        console.error("Update failed:", updateResult.error)
+      }
 
       // Check business verification status
       const { data: profile, error: profileError } = await supabase

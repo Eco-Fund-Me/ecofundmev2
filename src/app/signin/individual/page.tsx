@@ -230,6 +230,8 @@ import { Eye, EyeOff, User, Briefcase } from "lucide-react"
 import { AuthHero } from "@/components/auth/AuthHero"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { useUserAuth } from "@/context/AuthContext"
+import { updateUser } from "@/app/actions/user"
+
 
 export default function IndividualSigninPage() {
   const router = useRouter()
@@ -265,6 +267,17 @@ export default function IndividualSigninPage() {
 
       // Connect with Thirdweb
       await connectWithThirdweb("custom", email, password)
+      
+      const updateResult = await updateUser({
+        address:
+        
+      })
+
+      if (updateResult.success) {
+        console.log("User updated:", updateResult.updatedUser)
+      } else {
+        console.error("Update failed:", updateResult.error)
+      }
 
       // Redirect to campaigns page
       router.push("/campaigns")
