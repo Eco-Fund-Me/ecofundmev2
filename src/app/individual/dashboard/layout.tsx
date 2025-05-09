@@ -1,5 +1,6 @@
 import type React from "react"
 import NavBar from "@/components/NavBar"
+import { Sidebar } from "@/components/dashboard/individual/Sidebar"
 
 
 export default function IndividualDashboardLayout({

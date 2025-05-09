@@ -43,7 +43,7 @@ export function NotificationSettings() {
                 <Label htmlFor="emailUpdates" className="text-base font-normal">
                   Campaign Updates
                 </Label>
-                <p className="text-sm text-gray-500">Receive updates about campaigns you've backed</p>
+                <p className="text-sm text-gray-500">Receive updates about campaigns you&apos;ve backed</p>
               </div>
               <Switch
                 id="emailUpdates"
@@ -86,7 +86,7 @@ export function NotificationSettings() {
                   Successful Funding
                 </Label>
                 <p className="text-sm text-gray-500">
-                  Get notified when campaigns you've backed are successfully funded
+                  Get notified when campaigns you&apos;ve backed are successfully funded
                 </p>
               </div>
               <Switch
