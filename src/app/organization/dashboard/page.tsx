@@ -149,7 +149,7 @@ export default function OrganizationDashboard() {
         <OrganizationSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {/* Main Content */}
-        <div className="flex-1 p-4 md:p-6 lg:p-8">
+        <div className="flex-1 pt-16 p-4 md:p-6 lg:p-8">
           {/* Home Tab */}
           {activeTab === "home" && (
             <>

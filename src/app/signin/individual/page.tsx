@@ -269,7 +269,7 @@ export default function IndividualSigninPage() {
       await connectWithThirdweb("custom", email, password)
       
       const updateResult = await updateUser({
-        address:
+        address:"0x24343"
         
       })
 

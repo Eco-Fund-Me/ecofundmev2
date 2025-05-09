@@ -203,7 +203,7 @@ export default function BusinessSigninPage() {
       // Connect with Thirdweb
       await connectWithThirdweb("custom", email, password)
       const updateResult = await updateUser({
-        address:
+        address:"0x11234"
       })
 
       if (updateResult.success) {
