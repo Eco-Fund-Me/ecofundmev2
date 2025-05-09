@@ -201,6 +201,7 @@ import {
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+// import getUserInfoByAddress from "@/app/actions/getUserInfoByAddress"
 
 interface UserDropdownProps {
   type: "individual" | "business"
@@ -210,6 +211,8 @@ interface UserDropdownProps {
   profileImage?: string
   onLogout?: () => Promise<void>
 }
+
+
 
 export function UserDropdown({
   type,
@@ -329,7 +332,7 @@ export function UserDropdown({
           {/* Menu Items based on user type */}
           {type === "individual" ? (
             <>
-              <Link href="/profile">
+              <Link href="/individual/dashboard">
                 <DropdownMenuItem className="cursor-pointer">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
@@ -344,7 +347,7 @@ export function UserDropdown({
             </>
           ) : type === "business" && verificationStatus === "verified" ? (
             <>
-              <Link href="/organization/profile">
+              <Link href="/organization/dashboard">
                 <DropdownMenuItem className="cursor-pointer">
                   <Building className="mr-2 h-4 w-4" />
                   <span>Organization Profile</span>

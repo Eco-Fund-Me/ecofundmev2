@@ -120,3 +120,54 @@ export async function isBusinessEmail(email: string): Promise<boolean> {
   const domain = email.split("@")[1]?.toLowerCase()
   return !!domain && !personalDomains.includes(domain)
 }
+
+
+export interface User {
+  user_id: string
+  address: string | null
+  created_at: string | null
+  business_id: string | null
+  kyc_status: string | null
+  kyc_verified_at: string | null
+  kyc_verification_id: string | null
+  kyc_rejection_reason: string | null
+  document_type: string | null
+  document_country: string | null
+  document_number: string | null
+  user_type: "individual" | "business"
+  wallet_assigned_at: string | null
+  oauth_provider: string | null
+  first_name: string | null
+  last_name: string | null
+  email: string
+  business_name: string | null
+}
+
+export async function getUserByAddress(address: string): Promise<{
+  success: boolean
+  user?: User
+  error?: string
+  code?: string
+}> {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("address", address)
+      .single() // if you expect one user per address
+
+    if (error) {
+      console.error("Error fetching user:", error)
+      return { success: false, error: "Error fetching user", code: "FETCH_ERROR" }
+    }
+
+    return { success: true, user: data as User }
+  } catch (err) {
+    console.error("Unexpected error fetching user:", err)
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+      code: "UNEXPECTED_ERROR",
+    }
+  }
+}
