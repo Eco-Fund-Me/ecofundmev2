@@ -7,6 +7,7 @@ import { NotificationSettings } from "./NotificationSettings"
 import { SecuritySettings } from "./SecuritySettings"
 import { PaymentSettings } from "./PaymentSettings"
 
+
 export function AccountSettings() {
   const [activeTab, setActiveTab] = useState("profile")
 

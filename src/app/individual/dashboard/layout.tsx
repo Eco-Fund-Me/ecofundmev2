@@ -1,6 +1,6 @@
 import type React from "react"
-import { Sidebar } from "@/components/dashboard/individual/Sidebar"
 import NavBar from "@/components/NavBar"
+
 
 export default function IndividualDashboardLayout({
   children,
