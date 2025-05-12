@@ -1,12 +1,14 @@
-"use client";
-
+"use client"
 
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { CampaignCard } from "@/components/Campaign/CampaignCard"
-import { useCampaignStore } from "@/hooks/useCampignStore"
+
 import { Leaf, Droplets, Recycle, Building2, Trash2, Coins, Palette } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
+import { useCampaignStore } from "@/hooks/useCampignStore"
+
 // Helper function to capitalize each word
 function capitalizeEachWord(str: string) {
   return str
@@ -75,9 +77,33 @@ export default function CampaignsPage() {
               Explore Projects
             </span>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Discover Campaigns</h1>
-            <p className="text-lg text-white/80 max-w-2xl mx-auto">
+            <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">
               Support innovative green projects that are making a real impact on our planet&apos;s future.
             </p>
+
+            {/* Create Campaign Button */}
+            <Link href="/create-campaign">
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#4CAF50] text-white font-medium rounded-full shadow-lg hover:bg-[#3d9140] transition-colors duration-300"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current"
+                >
+                  <path d="M12 5V19M5 12H19" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Create Campaign
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </div>
@@ -109,7 +135,7 @@ export default function CampaignsPage() {
               >
                 <div className="absolute inset-0 opacity-10">
                   <Image
-                    src="/hero-banner.png"
+                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/hero-banner-IdzKCRG8YsfDo4cjGM4GSg5oH5qkz4.png"
                     alt="Nature"
                     fill
                     className="object-cover"
@@ -169,6 +195,29 @@ export default function CampaignsPage() {
             </div>
           </motion.div>
         )}
+        {/* Floating Action Button for Mobile */}
+        <div className="md:hidden fixed bottom-6 right-6 z-10">
+          <Link href="/create-campaign">
+            <motion.button
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center w-14 h-14 rounded-full bg-[#4CAF50] text-white shadow-lg"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current"
+              >
+                <path d="M12 5V19M5 12H19" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </motion.button>
+          </Link>
+        </div>
       </div>
     </div>
   )
