@@ -231,11 +231,12 @@ import { AuthHero } from "@/components/auth/AuthHero"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { useUserAuth } from "@/context/AuthContext"
 import { updateUser } from "@/app/actions/user"
-
+import { useUserAddress } from "@/hooks/useUserAddress"
 
 export default function IndividualSigninPage() {
   const router = useRouter()
   const { signInUser } = useUserAuth()
+  const  userAddress = useUserAddress()
   const { connectWithThirdweb, isConnecting, error: thirdwebError } = useThirdwebAuth()
 
   const [email, setEmail] = useState("")
@@ -269,8 +270,8 @@ export default function IndividualSigninPage() {
       await connectWithThirdweb("custom", email, password)
       
       const updateResult = await updateUser({
-        address:"0x24343"
-        
+        address: userAddress,
+        user_id: result.data?.user?.id
       })
 
       if (updateResult.success) {
@@ -278,7 +279,6 @@ export default function IndividualSigninPage() {
       } else {
         console.error("Update failed:", updateResult.error)
       }
-
       // Redirect to campaigns page
       router.push("/campaigns")
     } catch (err) {

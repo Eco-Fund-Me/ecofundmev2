@@ -168,10 +168,12 @@ import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { supabase } from "@/lib/supabaseClient"
 import { useUserAuth } from "@/context/AuthContext"
 import { updateUser } from "@/app/actions/user"
+import { useUserAddress } from "@/hooks/useUserAddress"
 
 export default function BusinessSigninPage() {
   const router = useRouter()
   const { signInUser } = useUserAuth()
+  const  userAddress = useUserAddress()
   const { connectWithThirdweb, isConnecting, error: thirdwebError } = useThirdwebAuth()
 
   const [email, setEmail] = useState("")
@@ -203,7 +205,8 @@ export default function BusinessSigninPage() {
       // Connect with Thirdweb
       await connectWithThirdweb("custom", email, password)
       const updateResult = await updateUser({
-        address:"0x11234"
+        address: userAddress,
+        user_id: result.data?.user?.id
       })
 
       if (updateResult.success) {
