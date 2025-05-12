@@ -142,7 +142,7 @@ export function useThirdwebAuth() {
             chain:chain
 
           })
-           walletId =wallet.id
+           walletId = wallet.id
           return wallet
          
         })
@@ -153,13 +153,9 @@ export function useThirdwebAuth() {
           // Add user to database with wallet address
           await addUser({
             userID:  walletId || "",
-            user_type: userData.user_type,
+            user_type: "individual",
             address,
             email: userData.email || `${method}_user@example.com`, // Placeholder if email not available
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            business_name: userData.business_name,
-            business_id: userData.business_id,
           })
         }
       }

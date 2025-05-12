@@ -350,6 +350,8 @@ export default function IndividualSignupPage() {
       
       // Get the wallet address
       const address = walletAddress
+
+      
       if (address) {
         router.push("/campaigns")
       }
