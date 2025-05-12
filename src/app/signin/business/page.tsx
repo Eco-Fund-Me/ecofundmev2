@@ -167,7 +167,7 @@ import { AuthHero } from "@/components/auth/AuthHero"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { supabase } from "@/lib/supabaseClient"
 import { useUserAuth } from "@/context/AuthContext"
-import { updateUser } from "@/app/actions/user"
+import { isBusinessEmail, updateUser } from "@/app/actions/user"
 import { useUserAddress } from "@/hooks/useUserAddress"
 
 export default function BusinessSigninPage() {
@@ -190,6 +190,11 @@ export default function BusinessSigninPage() {
       setError("Email and password are required")
       return
     }
+
+        if (!isBusinessEmail(email)) {
+          setError("Please use a valid business email address to sign up.")
+          return
+        }
 
     setIsSubmitting(true)
     setError(null)
@@ -309,9 +314,25 @@ export default function BusinessSigninPage() {
                       </div>
                     </div>
                   )}
+
+                  {(error?.includes("use a valid business email") || error?.includes("valid business email address")) && (
+                    <div className="mt-2">
+                      <p className="text-sm text-blue-700">Please use a valid business email address to sign in.</p>
+                      {/* <div className="mt-2 flex gap-3">
+                        <Link href="/signin" className="text-sm text-[#00EE7D] hover:underline">
+                          Sign in instead
+                        </Link>
+                        <Link href="/forgot-password" className="text-sm text-[#00EE7D] hover:underline">
+                          Reset your password
+                        </Link>
+                      </div> */}
+                    </div>
+                  )}
                 </div>
                 
               )}
+
+              
 
               <div>
                 <input

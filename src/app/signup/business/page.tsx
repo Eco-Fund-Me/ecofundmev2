@@ -370,6 +370,20 @@ export default function BusinessSignupPage() {
                     </div>
                   )}
 
+                   {(error?.includes("use a valid business email") || error?.includes("valid business email address")) && (
+                    <div className="mt-2">
+                      <p className="text-sm text-blue-700">Please use a valid business email address to sign up.</p>
+                      {/* <div className="mt-2 flex gap-3">
+                        <Link href="/signin" className="text-sm text-[#00EE7D] hover:underline">
+                          Sign in instead
+                        </Link>
+                        <Link href="/forgot-password" className="text-sm text-[#00EE7D] hover:underline">
+                          Reset your password
+                        </Link>
+                      </div> */}
+                    </div>
+                  )}
+
                 </div>
               )}
 
