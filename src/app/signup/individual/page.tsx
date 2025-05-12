@@ -274,9 +274,11 @@ import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { useUserAuth } from "@/context/AuthContext"
 import { addUser, checkEmailExists } from "@/app/actions/user"
-
+import { getUserEmail } from "thirdweb/wallets"
+import { client } from "@/app/client"
 export default function IndividualSignupPage() {
   const router = useRouter()
+  const  userEmail = getUserEmail({client})
   const { signUpNewUser} = useUserAuth()
   const {  connectWithThirdweb,isConnecting, error: thirdwebError } = useThirdwebAuth()
   const walletAddress =useUserAddress()
@@ -344,14 +346,21 @@ export default function IndividualSignupPage() {
 
   const handleGoogleSignup = async () => {
     try {
-      await connectWithThirdweb("google", undefined, undefined, {
+   await connectWithThirdweb("google", undefined, undefined, {
         user_type: "individual",
       })
       
-      // Get the wallet address
-      const address = walletAddress
-
       
+      const email = await userEmail 
+      
+      const address = walletAddress
+            await addUser({
+            userID:  address,
+            user_type: "individual",
+            address,
+            email: email || `google_user@example.com`, // Placeholder if email not available
+            
+          })
       if (address) {
         router.push("/campaigns")
       }

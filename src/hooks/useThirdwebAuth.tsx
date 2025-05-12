@@ -116,20 +116,20 @@ export function useThirdwebAuth() {
         })
 
         // Get wallet address after connection
-        const address = account?.address
-        if (address && userData) {
-          // Add user to database with wallet address
-          await addUser({
-            userID:session.user.id,
-            user_type: userData.user_type,
-            address,
-            email: userData.email,
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            business_name: userData.business_name,
-            business_id: userData.business_id,
-          })
-        }
+        // const address = account?.address
+        // if (address && userData) {
+        //   // Add user to database with wallet address
+        //   await addUser({
+        //     userID:session.user.id,
+        //     user_type: userData.user_type,
+        //     address,
+        //     email: userData.email,
+        //     first_name: userData.first_name,
+        //     last_name: userData.last_name,
+        //     business_name: userData.business_name,
+        //     business_id: userData.business_id,
+        //   })
+        // }
       } else {
         // Google or Apple
         let walletId 
