@@ -1,44 +1,44 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserAuth } from "@/context/AuthContext";
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth";
 import { useUserAddress } from "@/hooks/useUserAddress";
-import { addUser } from "@/app/actions/user";
+import { addUser, getUserByAddress } from "@/app/actions/user";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
   const { session } = useUserAuth();
   const { connectWithThirdweb } = useThirdwebAuth();
   const walletAddress = useUserAddress();
+  const [hasHandled, setHasHandled] = useState(false);
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
       try {
-        // Wait for session
-        if (!session?.user?.email) return;
+        if (hasHandled) return;
+        if (!session?.user?.email || !walletAddress) return;
+
+        setHasHandled(true); // Prevent double invocation
 
         const email = session.user.email;
+        const userId = session.user.id;
 
-        // Connect wallet using Thirdweb (strategy: Google)
-        await connectWithThirdweb("google", "oauth", undefined, undefined,);
+        // Connect Thirdweb wallet (Google OAuth)
+        await connectWithThirdweb("google", "oauth");
 
-        const address = walletAddress;
-        if (!address) {
-          console.warn("No wallet address available after Thirdweb connection");
-          return;
+        // Check if user already exists in DB
+        const existing = await getUserByAddress(userId); // or walletAddress
+        if (!existing.user) {
+          await addUser({
+            userID: userId,
+            user_type: "individual",
+            address: walletAddress,
+            email,
+          });
         }
 
-        // Add user to DB (if not exists)
-        await addUser({
-          userID: session.user.id, // or use a UUID or supabase id if preferred
-          user_type: "individual",
-          address,
-          email,
-        });
-
-        // Redirect after everything is set up
         router.replace("/campaigns");
       } catch (err) {
         console.error("OAuth callback error:", err);
@@ -47,7 +47,7 @@ export default function AuthCallbackPage() {
     };
 
     handleOAuthCallback();
-  });
+  }, [session, walletAddress, hasHandled]); // 👈 properly scoped deps
 
   return (
     <div className="flex justify-center items-center h-screen">
