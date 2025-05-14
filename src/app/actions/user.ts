@@ -143,18 +143,29 @@ export interface User {
   business_name: string | null
 }
 
-export async function getUserByAddress(address: string): Promise<{
+export async function getUserByAddress(address?: string, user_id?: string): Promise<{
   success: boolean
   user?: User
   error?: string
   code?: string
 }> {
+  const identifier = address || user_id
+  const column = address ? "address" : user_id ? "user_id" : null
+
+  if (!identifier || !column) {
+    return {
+      success: false,
+      error: "No identifier provided",
+      code: "NO_IDENTIFIER",
+    }
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .eq("address", address)
-      .single() // if you expect one user per address
+      .eq(column, identifier)
+      .single()
 
     if (error) {
       console.error("Error fetching user:", error)
@@ -171,6 +182,7 @@ export async function getUserByAddress(address: string): Promise<{
     }
   }
 }
+
 
 
 export interface UpdateUserParams {

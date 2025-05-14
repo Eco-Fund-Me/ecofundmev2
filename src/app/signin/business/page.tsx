@@ -208,7 +208,7 @@ export default function BusinessSigninPage() {
       }
 
       // Connect with Thirdweb
-      await connectWithThirdweb("custom", email, password)
+      await connectWithThirdweb(undefined,"email-password", email, password)
       const updateResult = await updateUser({
         address: userAddress,
         user_id: result.data?.user?.id
@@ -222,7 +222,7 @@ export default function BusinessSigninPage() {
 
       // Check business verification status
       const { data: profile, error: profileError } = await supabase
-        .from("business_profiles")
+        .from("user")
         .select("verification_status")
         .eq("user_id", result.data?.user?.id)
         .single()

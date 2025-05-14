@@ -234,7 +234,7 @@ import { useUserAddress } from "@/hooks/useUserAddress"
 
 export default function IndividualSigninPage() {
   const router = useRouter()
-  const { signInUser } = useUserAuth()
+  const { signInUser, signInWithOAuth } = useUserAuth()
   const  userAddress = useUserAddress()
   const { connectWithThirdweb, isConnecting, error: thirdwebError } = useThirdwebAuth()
 
@@ -266,7 +266,7 @@ export default function IndividualSigninPage() {
       }
 
       // Connect with Thirdweb
-      await connectWithThirdweb("custom", email, password)
+      await connectWithThirdweb(undefined,"email-password", email, password,)
       
       const updateResult = await updateUser({
         address: userAddress,
@@ -290,7 +290,8 @@ export default function IndividualSigninPage() {
 
   const handleGoogleSignin = async () => {
     try {
-      await connectWithThirdweb("google")
+      await signInWithOAuth("google")
+      await connectWithThirdweb("google","oauth")
       router.push("/campaigns")
     } catch (err) {
       console.error("Google signin error:", err)
@@ -300,7 +301,8 @@ export default function IndividualSigninPage() {
 
   const handleAppleSignin = async () => {
     try {
-      await connectWithThirdweb("apple")
+      await signInWithOAuth("apple")
+      await connectWithThirdweb("apple","oauth")
       router.push("/campaigns")
     } catch (err) {
       console.error("Apple signin error:", err)

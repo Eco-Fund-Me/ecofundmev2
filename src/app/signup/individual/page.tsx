@@ -274,12 +274,12 @@ import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { useUserAuth } from "@/context/AuthContext"
 import { addUser, checkEmailExists } from "@/app/actions/user"
-import { getUserEmail } from "thirdweb/wallets"
-import { client } from "@/app/client"
+// import { getUserEmail } from "thirdweb/wallets"
+// import { client } from "@/app/client"
 export default function IndividualSignupPage() {
   const router = useRouter()
-  const  userEmail = getUserEmail({client})
-  const { signUpNewUser} = useUserAuth()
+  // const  userEmail = getUserEmail({client})
+  const { session,signUpNewUser, signInWithOAuth} = useUserAuth()
   const {  connectWithThirdweb,isConnecting, error: thirdwebError } = useThirdwebAuth()
   const walletAddress =useUserAddress()
   const [firstName, setFirstName] = useState("")
@@ -346,12 +346,11 @@ export default function IndividualSignupPage() {
 
   const handleGoogleSignup = async () => {
     try {
-   await connectWithThirdweb("google", undefined, undefined, {
-        user_type: "individual",
-      })
+    await signInWithOAuth("google")
+    await connectWithThirdweb("google","oauth", undefined, undefined, )
       
       
-      const email = await userEmail 
+      const email = session?.user.email
       
       const address = walletAddress
             await addUser({
@@ -372,12 +371,21 @@ export default function IndividualSignupPage() {
 
   const handleAppleSignup = async () => {
     try {
-      await connectWithThirdweb("apple", undefined, undefined, {
-        user_type: "individual",
-      })
+        await signInWithOAuth("apple")
+      await connectWithThirdweb("apple","oauth", undefined, undefined)
       
-      // Get the wallet address
+
+      
+      const email = session?.user.email
+      
       const address = walletAddress
+            await addUser({
+            userID:  address,
+            user_type: "individual",
+            address,
+            email: email || `google_user@example.com`, // Placeholder if email not available
+            
+          })
       if (address) {
         router.push("/campaigns")
       }
