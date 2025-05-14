@@ -13,7 +13,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 import { assignWalletAddress, checkUserWallet } from "@/app/actions/wallet";
 import { useActiveAccount } from "thirdweb/react";
-import { headers } from "next/headers";
+// import { headers } from "next/headers";
 
 interface AuthContextType {
   session: Session | null | undefined;
@@ -153,12 +153,12 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     throw Error("Oauth Provider is Undefined")
   }
   try {
-        const origin = (await headers()).get("origin");
+        // const origin = (await headers()).get("origin");
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        // redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
-        redirectTo: `${origin}/auth/callback`, // Handle it after redirect
+        redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
+        // redirectTo: `${origin}/auth/callback`, // Handle it after redirect
       },
     });
 
