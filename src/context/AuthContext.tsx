@@ -63,51 +63,50 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     return { success: true, data };
   };
 
-  const signInUser = async (
-    email: string,
-    password: string
-  ): Promise<{ success: boolean; data?: any; error?: string }> => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.toLowerCase(),
-        password,
-      }
-    
-    );
+const signInUser = async (
+  email: string,
+  password: string
+): Promise<{ success: boolean; data?: any; error?: string }> => {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.toLowerCase(),
+      password,
+    });
 
-      if (error) {
-        console.error("Sign-in error:", error.message);
-        return { success: false, error: error.message };
-      }
+    if (error) {
+      console.error("Sign-in error:", error.message);
+      return { success: false, error: error.message };
+    }
 
-      if (data.user) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("user_type")
-          .eq("user_id", data.user.id)
-          .single();
+    if (data.user) {
+      const { data: userData } = await supabase
+        .from("users")
+        .select("user_type")
+        .eq("user_id", data.user.id) // ✅ FIXED HERE
+        .single();
 
-        if (userData) {
-          setUserType(userData.user_type as "individual" | "business");
+      if (userData) {
+        setUserType(userData.user_type as "individual" | "business");
 
-          if (userData.user_type === "individual" && walletAddress) {
-            const { hasWallet } = await checkUserWallet(data.user.id);
-            if (!hasWallet) {
-              await assignWalletAddress(data.user.id, walletAddress);
-            }
+        if (userData.user_type === "individual" && walletAddress) {
+          const { hasWallet } = await checkUserWallet(data.user.id);
+          if (!hasWallet) {
+            await assignWalletAddress(data.user.id, walletAddress);
           }
         }
       }
-
-      return { success: true, data };
-    } catch (err: any) {
-      console.error("Unexpected sign-in error:", err.message);
-      return {
-        success: false,
-        error: "An unexpected error occurred. Please try again.",
-      };
     }
-  };
+
+    return { success: true, data };
+  } catch (err: any) {
+    console.error("Unexpected sign-in error:", err.message);
+    return {
+      success: false,
+      error: "An unexpected error occurred. Please try again.",
+    };
+  }
+};
+
 
   const resetPassword = async (email: string) => {
     try {
