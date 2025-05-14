@@ -158,7 +158,7 @@ export async function getUserByAddress(address?: string, user_id?: string): Prom
       error: "No identifier provided",
       code: "NO_IDENTIFIER",
     }
-  }
+  }""
 
   try {
     const { data, error } = await supabase

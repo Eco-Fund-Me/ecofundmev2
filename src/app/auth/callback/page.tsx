@@ -1,69 +1,57 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUserAuth } from "@/context/AuthContext";
-import { useThirdwebAuth } from "@/hooks/useThirdwebAuth";
-import { useUserAddress } from "@/hooks/useUserAddress";
-import { addUser, getUserByAddress } from "@/app/actions/user";
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useUserAuth } from "@/context/AuthContext"
+import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
+import { useUserAddress } from "@/hooks/useUserAddress"
+import { addUser, getUserByAddress } from "@/app/actions/user"
 
 export default function AuthCallbackPage() {
-  const router = useRouter();
-  const { session } = useUserAuth();
-  const { connectWithThirdweb, getWalletAddress } = useThirdwebAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const router = useRouter()
+  const { session } = useUserAuth()
+  const { connectWithThirdweb } = useThirdwebAuth()
+  const walletAddress = useUserAddress()
+  const [hasHandled, setHasHandled] = useState(false)
 
   useEffect(() => {
+    if (!session?.user?.email || !walletAddress || hasHandled) return
+
     const handleOAuthCallback = async () => {
-      if (isProcessing) return;
-
-      // Wait until session is ready
-      if (!session?.user?.email || !session.user?.id) return;
-
-      setIsProcessing(true);
-
       try {
-        const email = session.user.email;
-        const userId = session.user.id;
+        setHasHandled(true)
 
-        // 1. Connect to Thirdweb wallet (Google OAuth strategy)
-        await connectWithThirdweb("google", "oauth");
+        const email = session.user.email
+        const userId = session.user.id
 
-        // 2. Wait and get wallet address from Thirdweb
-        const address = getWalletAddress();
-        if (!address) {
-          throw new Error("Wallet address unavailable after Thirdweb connection");
-        }
+        // Connect Thirdweb wallet (Google OAuth)
+        await connectWithThirdweb("google", "oauth")
 
-        // 3. Check if user exists
-        const existing = await getUserByAddress(undefined, userId);
+        // Check if user exists in Supabase
+        const existing = await getUserByAddress(undefined, userId)
 
         if (!existing.success || !existing.user) {
-          // 4. Add to DB if not found
           await addUser({
             userID: userId,
             user_type: "individual",
-            address,
+            address: walletAddress,
             email,
-          });
+          })
         }
 
-        // 5. Redirect
-        router.replace("/campaigns");
+        router.replace("/campaigns")
       } catch (err) {
-        console.error("OAuth callback error:", err);
-        router.replace("/signin?error=oauth_failed");
-      } finally {
-        setIsProcessing(false);
+        console.error("OAuth callback error:", err)
+        router.replace("/signin?error=oauth_failed")
       }
-    };
+    }
 
-    handleOAuthCallback();
-  }, [session]); // Only react to session change
+    handleOAuthCallback()
+  }, [session?.user?.email, walletAddress, hasHandled])
 
   return (
     <div className="flex justify-center items-center h-screen">
       <p className="text-green-500">Finalizing login...</p>
     </div>
-  );
+  )
 }

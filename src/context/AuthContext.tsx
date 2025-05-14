@@ -84,7 +84,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
         const { data: userData } = await supabase
           .from("users")
           .select("user_type")
-          .eq("id", data.user.id)
+          .eq("user_id", data.user.id)
           .single();
 
         if (userData) {
