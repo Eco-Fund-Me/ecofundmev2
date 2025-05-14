@@ -291,8 +291,8 @@ export default function IndividualSigninPage() {
   const handleGoogleSignin = async () => {
     try {
       await signInWithOAuth("google")
-      await connectWithThirdweb("google","oauth")
-      router.push("/campaigns")
+      // await connectWithThirdweb("google","oauth")
+      // router.push("/campaigns")
     } catch (err) {
       console.error("Google signin error:", err)
       setError(err instanceof Error ? err.message : "Failed to sign in with Google")
