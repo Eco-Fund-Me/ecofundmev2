@@ -13,6 +13,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 import { assignWalletAddress, checkUserWallet } from "@/app/actions/wallet";
 import { useActiveAccount } from "thirdweb/react";
+import { headers } from "next/headers";
 
 interface AuthContextType {
   session: Session | null | undefined;
@@ -38,6 +39,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [userType, setUserType] = useState<"individual" | "business" | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+
 
   const account = useActiveAccount();
   const walletAddress = account?.address || "";
@@ -146,15 +148,18 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     const signInWithOAuth = async (
   provider: "google" | "apple" | undefined
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
+  
   if(provider === undefined){
     throw Error("Oauth Provider is Undefined")
   }
   try {
+        const origin = (await headers()).get("origin");
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
-      // options: {
-      //   redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
-      // },
+      options: {
+        // redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
+        redirectTo: `${origin}/auth/callback`, // Handle it after redirect
+      },
     });
 
     if (error) {

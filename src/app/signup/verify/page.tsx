@@ -106,8 +106,8 @@ import { motion } from "framer-motion"
 import { AuthHero } from "@/components/auth/AuthHero"
 import { Button } from "@/components/ui/button"
 import { supabase } from "@/lib/supabaseClient"
-import { getUser } from "@/lib/api/getUser" // <-- updated function
-import { User } from "@/types/user"
+import { getUserByAddress } from "@/app/actions/user"
+
 
 export default function VerifyPage() {
   const searchParams = useSearchParams()
@@ -153,13 +153,13 @@ export default function VerifyPage() {
 
       const user_id = session.user.id
 
-      const { success, user } = await getUser({ user_id })
+      const { success, user } = await getUserByAddress(user_id )
       if (!success || !user) return
 
       // You can now route based on user details
       if (user.user_type === "business") {
         if (!user.kyc_status || user.kyc_status === "pending") {
-          router.push("/business/onboarding")
+          router.push("/business-verification")
         } else {
           router.push("/dashboard")
         }
