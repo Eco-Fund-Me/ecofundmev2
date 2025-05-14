@@ -143,43 +143,63 @@ export interface User {
   business_name: string | null
 }
 
-export async function getUserByAddress(address?: string, user_id?: string): Promise<{
-  success: boolean
-  user?: User
-  error?: string
-  code?: string
-}> {
-  const identifier = address || user_id
-  const column = address ? "address" : user_id ? "user_id" : null
+import { db as supabase } from "@/lib/db";
+import type { User } from "@/types"; // adjust as needed
 
-  if (!identifier || !column) {
+export async function getUserByAddress(
+  address?: string,
+  user_id?: string
+): Promise<{
+  success: boolean;
+  user?: User;
+  error?: string;
+  code?: string;
+}> {
+  // Validate input
+  if (!address && !user_id) {
     return {
       success: false,
       error: "No identifier provided",
       code: "NO_IDENTIFIER",
-    }
+    };
   }
 
+  // Determine the correct column and identifier
+  const column = address ? "address" : "user_id";
+  const identifier = address || user_id;
+
   try {
-    const { data, error } = await supabase
+    const { data, error, status } = await supabase
       .from("users")
       .select("*")
       .eq(column, identifier)
-      .single()
+      .maybeSingle(); // ✅ safer than .single() in some edge cases
 
-    if (error) {
-      console.error("Error fetching user:", error)
-      return { success: false, error: "Error fetching user", code: "FETCH_ERROR" }
+    if (error && status !== 406) {
+      console.error("Supabase error:", error);
+      return {
+        success: false,
+        error: error.message || "Error fetching user",
+        code: "FETCH_ERROR",
+      };
     }
 
-    return { success: true, user: data as User }
+    if (!data) {
+      return {
+        success: false,
+        error: "User not found",
+        code: "NOT_FOUND",
+      };
+    }
+
+    return { success: true, user: data as User };
   } catch (err) {
-    console.error("Unexpected error fetching user:", err)
+    console.error("Unexpected error fetching user:", err);
     return {
       success: false,
       error: "An unexpected error occurred",
       code: "UNEXPECTED_ERROR",
-    }
+    };
   }
 }
 
