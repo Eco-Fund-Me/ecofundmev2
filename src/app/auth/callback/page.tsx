@@ -10,44 +10,56 @@ import { addUser, getUserByAddress } from "@/app/actions/user";
 export default function AuthCallbackPage() {
   const router = useRouter();
   const { session } = useUserAuth();
-  const { connectWithThirdweb } = useThirdwebAuth();
-  const walletAddress = useUserAddress();
-  const [hasHandled, setHasHandled] = useState(false);
+  const { connectWithThirdweb, getWalletAddress } = useThirdwebAuth();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
+      if (isProcessing) return;
+
+      // Wait until session is ready
+      if (!session?.user?.email || !session.user?.id) return;
+
+      setIsProcessing(true);
+
       try {
-        if (hasHandled) return;
-        if (!session?.user?.email || !walletAddress) return;
-
-        setHasHandled(true); // Prevent double invocation
-
         const email = session.user.email;
         const userId = session.user.id;
 
-        // Connect Thirdweb wallet (Google OAuth)
+        // 1. Connect to Thirdweb wallet (Google OAuth strategy)
         await connectWithThirdweb("google", "oauth");
 
-        // Check if user already exists in DB
-        const existing = await getUserByAddress(userId); // or walletAddress
-        if (!existing.user) {
+        // 2. Wait and get wallet address from Thirdweb
+        const address = getWalletAddress();
+        if (!address) {
+          throw new Error("Wallet address unavailable after Thirdweb connection");
+        }
+
+        // 3. Check if user exists
+        const existing = await getUserByAddress(undefined, userId);
+
+        if (!existing.success || !existing.user) {
+          // 4. Add to DB if not found
           await addUser({
             userID: userId,
             user_type: "individual",
-            address: walletAddress,
+            address,
             email,
           });
         }
 
+        // 5. Redirect
         router.replace("/campaigns");
       } catch (err) {
         console.error("OAuth callback error:", err);
         router.replace("/signin?error=oauth_failed");
+      } finally {
+        setIsProcessing(false);
       }
     };
 
     handleOAuthCallback();
-  }, [session, walletAddress, hasHandled]); // 👈 properly scoped deps
+  }, [session]); // Only react to session change
 
   return (
     <div className="flex justify-center items-center h-screen">
