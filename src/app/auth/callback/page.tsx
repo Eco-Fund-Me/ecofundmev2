@@ -47,7 +47,7 @@ export default function AuthCallbackPage() {
     };
 
     handleOAuthCallback();
-  }, [session, walletAddress]);
+  });
 
   return (
     <div className="flex justify-center items-center h-screen">
