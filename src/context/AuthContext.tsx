@@ -71,7 +71,9 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.toLowerCase(),
         password,
-      });
+      }
+    
+    );
 
       if (error) {
         console.error("Sign-in error:", error.message);
@@ -157,7 +159,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/signin`, // Handle it after redirect
+        redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
         // redirectTo: `${origin}/auth/callback`, // Handle it after redirect
       },
     });
