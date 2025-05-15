@@ -67,8 +67,7 @@ export default function AuthCallbackPage() {
       try {
         hasHandled.current = true
 
-        const email = session.user.email
-        const userId = session.user.id
+     const { email, id: userId } = session.user
 
         // Check if user exists in your DB
         const existing = await getUserByAddress(undefined, userId)
