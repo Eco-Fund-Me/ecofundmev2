@@ -75,47 +75,21 @@ import { client } from "@/app/client"
 import { useUserAuth } from "@/context/AuthContext"
 import { chain } from "@/app/chain"
 
-type LoginMethod = "google" | "apple" | undefined
-type AuthOption = "email-password" | "oauth" | undefined
-
 export function useThirdwebAuth() {
-  const { session, signInUser, signOut, signInWithOAuth } = useUserAuth()
+  const { session} = useUserAuth()
   const { connect } = useConnect()
   const account = useActiveAccount()
 
   const [isConnecting, setIsConnecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
- const connectWithThirdweb = async (
-  OAuthMethod?: LoginMethod,
-  authoption?: AuthOption,
-  email?: string,
-  password?: string
-) => {
+const connectWithThirdweb = async () => {
   setIsConnecting(true)
   setError(null)
 
   try {
-    let userId = session?.user?.id
-
-    if (!userId) {
-      if (authoption === "oauth") {
-        const result = await signInWithOAuth(OAuthMethod)
-        if (!result.success || !result.data?.user?.id) {
-          throw new Error(result.error || "OAuth sign-in failed")
-        }
-        userId = result.data.user.id
-      } else if (authoption === "email-password") {
-        if (!email || !password) throw new Error("Missing email or password")
-        const result = await signInUser(email, password)
-        if (!result.success || !result.data?.user?.id) {
-          throw new Error(result.error || "Email/password sign-in failed")
-        }
-        userId = result.data.user.id
-      }
-    }
-
-    if (!userId) throw new Error("User ID is missing")
+    const userId = session?.user?.id
+    if (!userId) throw new Error("Session missing user ID")
       
 
     // Connect thirdweb wallet
@@ -141,7 +115,6 @@ export function useThirdwebAuth() {
 
   return {
     connectWithThirdweb,
-    signOut,
     isConnecting,
     error,
     session,
