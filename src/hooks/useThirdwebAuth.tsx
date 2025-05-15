@@ -66,7 +66,6 @@
 //   };
 // }
 
-
 "use client"
 
 import { useState } from "react"
@@ -76,59 +75,76 @@ import { client } from "@/app/client"
 import { useUserAuth } from "@/context/AuthContext"
 import { chain } from "@/app/chain"
 
-type LoginMethod = "google" | "apple" |undefined
+type LoginMethod = "google" | "apple" | undefined
 type AuthOption = "email-password" | "oauth" | undefined
 
 export function useThirdwebAuth() {
   const { session, signInUser, signOut, signInWithOAuth } = useUserAuth()
   const { connect } = useConnect()
-  const account = useActiveAccount() // Get the active account
+  const account = useActiveAccount()
+
   const [isConnecting, setIsConnecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const connectWithThirdweb = async (OAuthMethod: LoginMethod, authoption: AuthOption, email?: string, password?: string ) => {
+  const connectWithThirdweb = async (
+    OAuthMethod: LoginMethod,
+    authOption: AuthOption,
+    email?: string,
+    password?: string
+  ) => {
     setIsConnecting(true)
     setError(null)
 
     try {
-      
-        const oauthLogin = signInWithOAuth(OAuthMethod)
-        const emailPassword = signInUser(email!,password!)
-        const signInProvider = authoption === "oauth" ? oauthLogin : emailPassword
-        if (!session) {
-          const result = await signInProvider
-          if (!result.success) throw new Error(result.error || "Failed to sign in")
+      let userId: string | null = null
+      // let token: string | undefined = session?.access_token
+
+      // 1. Authenticate with Supabase (if not already)
+      if (!session) {
+        if (authOption === "oauth") {
+          const result = await signInWithOAuth(OAuthMethod)
+          if (!result.success || !result.session?.user?.id) {
+            throw new Error(result.error || "OAuth sign-in failed or missing user")
+          }
+          userId = result.session.user.id
+          // token = result.session.access_token
+        } else if (authOption === "email-password") {
+          if (!email || !password) throw new Error("Missing email or password")
+          const result = await signInUser(email, password)
+          if (!result.success || !result.session?.user?.id) {
+            throw new Error(result.error || "Email/password sign-in failed")
+          }
+          userId = result.session.user.id
+          // token = result.session.access_token
+        } else {
+          throw new Error("Invalid auth method")
         }
-
-        const userId = session?.user?.id
-        if (!userId) throw new Error("No user ID found in session")
-
-        // Connect wallet
-        await connect(async () => {
-          const wallet = inAppWallet()
-          await wallet.connect({
-            client,
-            strategy: "auth_endpoint",
-            payload: JSON.stringify({ userId }),
-            chain:chain
-          })
-          return wallet
-        })
-
+      } else {
+        userId = session.user?.id ?? null
       }
-      catch(err){
-      console.error("Wallet connection error:", err)
-      setError(err instanceof Error ? err.message : "An unexpected error occurred")
+
+      if (!userId) throw new Error("User ID is missing")
+
+      // 2. Connect wallet using Thirdweb (inAppWallet + auth)
+      await connect(async () => {
+        const wallet = inAppWallet()
+        await wallet.connect({
+          client,
+          strategy: "auth_endpoint",
+          payload: JSON.stringify({ userId }),
+          chain,
+        })
+        return wallet
+      })
+    } catch (err) {
+      console.error("Thirdweb wallet connection error:", err)
+      setError(err instanceof Error ? err.message : "Unexpected connection error")
     } finally {
       setIsConnecting(false)
     }
   }
 
-  // Helper function to get the current wallet address
-  const getWalletAddress = () => {
-    return account ? account.address : ""
-  }
+  const getWalletAddress = () => account?.address ?? ""
 
   return {
     connectWithThirdweb,
