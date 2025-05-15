@@ -61,10 +61,10 @@ export default function AuthCallbackPage() {
   const hasHandled = useRef(false)
 
   useEffect(() => {
-    if (!session?.user?.email || !walletAddress || hasHandled.current) return
-
     const handleOAuthCallback = async () => {
       try {
+         if (!session?.user?.email || !walletAddress || hasHandled.current) return
+
         hasHandled.current = true
 
      const { email, id: userId } = session.user
