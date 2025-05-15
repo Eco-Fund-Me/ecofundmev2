@@ -12,6 +12,7 @@ export default function AuthCallback() {
   const { session } = useUserAuth()
   const walletAddress = useUserAddress()
   const hasHandled = useRef(false)
+   const searchParams = useSearchParams()
 const rawProvider = searchParams.get("provider")
 const provider = (rawProvider === "google" || rawProvider === "apple") ? rawProvider : "google"
 
