@@ -86,62 +86,55 @@ export function useThirdwebAuth() {
   const [isConnecting, setIsConnecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const connectWithThirdweb = async (
-    OAuthMethod: LoginMethod,
-    authOption: AuthOption,
-    email?: string,
-    password?: string
-  ) => {
-    setIsConnecting(true)
-    setError(null)
+ const connectWithThirdweb = async (
+  OAuthMethod?: LoginMethod,
+  authoption?: AuthOption,
+  email?: string,
+  password?: string
+) => {
+  setIsConnecting(true)
+  setError(null)
 
-    try {
-      let userId: string | null = null
-      // 1. Authenticate with Supabase (if not already)
-      if (!session) {
-        if (authOption === "oauth") {
-          const result = await signInWithOAuth(OAuthMethod)
-          if (!result.success || !result.data?.user?.id) {
-            throw new Error(result.error || "OAuth sign-in failed or missing user")
-          }
-          userId = result.data?.user?.id
-       
-        } else if (authOption === "email-password") {
-          if (!email || !password) throw new Error("Missing email or password")
-          const result = await signInUser(email, password)
-          if (!result.success || !result.data?.user?.id) {
-            throw new Error(result.error || "Email/password sign-in failed")
-          }
-          userId = result.data?.user?.id
-       
-        } else {
-          throw new Error("Invalid auth method")
+  try {
+    let userId = session?.user?.id
+
+    if (!userId) {
+      if (authoption === "oauth") {
+        const result = await signInWithOAuth(OAuthMethod)
+        if (!result.success || !result.data?.user?.id) {
+          throw new Error(result.error || "OAuth sign-in failed")
         }
-      } else {
-        userId = session?.user?.id ?? null
+        userId = result.data.user.id
+      } else if (authoption === "email-password") {
+        if (!email || !password) throw new Error("Missing email or password")
+        const result = await signInUser(email, password)
+        if (!result.success || !result.data?.user?.id) {
+          throw new Error(result.error || "Email/password sign-in failed")
+        }
+        userId = result.data.user.id
       }
-
-      if (!userId) throw new Error("User ID is missing")
-
-      // 2. Connect wallet using Thirdweb (inAppWallet + auth)
-      await connect(async () => {
-        console.log("connecting to thirdweb wallet")
-        const wallet = inAppWallet()
-        await wallet.connect({
-          client,
-          strategy: "auth_endpoint",
-          payload: JSON.stringify({ userId }),
-          chain,
-        })
-        return wallet
-      })
-    } catch (err) {
-      console.error("Thirdweb wallet connection error:", err)
-      setError(err instanceof Error ? err.message : "Unexpected connection error")
-    } finally {
-      setIsConnecting(false)
     }
+
+    if (!userId) throw new Error("User ID is missing")
+
+    // Connect thirdweb wallet
+    await connect(async () => {
+      const wallet = inAppWallet()
+      await wallet.connect({
+        client,
+        strategy: "auth_endpoint",
+        payload: JSON.stringify({ userId }),
+        chain,
+      })
+      return wallet
+    })
+  } catch (err) {
+    console.error("Thirdweb connection error:", err)
+    setError(err instanceof Error ? err.message : "Unexpected error")
+  } finally {
+    setIsConnecting(false)
   }
+}
 
   const getWalletAddress = () => account?.address ?? ""
 
