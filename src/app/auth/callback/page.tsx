@@ -12,17 +12,20 @@ export default function AuthCallback() {
   const { session } = useUserAuth()
   const walletAddress = useUserAddress()
   const hasHandled = useRef(false)
-  const searchParams = useSearchParams()
-const provider = searchParams.get("provider") as "google" | "apple" | null
+const rawProvider = searchParams.get("provider")
+const provider = (rawProvider === "google" || rawProvider === "apple") ? rawProvider : "google"
+
 const { connectWithThirdweb } = useThirdwebAuth()
 
   useEffect(() => {
-    const processUser = async () => {
-      if (hasHandled.current || !session?.user?.email || !walletAddress) return
-      hasHandled.current = true
+  const processUser = async () => {
+    if (hasHandled.current || !session?.user?.email || !walletAddress) return
+    hasHandled.current = true
 
-      const { email, id: userId } = session.user
+    const { email, id: userId } = session.user
+    const currentProvider =  provider 
 
+    try {
       const existing = await getUserByAddress(undefined, userId)
       if (!existing.success || !existing.user) {
         await addUser({
@@ -32,13 +35,17 @@ const { connectWithThirdweb } = useThirdwebAuth()
           email,
         })
       }
-      await connectWithThirdweb(provider ?? "google", "oauth")
 
+      await connectWithThirdweb(currentProvider, "oauth")
       router.replace("/campaigns")
+    } catch (error) {
+      console.error("Auth callback error:", error)
     }
+  }
 
-    processUser()
-  }, [session?.user, walletAddress,router, connectWithThirdweb, provider])
+  processUser()
+}, [session?.user, walletAddress, router, connectWithThirdweb, searchParams])
+
 
   return (
     <div className="flex justify-center items-center h-screen">
