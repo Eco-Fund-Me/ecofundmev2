@@ -38,7 +38,7 @@ const { connectWithThirdweb } = useThirdwebAuth()
     }
 
     processUser()
-  }, [session?.user?.email, walletAddress])
+  }, [session?.user, walletAddress,router, connectWithThirdweb, provider])
 
   return (
     <div className="flex justify-center items-center h-screen">
