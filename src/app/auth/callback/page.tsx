@@ -5,6 +5,7 @@ import { useRouter,useSearchParams } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { addUser, getUserByAddress } from "@/app/actions/user"
+import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -13,6 +14,7 @@ export default function AuthCallback() {
   const hasHandled = useRef(false)
   const searchParams = useSearchParams()
 const provider = searchParams.get("provider") as "google" | "apple" | null
+const { connectWithThirdweb } = useThirdwebAuth()
 
   useEffect(() => {
     const processUser = async () => {
