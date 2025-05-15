@@ -146,7 +146,7 @@ const signInUser = async (
   };
 
   
-    const signInWithOAuth = async (
+  const signInWithOAuth = async (
   provider: "google" | "apple" | undefined
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
   
@@ -158,7 +158,7 @@ const signInUser = async (
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
+        redirectTo: `${window.location.origin}/auth/callback?provider=${provider}`, // Handle it after redirect
         // redirectTo: `${origin}/auth/callback`, // Handle it after redirect
       },
     });
