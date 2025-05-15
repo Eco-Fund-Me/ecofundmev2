@@ -104,7 +104,7 @@ export function useThirdwebAuth() {
           if (!result.success || !result.data?.user?.id) {
             throw new Error(result.error || "OAuth sign-in failed or missing user")
           }
-          userId = session?.user?.id;
+          userId = result.data?.user?.id
        
         } else if (authOption === "email-password") {
           if (!email || !password) throw new Error("Missing email or password")
@@ -112,13 +112,13 @@ export function useThirdwebAuth() {
           if (!result.success || !result.data?.user?.id) {
             throw new Error(result.error || "Email/password sign-in failed")
           }
-          userId = session?.user?.id;
+          userId = result.data?.user?.id
        
         } else {
           throw new Error("Invalid auth method")
         }
       } else {
-        userId = session.user?.id ?? null
+        userId = session?.user?.id ?? null
       }
 
       if (!userId) throw new Error("User ID is missing")
