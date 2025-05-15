@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { addUser, getUserByAddress } from "@/app/actions/user"
-import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
+// import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -17,7 +17,7 @@ export default function AuthCallback() {
   const rawProvider = searchParams.get("provider")
   const provider = (rawProvider === "google" || rawProvider === "apple") ? rawProvider : "google"
 
-  const { connectWithThirdweb, error } = useThirdwebAuth()
+  // const { connectWithThirdweb, error } = useThirdwebAuth()
 
   useEffect(() => {
     const processUser = async () => {
@@ -38,7 +38,7 @@ export default function AuthCallback() {
         }
 
         // ✅ Connect wallet after user exists
-        await connectWithThirdweb(provider, "oauth")
+        // await connectWithThirdweb(provider, "oauth")
 
         // ✅ Navigate only after connection
         router.replace("/campaigns")

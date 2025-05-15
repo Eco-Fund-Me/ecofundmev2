@@ -116,6 +116,7 @@ export function useThirdwebAuth() {
     }
 
     if (!userId) throw new Error("User ID is missing")
+      
 
     // Connect thirdweb wallet
     await connect(async () => {
