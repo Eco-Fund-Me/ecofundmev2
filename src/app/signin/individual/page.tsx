@@ -266,7 +266,7 @@ export default function IndividualSigninPage() {
       }
 
       // Connect with Thirdweb
-      await connectWithThirdweb(undefined,"email-password", email, password,)
+      await connectWithThirdweb()
       
       const updateResult = await updateUser({
         address: userAddress,
@@ -302,7 +302,7 @@ export default function IndividualSigninPage() {
   const handleAppleSignin = async () => {
     try {
       await signInWithOAuth("apple")
-      await connectWithThirdweb("apple","oauth")
+      await connectWithThirdweb()
       router.push("/campaigns")
     } catch (err) {
       console.error("Apple signin error:", err)

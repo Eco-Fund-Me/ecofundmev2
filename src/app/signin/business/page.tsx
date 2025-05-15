@@ -208,7 +208,7 @@ export default function BusinessSigninPage() {
       }
 
       // Connect with Thirdweb
-      await connectWithThirdweb(undefined,"email-password", email, password)
+      await connectWithThirdweb()
       const updateResult = await updateUser({
         address: userAddress,
         user_id: result.data?.user?.id

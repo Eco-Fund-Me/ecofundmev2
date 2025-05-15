@@ -347,7 +347,7 @@ export default function IndividualSignupPage() {
   const handleGoogleSignup = async () => {
     try {
     await signInWithOAuth("google")
-    await connectWithThirdweb("google","oauth", undefined, undefined, )
+    await connectWithThirdweb()
       
       
       const email = session?.user.email
@@ -372,7 +372,7 @@ export default function IndividualSignupPage() {
   const handleAppleSignup = async () => {
     try {
         await signInWithOAuth("apple")
-      await connectWithThirdweb("apple","oauth", undefined, undefined)
+      await connectWithThirdweb()
       
 
       

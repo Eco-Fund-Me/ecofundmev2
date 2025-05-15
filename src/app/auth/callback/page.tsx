@@ -68,11 +68,14 @@ import { useRouter } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { addUser, getUserByAddress } from "@/app/actions/user"
+import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 
 export default function AuthCallback() {
   const router = useRouter()
   const { session } = useUserAuth()
   const walletAddress = useUserAddress()
+  const { connectWithThirdweb } = useThirdwebAuth()
+
   const hasHandled = useRef(false)
 
   useEffect(() => {
@@ -82,26 +85,34 @@ export default function AuthCallback() {
 
       const { email, id: userId } = session.user
 
-      const existing = await getUserByAddress(undefined, userId)
-      if (!existing.success || !existing.user) {
-        await addUser({
-          userID: userId,
-          user_type: "individual",
-          address: walletAddress,
-          email,
-        })
-      }
+      try {
+        // Check if user exists
+        const existing = await getUserByAddress(undefined, userId)
+        if (!existing.success || !existing.user) {
+          await addUser({
+            userID: userId,
+            user_type: "individual",
+            address: walletAddress,
+            email,
+          })
+        }
 
-      router.replace("/campaigns")
+        // 🔐 Connect to thirdweb wallet using userId from session
+        await connectWithThirdweb()
+
+        // ✅ Redirect to dashboard
+        router.replace("/campaigns")
+      } catch (error) {
+        console.error("Auth callback error:", error)
+      }
     }
 
     processUser()
-  }, [session?.user?.email, walletAddress])
+  }, [session?.user, walletAddress])
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <p className="text-green-500">Logging you in…</p>
+      <p className="text-green-500">Logging you in now…</p>
     </div>
   )
 }
-
