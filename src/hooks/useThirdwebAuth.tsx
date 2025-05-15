@@ -97,8 +97,6 @@ export function useThirdwebAuth() {
 
     try {
       let userId: string | null = null
-      // let token: string | undefined = session?.access_token
-
       // 1. Authenticate with Supabase (if not already)
       if (!session) {
         if (authOption === "oauth") {
@@ -106,16 +104,16 @@ export function useThirdwebAuth() {
           if (!result.success || !result.session?.user?.id) {
             throw new Error(result.error || "OAuth sign-in failed or missing user")
           }
-          userId = result.session.user.id
-          // token = result.session.access_token
+          userId = session?.user?.id;
+       
         } else if (authOption === "email-password") {
           if (!email || !password) throw new Error("Missing email or password")
           const result = await signInUser(email, password)
-          if (!result.success || !result.session?.user?.id) {
+          if (!result.success || !result.user?.id) {
             throw new Error(result.error || "Email/password sign-in failed")
           }
-          userId = result.session.user.id
-          // token = result.session.access_token
+          userId = session?.user?.id;
+       
         } else {
           throw new Error("Invalid auth method")
         }
