@@ -54,7 +54,7 @@ export default function AuthCallback() {
     <div className="flex justify-center items-center h-screen">
       <div className="text-center">
         <p className="text-green-500">Logging you in…</p>
-        {error && <p className="text-red-500 mt-4">{error}</p>}
+        {/* {error && <p className="text-red-500 mt-4">{error}</p>} */}
       </div>
     </div>
   )
