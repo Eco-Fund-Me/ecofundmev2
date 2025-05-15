@@ -1,57 +1,43 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
-import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { addUser, getUserByAddress } from "@/app/actions/user"
 
-export default function AuthCallbackPage() {
+export default function AuthCallback() {
   const router = useRouter()
   const { session } = useUserAuth()
-  const { connectWithThirdweb } = useThirdwebAuth()
   const walletAddress = useUserAddress()
-  const [hasHandled, setHasHandled] = useState(false)
+  const hasHandled = useRef(false)
 
   useEffect(() => {
-    if (!session?.user?.email || !walletAddress || hasHandled) return
+    const processUser = async () => {
+      if (hasHandled.current || !session?.user?.email || !walletAddress) return
+      hasHandled.current = true
 
-    const handleOAuthCallback = async () => {
-      try {
-        setHasHandled(true)
+      const { email, id: userId } = session.user
 
-        const email = session.user.email
-        const userId = session.user.id
-
-        // Connect Thirdweb wallet (Google OAuth)
-        await connectWithThirdweb("google", "oauth")
-
-        // Check if user exists in Supabase
-        const existing = await getUserByAddress(undefined, userId)
-
-        if (!existing.success || !existing.user) {
-          await addUser({
-            userID: userId,
-            user_type: "individual",
-            address: walletAddress,
-            email,
-          })
-        }
-
-        router.replace("/campaigns")
-      } catch (err) {
-        console.error("OAuth callback error:", err)
-        router.replace("/signin?error=oauth_failed")
+      const existing = await getUserByAddress(undefined, userId)
+      if (!existing.success || !existing.user) {
+        await addUser({
+          userID: userId,
+          user_type: "individual",
+          address: walletAddress,
+          email,
+        })
       }
+
+      router.replace("/campaigns")
     }
 
-    handleOAuthCallback()
-  }, [session?.user?.email, walletAddress, hasHandled])
+    processUser()
+  }, [session?.user?.email, walletAddress])
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <p className="text-green-500">Finalizing login...</p>
+      <p className="text-green-500">Logging you in…</p>
     </div>
   )
 }
