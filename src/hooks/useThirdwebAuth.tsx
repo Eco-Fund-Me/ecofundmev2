@@ -101,7 +101,7 @@ export function useThirdwebAuth() {
       if (!session) {
         if (authOption === "oauth") {
           const result = await signInWithOAuth(OAuthMethod)
-          if (!result.success || !result.session?.user?.id) {
+          if (!result.success || !result.user?.id) {
             throw new Error(result.error || "OAuth sign-in failed or missing user")
           }
           userId = session?.user?.id;
