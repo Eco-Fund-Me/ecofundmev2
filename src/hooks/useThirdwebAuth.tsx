@@ -125,6 +125,7 @@ export function useThirdwebAuth() {
 
       // 2. Connect wallet using Thirdweb (inAppWallet + auth)
       await connect(async () => {
+        console.log("connecting to thirdweb wallet")
         const wallet = inAppWallet()
         await wallet.connect({
           client,
