@@ -52,7 +52,7 @@ export async function assignWalletAddress(userId: string, walletAddress: string)
 // Function to check if a user has a wallet assigned
 export async function checkUserWallet(userId: string) {
   try {
-    const { data, error } = await supabase.from("users").select("address, wallet_assigned_at").eq("id", userId).single()
+    const { data, error } = await supabase.from("users").select("address, wallet_assigned_at").eq("user_id", userId).single()
 
     if (error) {
       console.error("Error checking user wallet:", error)

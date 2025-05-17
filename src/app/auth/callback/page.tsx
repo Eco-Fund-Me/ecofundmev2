@@ -126,6 +126,7 @@ import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { addUser, getUserByAddress } from "@/app/actions/user"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
+import { assignWalletAddress, checkUserWallet } from "@/app/actions/wallet";
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -162,6 +163,14 @@ export default function AuthCallback() {
         // 3️⃣ Connect to Thirdweb
         await connectWithThirdweb()
 
+      
+
+        // 4️⃣ Assign wallet address if not already assigned
+        const { hasWallet } = await checkUserWallet(userId)
+        if (!hasWallet && walletAddress) {
+          await assignWalletAddress(userId, walletAddress)
+        }
+
         // 4️⃣ Redirect
         router.replace("/campaigns")
       } catch (error) {
@@ -170,7 +179,7 @@ export default function AuthCallback() {
     }
 
     processUser()
-  }, [session?.user, walletAddress])
+  }, [session?.user, walletAddress,connectWithThirdweb,router])
 
   return (
     <div className="flex justify-center items-center h-screen">
