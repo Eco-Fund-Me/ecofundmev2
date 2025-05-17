@@ -9,7 +9,7 @@ import { Controllers } from "@/components/BusinessVerification/Controllers"
 import { BusinessDocuments } from "@/components/BusinessVerification/BusinessDocuments"
 import { useActiveAccount } from "thirdweb/react"
 import { getUserKycData } from "@/app/actions/get-user-kyc-data"
-import KYCPage from "@/app/kyc/page"
+// import KYCPage from "@/app/kyc/page"
 
 export default function BusinessVerificationPage() {
   const [activeTab, setActiveTab] = useState("business-details")
@@ -110,7 +110,8 @@ export default function BusinessVerificationPage() {
 
   // If KYC is not approved, show KYC page instead
   if (kycStatus !== "approved") {
-    return <KYCPage />
+    // return <KYCPage />
+    console.log("kyc not approved")
   }
 
   return (
