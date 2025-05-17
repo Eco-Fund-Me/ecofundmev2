@@ -52,19 +52,27 @@ export async function assignWalletAddress(userId: string, walletAddress: string)
 // Function to check if a user has a wallet assigned
 export async function checkUserWallet(userId: string) {
   try {
-    const { data, error } = await supabase.from("users").select("address, wallet_assigned_at").eq("user_id", userId).single()
+    const { data, error } = await supabase
+      .from("users")
+      .select("address, wallet_assigned_at")
+      .eq("user_id", userId)
+      .maybeSingle();
 
     if (error) {
-      console.error("Error checking user wallet:", error)
-      return { hasWallet: false, error: "Failed to check wallet status" }
+      console.error("Error checking user wallet:", error);
+      return { hasWallet: false, error: "Failed to check wallet status" };
+    }
+
+    if (!data) {
+      return { hasWallet: false, error: "User not found" };
     }
 
     return {
       hasWallet: !!data.wallet_assigned_at,
       walletAddress: data.address,
-    }
+    };
   } catch (error) {
-    console.error("Error in checkUserWallet:", error)
-    return { hasWallet: false, error: "An unexpected error occurred" }
+    console.error("Error in checkUserWallet:", error);
+    return { hasWallet: false, error: "An unexpected error occurred" };
   }
 }
