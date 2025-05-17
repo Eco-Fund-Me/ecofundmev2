@@ -127,7 +127,6 @@ import { useUserAddress } from "@/hooks/useUserAddress"
 import { addUser, getUserByAddress, updateUser } from "@/app/actions/user"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import {  checkUserWallet } from "@/app/actions/wallet";
-import { timeStamp } from "console"
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -164,7 +163,7 @@ export default function AuthCallback() {
         // 3️⃣ Connect to Thirdweb
         await connectWithThirdweb()
         // 4️⃣ Assign wallet address if not already assigned
-        console.log(walletAddress,timeStamp)
+   
         const { hasWallet } = await checkUserWallet(userId)
         if (!hasWallet && walletAddress) {
             const updateResult = await updateUser({
