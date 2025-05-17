@@ -281,7 +281,7 @@ export default function BusinessSignupPage() {
         throw new Error("Missing user ID after sign-up")
       }
 
-            await addUser({
+           const userAdder= await addUser({
               user_type: "business",
               userID: userId,
               email,
@@ -290,6 +290,7 @@ export default function BusinessSignupPage() {
               last_name: "",
               address: "", // Wallet will be assigned after login
             })
+            console.log("addUser log:", userAdder)
       // Store user type in metadata
       await supabase.auth.updateUser({
         data: {
