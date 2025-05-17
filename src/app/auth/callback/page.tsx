@@ -225,3 +225,4 @@ if (!hasWallet && walletAddress) {
     </div>
   )
 }
+

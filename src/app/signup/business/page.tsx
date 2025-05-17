@@ -311,7 +311,7 @@ export default function BusinessSignupPage() {
 
       // Redirect to business verification page
       router.push(`/signup/verify?email=${encodeURIComponent(email)}`)
-      router.push("/business-verification")
+      // router.push("/business-verification")
 
     } catch (err) {
       console.error("Signup error:", err)

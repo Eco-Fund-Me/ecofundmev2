@@ -222,7 +222,7 @@ export default function BusinessSigninPage() {
 
       // Check business verification status
       const { data: profile, error: profileError } = await supabase
-        .from("user")
+        .from("users")
         .select("verification_status")
         .eq("user_id", result.data?.user?.id)
         .single()
