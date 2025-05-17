@@ -59,7 +59,7 @@ export async function addUser(params: UserParams) {
 
     if (insertError) {
       console.error("Error creating user:", insertError)
-      return { success: false, error: "Error creating user", code: "INSERT_ERROR" }
+      return { success: false, error: "Error creating user", code: "INSERT_ERROR", message:insertError }
     }
 
     // For business users, create a business profile
