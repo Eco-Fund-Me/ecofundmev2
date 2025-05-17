@@ -13,7 +13,7 @@ export async function assignWalletToUser(userId: string, walletAddress: string, 
       .from("users")
       .select("address")
       .eq("address", walletAddress)
-      .neq("id", userId) // Exclude the current user
+      .neq("user_id", userId) // Exclude the current user
       .maybeSingle()
 
     if (checkError) {
@@ -35,7 +35,7 @@ export async function assignWalletToUser(userId: string, walletAddress: string, 
         address: walletAddress,
         wallet_assigned_at: new Date().toISOString(),
       })
-      .eq("id", userId)
+      .eq("user_id", userId)
 
     if (updateError) {
       console.error("Error updating wallet address:", updateError)

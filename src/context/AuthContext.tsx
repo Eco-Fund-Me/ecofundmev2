@@ -158,7 +158,7 @@ const signInUser = async (
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?provider=${provider}`, // Handle it after redirect
+        redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
         // redirectTo: `${origin}/auth/callback`, // Handle it after redirect
       },
     });
@@ -190,7 +190,7 @@ const signInUser = async (
         supabase
           .from("users")
           .select("user_type")
-          .eq("id", session.user.id)
+          .eq("user_id", session.user.id)
           .single()
           .then(({ data }) => {
             if (data) {
@@ -209,7 +209,7 @@ const signInUser = async (
         supabase
           .from("users")
           .select("user_type")
-          .eq("id", session.user.id)
+          .eq("user_id", session.user.id)
           .single()
           .then(({ data }) => {
             if (data) {
