@@ -124,9 +124,9 @@ import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
-// import { addUser, getUserByAddress } from "@/app/actions/user"
+import { addUser, getUserByAddress } from "@/app/actions/user"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
-// import { assignWalletAddress, checkUserWallet } from "@/app/actions/wallet";
+import { assignWalletAddress, checkUserWallet } from "@/app/actions/wallet";
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -139,38 +139,34 @@ export default function AuthCallback() {
   useEffect(() => {
     const processUser = async () => {
       if (hasHandled.current) return
-      if (!session?.user?.id || !session.user.email || !walletAddress) return
+      if (!session?.user?.id || !session.user.email) return
 
       hasHandled.current = true
 
-      // const userId = session.user.id
-      // const email = session.user.email
+      const userId = session.user.id
+      const email = session.user.email
 
       try {
         // 1️⃣ Check if user exists
-         // 3️⃣ Connect to Thirdweb
-        // await connectWithThirdweb()
-        // const existing = await getUserByAddress(undefined, userId)
+        const existing = await getUserByAddress(undefined, userId)
 
-        // if (!existing.success || !existing.user) {
-        //   // 2️⃣ If not, add user to DB
-        //   await addUser({
-        //     userID: userId,
-        //     user_type: "individual", // or dynamically detect later
-        //     address: walletAddress,
-        //     email,
-        //   })
-        // }
+        if (!existing.success || !existing.user) {
+          // 2️⃣ If not, add user to DB
+          await addUser({
+            userID: userId,
+            user_type: "individual", // or dynamically detect later
+            address: walletAddress,
+            email,
+          })
+        }
 
-       
-
-      
-
-        // // 4️⃣ Assign wallet address if not already assigned
-        // const { hasWallet } = await checkUserWallet(userId)
-        // if (!hasWallet && walletAddress) {
-        //   await assignWalletAddress(userId, walletAddress)
-        // }
+        // 3️⃣ Connect to Thirdweb
+        await connectWithThirdweb()
+        // 4️⃣ Assign wallet address if not already assigned
+        const { hasWallet } = await checkUserWallet(userId)
+        if (!hasWallet && walletAddress) {
+          await assignWalletAddress(userId, walletAddress)
+        }
 
         // 4️⃣ Redirect
         router.replace("/campaigns")
