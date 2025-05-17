@@ -1,6 +1,6 @@
 "use server"
 
-import { supabase } from "@/lib/supabaseClient"
+import {db as supabase } from "@/lib/db"
 
 export async function assignWalletAddress(userId: string, walletAddress: string) {
   if (!walletAddress || !userId) {
