@@ -124,9 +124,9 @@ import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
-import { addUser, getUserByAddress } from "@/app/actions/user"
+import { addUser, getUserByAddress, updateUser } from "@/app/actions/user"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
-import { assignWalletAddress, checkUserWallet } from "@/app/actions/wallet";
+import {  checkUserWallet } from "@/app/actions/wallet";
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -165,7 +165,15 @@ export default function AuthCallback() {
         // 4️⃣ Assign wallet address if not already assigned
         const { hasWallet } = await checkUserWallet(userId)
         if (!hasWallet && walletAddress) {
-          await assignWalletAddress(userId, walletAddress)
+            const updateResult = await updateUser({
+                  address: walletAddress,
+                  user_id: userId
+                })
+                if (updateResult.success) {
+        console.log("User updated:", updateResult.updatedUser)
+      } else {
+        console.error("Update failed:", updateResult.error)
+      }
         }
 
         // 4️⃣ Redirect
