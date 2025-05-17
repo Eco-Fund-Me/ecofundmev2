@@ -53,6 +53,9 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email: email.toLowerCase(),
       password,
+      options:{
+        emailRedirectTo:`${location.origin}/email-service/callback`,
+      }
     });
 
     if (error) {

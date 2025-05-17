@@ -1,13 +1,11 @@
 
-
-
 "use client"
 
 import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
-import { addUser, getUserByAddress, updateUser } from "@/app/actions/user"
+import {  updateUser } from "@/app/actions/user"
 import { useThirdwebAuth} from "@/hooks/useThirdwebAuth"
 import {  checkUserWallet } from "@/app/actions/wallet";
 
@@ -38,40 +36,15 @@ export default function AuthCallback() {
       hasHandled.current = true
 
       const userId = session.user.id
-      const email = session.user.email
 
       try {
-        // 1️⃣ Check if user exists
-        const existing = await getUserByAddress(undefined, userId)
 
-        if (!existing.success || !existing.user) {
-          // 2️⃣ If not, add user to DB
-          await addUser({
-            userID: userId,
-            user_type: "individual", // or dynamically detect later
-            address: walletAddress,
-            email,
-          })
-        }
+
 
         // 3️⃣ Connect to Thirdweb
         await connectWithThirdweb()
       //   // 4️⃣ Assign wallet address if not already assigned
-      //   console.log(walletAddress)
-      //   const { hasWallet } = await checkUserWallet(userId)
-      //    console.log("haswallet",hasWallet)
-      //   if (!hasWallet && walletAddress) {
-      //       const updateResult = await updateUser({
-      //             address: walletAddress,
-      //             user_id: userId
-      //           })
-      //           if (updateResult.success) {
-      //   console.log("User updated:", updateResult.updatedUser)
-      // } else {
-      //   console.error("Update failed:", updateResult.error)
-      // }
 
-      //   }
 
       console.log("walletAddress",walletAddress)
       console.log("safeAddress",safeAddress)
@@ -79,12 +52,13 @@ export default function AuthCallback() {
 const hasWallet = await waitForWalletCheck(userId);
 console.log("hasWallet", hasWallet)
 
-if (!hasWallet && walletAddress) {
-  const updateResult = await updateUser({
-    address: safeAddress,
-    user_id: userId,
-  });
+    if (!hasWallet && walletAddress) {
+    const updateResult = await updateUser({
+        address: safeAddress,
+        user_id: userId,
+    });
 
+    console.log("updateResult:", updateResult)
   if (updateResult.success) {
     console.log("User updated:", updateResult.updatedUser);
   } else {
@@ -93,7 +67,7 @@ if (!hasWallet && walletAddress) {
 }
 
         // 4️⃣ Redirect
-        router.replace("/campaigns")
+        router.replace("/organization/dashboard")
       } catch (error) {
         console.error("Auth callback error:", error)
       }
