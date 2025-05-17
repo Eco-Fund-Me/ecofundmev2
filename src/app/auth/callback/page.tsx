@@ -125,14 +125,15 @@ import { useRouter } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import { useUserAddress } from "@/hooks/useUserAddress"
 import { addUser, getUserByAddress, updateUser } from "@/app/actions/user"
-import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
+import { useThirdwebAuth} from "@/hooks/useThirdwebAuth"
 import {  checkUserWallet } from "@/app/actions/wallet";
 
 export default function AuthCallback() {
   const router = useRouter()
   const { session } = useUserAuth()
   const walletAddress = useUserAddress()
-  const { connectWithThirdweb } = useThirdwebAuth()
+  const { connectWithThirdweb,getWalletAddress } = useThirdwebAuth()
+  const safeAddress = getWalletAddress()
 
   const hasHandled = useRef(false)
   async function waitForWalletCheck(userId: string, maxRetries = 5, delay = 1000) {
@@ -189,14 +190,15 @@ export default function AuthCallback() {
 
       //   }
 
-      console.log(walletAddress)
+      console.log("walletAddress",walletAddress)
+      console.log("safeAddress",safeAddress)
 
 const hasWallet = await waitForWalletCheck(userId);
 console.log("hasWallet", hasWallet)
 
 if (!hasWallet && walletAddress) {
   const updateResult = await updateUser({
-    address: walletAddress,
+    address: safeAddress,
     user_id: userId,
   });
 
