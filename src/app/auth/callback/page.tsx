@@ -148,6 +148,8 @@ export default function AuthCallback() {
 
       try {
         // 1️⃣ Check if user exists
+         // 3️⃣ Connect to Thirdweb
+        await connectWithThirdweb()
         const existing = await getUserByAddress(undefined, userId)
 
         if (!existing.success || !existing.user) {
@@ -160,8 +162,7 @@ export default function AuthCallback() {
           })
         }
 
-        // 3️⃣ Connect to Thirdweb
-        await connectWithThirdweb()
+       
 
       
 
