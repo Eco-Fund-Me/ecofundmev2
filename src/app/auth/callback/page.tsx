@@ -61,6 +61,63 @@
 // }
 
 
+// "use client"
+
+// import { useEffect, useRef } from "react"
+// import { useRouter } from "next/navigation"
+// import { useUserAuth } from "@/context/AuthContext"
+// import { useUserAddress } from "@/hooks/useUserAddress"
+// import { addUser, getUserByAddress } from "@/app/actions/user"
+// import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
+
+// export default function AuthCallback() {
+//   const router = useRouter()
+//   const { session } = useUserAuth()
+//   const walletAddress = useUserAddress()
+//   const { connectWithThirdweb } = useThirdwebAuth()
+
+//   const hasHandled = useRef(false)
+
+//   useEffect(() => {
+//     const processUser = async () => {
+//       if (hasHandled.current || !session?.user?.email || !walletAddress) return
+//       hasHandled.current = true
+
+//       const { email, id: userId } = session.user
+
+//       try {
+//         // Check if user exists
+//         const existing = await getUserByAddress(undefined, userId)
+//         if (!existing.success || !existing.user) {
+//           await addUser({
+//             userID: userId,
+//             user_type: "individual",
+//             address: walletAddress,
+//             email,
+//           })
+//         }
+
+//         // 🔐 Connect to thirdweb wallet using userId from session
+//         await connectWithThirdweb()
+
+//         // ✅ Redirect to dashboard
+//         router.replace("/campaigns")
+//       } catch (error) {
+//         console.error("Auth callback error:", error)
+//       }
+//     }
+
+//     processUser()
+//   }, [session?.user, walletAddress])
+
+//   return (
+//     <div className="flex justify-center items-center h-screen">
+//       <p className="text-green-500">Logging you in now…</p>
+//     </div>
+//   )
+// }
+
+
 "use client"
 
 import { useEffect, useRef } from "react"
@@ -80,27 +137,32 @@ export default function AuthCallback() {
 
   useEffect(() => {
     const processUser = async () => {
-      if (hasHandled.current || !session?.user?.email || !walletAddress) return
+      if (hasHandled.current) return
+      if (!session?.user?.id || !session.user.email || !walletAddress) return
+
       hasHandled.current = true
 
-      const { email, id: userId } = session.user
+      const userId = session.user.id
+      const email = session.user.email
 
       try {
-        // Check if user exists
+        // 1️⃣ Check if user exists
         const existing = await getUserByAddress(undefined, userId)
+
         if (!existing.success || !existing.user) {
+          // 2️⃣ If not, add user to DB
           await addUser({
             userID: userId,
-            user_type: "individual",
+            user_type: "individual", // or dynamically detect later
             address: walletAddress,
             email,
           })
         }
 
-        // 🔐 Connect to thirdweb wallet using userId from session
+        // 3️⃣ Connect to Thirdweb
         await connectWithThirdweb()
 
-        // ✅ Redirect to dashboard
+        // 4️⃣ Redirect
         router.replace("/campaigns")
       } catch (error) {
         console.error("Auth callback error:", error)
@@ -112,7 +174,7 @@ export default function AuthCallback() {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <p className="text-green-500">Logging you in now…</p>
+      <p className="text-green-500">Logging you in…</p>
     </div>
   )
 }

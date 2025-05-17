@@ -104,8 +104,8 @@ const connectWithThirdweb = async () => {
       return wallet
     })
   } catch (err) {
-    console.error("Thirdweb connection error:", err)
-    setError(err instanceof Error ? err.message : "Unexpected error")
+    console.error("Thirdweb connection error:", err?.message || err);
+    setError(err instanceof Error ? err.message : "Unexpected error");
   } finally {
     setIsConnecting(false)
   }

@@ -165,12 +165,16 @@ export async function getUserByAddress(address?: string, user_id?: string): Prom
       .from("users")
       .select("*")
       .eq(column, identifier)
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error("Error fetching user:", error)
       return { success: false, error: "Error fetching user", code: "FETCH_ERROR" }
     }
+
+if (!data) {
+  return { success: false, error: "User not found", code: "NOT_FOUND" }
+}
 
     return { success: true, user: data as User }
   } catch (err) {
