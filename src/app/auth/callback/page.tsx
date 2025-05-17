@@ -163,7 +163,7 @@ export default function AuthCallback() {
         // 3️⃣ Connect to Thirdweb
         await connectWithThirdweb()
         // 4️⃣ Assign wallet address if not already assigned
-   
+        console.log(walletAddress)
         const { hasWallet } = await checkUserWallet(userId)
         if (!hasWallet && walletAddress) {
             const updateResult = await updateUser({
