@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter,  useSearchParams  } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import {  updateUser } from "@/app/actions/user"
 import { useThirdwebAuth} from "@/hooks/useThirdwebAuth"
@@ -12,9 +12,8 @@ import {  checkUserWallet } from "@/app/actions/wallet";
 export default function AuthCallback() {
   const router = useRouter()
   const { session } = useUserAuth()
-
-
-  
+  const searchParams =  useSearchParams()
+  const userType = searchParams.get("userType")
   const { connectWithThirdweb } = useThirdwebAuth()
   
 
@@ -42,6 +41,7 @@ export default function AuthCallback() {
       try {
 
 
+        const redirectLink =  userType == "business"?  "/organization/dashboard": "/individual/dashboard"
 
         // 3️⃣ Connect to Thirdweb
        const wallet = await connectWithThirdweb()
@@ -70,7 +70,7 @@ const hasWallet = await waitForWalletCheck(userId);
 }
 
         // 4️⃣ Redirect
-        router.replace("/organization/dashboard")
+        router.replace(redirectLink)
       } catch (error) {
         console.error("Auth callback error:", error)
       }
