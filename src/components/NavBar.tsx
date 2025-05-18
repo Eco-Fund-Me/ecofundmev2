@@ -15,6 +15,7 @@ import { supabase } from "@/lib/supabaseClient"
 import { Badge } from "@/components/ui/badge"
 import { getUserByAddress } from "@/app/actions/user"
 import { getUserKybData } from "@/app/actions/get-user-kyb-data"
+import { useRouter } from "next/navigation"
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -27,6 +28,7 @@ const wallet = useActiveWallet()
   const account = useActiveAccount()
   const address = account?.address || ""
   const { disconnect } = useDisconnect()
+   const router = useRouter()
 
 
 
@@ -99,7 +101,7 @@ const wallet = useActiveWallet()
     try {
       await supabase.auth.signOut()
       if (wallet) await disconnect(wallet)
-      window.location.reload()
+     router.push("/")
     } catch (err) {
       console.error("Error during logout:", err)
       window.location.reload()
