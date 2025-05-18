@@ -52,9 +52,6 @@ export default function AuthCallback() {
 
 const hasWallet = await waitForWalletCheck(userId);
 
-
-
-
     if (!hasWallet && walletAddress) {
     const updateResult = await updateUser({
         address: walletAddress,
