@@ -13,7 +13,8 @@ import { isAddress } from "thirdweb"
 import { UserDropdown } from "@/components/UserDropdown"
 import { supabase } from "@/lib/supabaseClient"
 import { Badge } from "@/components/ui/badge"
-import { useUserAuth } from "@/context/AuthContext"
+import { getUserByAddress } from "@/app/actions/user"
+import { getUserKybData } from "@/app/actions/get-user-kyb-data"
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -26,7 +27,7 @@ const wallet = useActiveWallet()
   const account = useActiveAccount()
   const address = account?.address || ""
   const { disconnect } = useDisconnect()
-  const {session} = useUserAuth()
+
 
 
   // Get balance
@@ -55,12 +56,13 @@ const wallet = useActiveWallet()
       }
 
       console.log("users address", address)
-      const userId =  session?.user.id
+      // const userId =  session?.user.id
 
       try {
         // Get user data from Supabase
-        const { data, error } = await supabase.from("users").select("*").eq("user_id", userId).single()
-
+        
+        const {user, error} =  await getUserByAddress(address) 
+        const data = user
         if (error) {
           console.error("Error fetching user data:", error)
           return
@@ -69,13 +71,14 @@ const wallet = useActiveWallet()
         if (data) {
           // If user has a business_id, fetch business verification status
           if (data.user_type === "business" && data.business_id) {
-            const { data: businessData, error: businessError } = await supabase
-              .from("kyb")
-              .select("status")
-              .eq("id", data.business_id)
-              .single()
+            // const { data: businessData, error: businessError } = await supabase
+            //   .from("kyb")
+            //   .select("status")
+            //   .eq("id", data.business_id)
+            //   .single()
+            const businessData = await getUserKybData(address)
 
-            if (!businessError && businessData) {
+            if ( businessData !== null) {
               setUserData({
                 ...data,
                 verificationStatus: businessData.status,
