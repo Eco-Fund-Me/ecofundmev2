@@ -93,7 +93,7 @@ const connectWithThirdweb = async () => {
       
 
     // Connect thirdweb wallet
-    await connect(async () => {
+   const wallet = await connect(async () => {
       const wallet = inAppWallet()
       await wallet.connect({
         client,
@@ -103,6 +103,8 @@ const connectWithThirdweb = async () => {
       })
       return wallet
     })
+
+    return wallet
   } catch (err) {
     console.error("Thirdweb connection error:", err)
     setError(err instanceof Error ? err.message : "Unexpected error")

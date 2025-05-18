@@ -7,12 +7,12 @@ import { useUserAuth } from "@/context/AuthContext"
 import {  updateUser } from "@/app/actions/user"
 import { useThirdwebAuth} from "@/hooks/useThirdwebAuth"
 import {  checkUserWallet } from "@/app/actions/wallet";
-import { useActiveWallet } from "thirdweb/react"
+
 
 export default function AuthCallback() {
   const router = useRouter()
   const { session } = useUserAuth()
-  const wallet = useActiveWallet()
+
 
   
   const { connectWithThirdweb,getWalletAddress } = useThirdwebAuth()
@@ -44,16 +44,15 @@ export default function AuthCallback() {
 
 
         // 3️⃣ Connect to Thirdweb
-        await connectWithThirdweb()
+       const wallet = await connectWithThirdweb()
        
-
+        const walletAddress = wallet?.getAccount()?.address
       
       
 
 const hasWallet = await waitForWalletCheck(userId);
- const walletAddress =  wallet?.getAccount()?.address
- console.log("walletAddress",walletAddress) 
-    console.log("hasWallet", hasWallet)
+
+
     const safeAddress = getWalletAddress()
 console.log("safeAddress",safeAddress)
     if (!hasWallet && walletAddress) {
@@ -78,7 +77,7 @@ console.log("safeAddress",safeAddress)
     }
 
     processUser()
-  }, [session?.user,connectWithThirdweb,router, wallet])
+  }, [session?.user,connectWithThirdweb,router])
 
   return (
     <div className="flex justify-center items-center h-screen">
