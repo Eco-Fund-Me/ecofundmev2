@@ -20,7 +20,7 @@ interface AuthContextType {
   signUpNewUser: (
     email: string,
     password: string,
-    userType: string
+    userType: "business" | "individual"
   ) => Promise<{ success: boolean; data?: any; error?: string }>;
   signInUser: (
     email: string,

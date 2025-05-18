@@ -312,7 +312,7 @@ export default function IndividualSignupPage() {
       }
   
       // 2. Sign up via Supabase
-      const result = await signUpNewUser(email, password)
+      const result = await signUpNewUser(email, password,"individual")
       if (!result.success) {
         throw new Error(result.error || "Failed to create account")
       }

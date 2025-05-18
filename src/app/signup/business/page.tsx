@@ -261,7 +261,7 @@ export default function BusinessSignupPage() {
       }
 
       // Sign up with Supabase
-      const result = await signUpNewUser(email, password)
+      const result = await signUpNewUser(email, password, "business")
 
       if (!result.success) {
         // Double-check for email already exists error from Supabase
