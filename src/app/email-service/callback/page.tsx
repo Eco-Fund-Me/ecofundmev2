@@ -15,7 +15,7 @@ export default function AuthCallback() {
 
 
   
-  const { connectWithThirdweb,getWalletAddress } = useThirdwebAuth()
+  const { connectWithThirdweb } = useThirdwebAuth()
   
 
   const hasHandled = useRef(false)
@@ -53,11 +53,11 @@ export default function AuthCallback() {
 const hasWallet = await waitForWalletCheck(userId);
 
 
-    const safeAddress = getWalletAddress()
-console.log("safeAddress",safeAddress)
+
+
     if (!hasWallet && walletAddress) {
     const updateResult = await updateUser({
-        address: safeAddress,
+        address: walletAddress,
         user_id: userId,
     });
 
