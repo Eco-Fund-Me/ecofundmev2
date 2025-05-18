@@ -71,11 +71,7 @@ const wallet = useActiveWallet()
         if (data) {
           // If user has a business_id, fetch business verification status
           if (data.user_type === "business" && data.business_id) {
-            // const { data: businessData, error: businessError } = await supabase
-            //   .from("kyb")
-            //   .select("status")
-            //   .eq("id", data.business_id)
-            //   .single()
+    
             const businessData = await getUserKybData(address)
 
             if ( businessData !== null) {
@@ -371,7 +367,7 @@ const wallet = useActiveWallet()
                             </>
                           ) : (
                             <Link
-                              href="/business-verification"
+                              href="/organization/dashboard"
                               className="block w-full py-3 text-white hover:text-[#4CAF50]"
                             >
                               Business Profile
