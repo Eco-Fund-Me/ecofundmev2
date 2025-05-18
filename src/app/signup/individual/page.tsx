@@ -322,16 +322,6 @@ export default function IndividualSignupPage() {
         throw new Error("Missing user ID after sign-up")
       }
   
-      // 3. Add user to your custom users table (without wallet)
-      await addUser({
-        user_type: "individual",
-        userID: userId,
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        address: "", // Wallet will be assigned after login
-      })
-  
       // 4. Redirect to verification page
       router.push(`/signup/verify?email=${encodeURIComponent(email)}`)
   
@@ -347,22 +337,7 @@ export default function IndividualSignupPage() {
   const handleGoogleSignup = async () => {
     try {
     await signInWithOAuth("google")
-    await connectWithThirdweb()
-      
-      
-      const email = session?.user.email
-      
-      const address = walletAddress
-            await addUser({
-            userID:  address,
-            user_type: "individual",
-            address,
-            email: email || `google_user@example.com`, // Placeholder if email not available
-            
-          })
-      if (address) {
-        router.push("/campaigns")
-      }
+  
     } catch (err) {
       console.error("Google signup error:", err)
       setError(err instanceof Error ? err.message : "Failed to sign up with Google")

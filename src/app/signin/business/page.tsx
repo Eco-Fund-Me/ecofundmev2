@@ -165,15 +165,14 @@ import { motion } from "framer-motion"
 import { Eye, EyeOff, User, Briefcase } from "lucide-react"
 import { AuthHero } from "@/components/auth/AuthHero"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
-import { supabase } from "@/lib/supabaseClient"
 import { useUserAuth } from "@/context/AuthContext"
-import { isBusinessEmail, updateUser } from "@/app/actions/user"
-import { useUserAddress } from "@/hooks/useUserAddress"
+import { isBusinessEmail } from "@/app/actions/user"
+// import { useUserAddress } from "@/hooks/useUserAddress"
 
 export default function BusinessSigninPage() {
   const router = useRouter()
   const { signInUser } = useUserAuth()
-  const  userAddress = useUserAddress()
+  // const  userAddress = useUserAddress()
   const { connectWithThirdweb, isConnecting, error: thirdwebError } = useThirdwebAuth()
 
   const [email, setEmail] = useState("")
@@ -209,50 +208,18 @@ export default function BusinessSigninPage() {
 
       // Connect with Thirdweb
       await connectWithThirdweb()
-      const updateResult = await updateUser({
-        address: userAddress,
-        user_id: result.data?.user?.id
-      })
+      // const updateResult = await updateUser({
+      //   address: userAddress,
+      //   user_id: result.data?.user?.id
+      // })
 
-      if (updateResult.success) {
-        console.log("User updated:", updateResult.updatedUser)
-      } else {
-        console.error("Update failed:", updateResult.error)
-      }
-
-      // Check business verification status
-      const { data: profile, error: profileError } = await supabase
-        .from("users")
-        .select("verification_status")
-        .eq("user_id", result.data?.user?.id)
-        .single()
-
-      if (profileError) {
-        console.error("Error fetching business profile:", profileError)
-        // If no profile exists, redirect to KYC flow
-        router.push("/business-verification")
-        return
-      }
-
-      // Route based on verification status
-      if (!profile) {
-        // No profile found, redirect to KYC flow
-        router.push("/business-verification")
-      } else {
-        switch (profile.verification_status) {
-          case "approved":
-            router.push("/business/dashboard")
-            break
-          case "pending":
-            router.push("/business/dashboard?status=pending")
-            break
-          case "rejected":
-            router.push("/business/dashboard?status=rejected")
-            break
-          default:
-            router.push("/business-verification")
-        }
-      }
+      // if (updateResult.success) {
+      //   console.log("User updated:", updateResult.updatedUser)
+      // } else {
+      //   console.error("Update failed:", updateResult.error)
+      // }
+      router.push("/organization/dashboard")
+      
     } catch (err) {
       console.error("Signin error:", err)
       setError(err instanceof Error ? err.message : "Invalid email or password")

@@ -229,13 +229,11 @@ import { Eye, EyeOff, User, Briefcase } from "lucide-react"
 import { AuthHero } from "@/components/auth/AuthHero"
 import { useThirdwebAuth } from "@/hooks/useThirdwebAuth"
 import { useUserAuth } from "@/context/AuthContext"
-import { updateUser } from "@/app/actions/user"
-import { useUserAddress } from "@/hooks/useUserAddress"
+// import { updateUser } from "@/app/actions/user"
 
 export default function IndividualSigninPage() {
   const router = useRouter()
   const { signInUser, signInWithOAuth } = useUserAuth()
-  const  userAddress = useUserAddress()
   const { connectWithThirdweb, isConnecting, error: thirdwebError } = useThirdwebAuth()
 
   const [email, setEmail] = useState("")
@@ -268,16 +266,16 @@ export default function IndividualSigninPage() {
       // Connect with Thirdweb
       await connectWithThirdweb()
       
-      const updateResult = await updateUser({
-        address: userAddress,
-        user_id: result.data?.user?.id
-      })
+      // const updateResult = await updateUser({
+      //   address: userAddress,
+      //   user_id: result.data?.user?.id
+      // })
 
-      if (updateResult.success) {
-        console.log("User updated:", updateResult.updatedUser)
-      } else {
-        console.error("Update failed:", updateResult.error)
-      }
+      // if (updateResult.success) {
+      //   console.log("User updated:", updateResult.updatedUser)
+      // } else {
+      //   console.error("Update failed:", updateResult.error)
+      // }
       // Redirect to campaigns page
       router.push("/campaigns")
     } catch (err) {
