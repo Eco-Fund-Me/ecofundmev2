@@ -3,11 +3,11 @@ import { useNavUser } from "@/hooks/useNavUser"
 import { useKYBData } from "@/hooks/useKYBData"
 import { StatsCards } from "./StatsCards"
 import { CampaignsTable } from "./CampaignsTable"
-import { KYBStatusCard } from "../shared/KYBStatusCard"
 import { dashboardData, campaignsData } from "@/data/dashboardData"
+import { KYBStatusCard } from "./shared/KYBStatusCard"
 
 export function DashboardHome() {
-  const { user, isLoading: userLoading } = useNavUser()
+  const { user} = useNavUser()
   const { kybData, isLoading: kybLoading } = useKYBData(user?.address)
 
   return (
