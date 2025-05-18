@@ -13,6 +13,7 @@ import { isAddress } from "thirdweb"
 import { UserDropdown } from "@/components/UserDropdown"
 import { supabase } from "@/lib/supabaseClient"
 import { Badge } from "@/components/ui/badge"
+import { useUserAuth } from "@/context/AuthContext"
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -25,6 +26,8 @@ const wallet = useActiveWallet()
   const account = useActiveAccount()
   const address = account?.address || ""
   const { disconnect } = useDisconnect()
+  const {session} = useUserAuth()
+
 
   // Get balance
   const balanceData = "2881.281"
@@ -51,9 +54,12 @@ const wallet = useActiveWallet()
         return
       }
 
+      console.log("users address", address)
+      const userId =  session?.user.id
+
       try {
         // Get user data from Supabase
-        const { data, error } = await supabase.from("users").select("*").eq("address", address).single()
+        const { data, error } = await supabase.from("users").select("*").eq("user_id", userId).single()
 
         if (error) {
           console.error("Error fetching user data:", error)
