@@ -373,7 +373,7 @@ export function UserDropdown({
               </Link>
             </>
           ) : (
-            <Link href="/business-verification">
+            <Link href="/organization/dashboard">
               <DropdownMenuItem className="cursor-pointer">
                 <Building className="mr-2 h-4 w-4" />
                 <span>Business Profile</span>
