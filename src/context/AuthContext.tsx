@@ -19,7 +19,8 @@ interface AuthContextType {
   session: Session | null | undefined;
   signUpNewUser: (
     email: string,
-    password: string
+    password: string,
+    userType: string
   ) => Promise<{ success: boolean; data?: any; error?: string }>;
   signInUser: (
     email: string,
@@ -48,13 +49,14 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
 
   const signUpNewUser = async (
     email: string,
-    password: string
+    password: string,
+    userType:"business" | "individual"
   ): Promise<{ success: boolean; data?: any; error?: string }> => {
     const { data, error } = await supabase.auth.signUp({
       email: email.toLowerCase(),
       password,
       options:{
-        emailRedirectTo:`${location.origin}/email-service/callback`,
+        emailRedirectTo:`${location.origin}/email-service/callback?userType=${userType}`,
       }
     });
 
