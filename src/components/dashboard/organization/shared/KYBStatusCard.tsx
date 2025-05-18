@@ -70,7 +70,7 @@ export function KYBStatusCard({ kybData, isLoading, compact = false }: KYBStatus
 
           {status === "pending" && (
             <p className="text-sm text-blue-600">
-              Your verification is in progress. We'll notify you once it's complete.
+              Your verification is in progress. We&apos;ll notify you once it&apos;s complete.
             </p>
           )}
 
