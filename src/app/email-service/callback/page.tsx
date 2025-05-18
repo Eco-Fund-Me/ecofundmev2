@@ -16,7 +16,7 @@ export default function AuthCallback() {
 
   
   const { connectWithThirdweb,getWalletAddress } = useThirdwebAuth()
-  const safeAddress = getWalletAddress()
+  
 
   const hasHandled = useRef(false)
   async function waitForWalletCheck(userId: string, maxRetries = 5, delay = 1000) {
@@ -48,13 +48,14 @@ export default function AuthCallback() {
        
 
       
-      console.log("safeAddress",safeAddress)
+      
 
 const hasWallet = await waitForWalletCheck(userId);
  const walletAddress =  wallet?.getAccount()?.address
  console.log("walletAddress",walletAddress) 
     console.log("hasWallet", hasWallet)
-
+    const safeAddress = getWalletAddress()
+console.log("safeAddress",safeAddress)
     if (!hasWallet && walletAddress) {
     const updateResult = await updateUser({
         address: safeAddress,
@@ -77,7 +78,7 @@ const hasWallet = await waitForWalletCheck(userId);
     }
 
     processUser()
-  }, [session?.user,connectWithThirdweb,router, wallet,safeAddress])
+  }, [session?.user,connectWithThirdweb,router, wallet])
 
   return (
     <div className="flex justify-center items-center h-screen">
