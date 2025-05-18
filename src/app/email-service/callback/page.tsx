@@ -4,15 +4,17 @@
 import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
-import { useUserAddress } from "@/hooks/useUserAddress"
 import {  updateUser } from "@/app/actions/user"
 import { useThirdwebAuth} from "@/hooks/useThirdwebAuth"
 import {  checkUserWallet } from "@/app/actions/wallet";
+import { useActiveWallet } from "thirdweb/react"
 
 export default function AuthCallback() {
   const router = useRouter()
   const { session } = useUserAuth()
-  const walletAddress = useUserAddress()
+  const wallet = useActiveWallet()
+
+  
   const { connectWithThirdweb,getWalletAddress } = useThirdwebAuth()
   const safeAddress = getWalletAddress()
 
@@ -43,14 +45,15 @@ export default function AuthCallback() {
 
         // 3️⃣ Connect to Thirdweb
         await connectWithThirdweb()
-      //   // 4️⃣ Assign wallet address if not already assigned
+       
 
-
-      console.log("walletAddress",walletAddress)
+      
       console.log("safeAddress",safeAddress)
 
 const hasWallet = await waitForWalletCheck(userId);
-console.log("hasWallet", hasWallet)
+ const walletAddress =  wallet?.getAccount()?.address
+ console.log("walletAddress",walletAddress) 
+    console.log("hasWallet", hasWallet)
 
     if (!hasWallet && walletAddress) {
     const updateResult = await updateUser({
@@ -74,7 +77,7 @@ console.log("hasWallet", hasWallet)
     }
 
     processUser()
-  }, [session?.user, walletAddress,connectWithThirdweb,router])
+  }, [session?.user,connectWithThirdweb,router, wallet,safeAddress])
 
   return (
     <div className="flex justify-center items-center h-screen">
