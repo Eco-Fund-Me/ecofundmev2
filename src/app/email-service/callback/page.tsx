@@ -41,7 +41,7 @@ export default function AuthCallback() {
       try {
 
 
-        const redirectLink =  userType == "business"?  "/organization/dashboard": "/individual/dashboard"
+        const redirectLink =  userType == "business"?  "/organization/dashboard": "/campaign"
 
         // 3️⃣ Connect to Thirdweb
        const wallet = await connectWithThirdweb()
