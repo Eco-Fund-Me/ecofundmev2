@@ -46,6 +46,9 @@ export interface Campaign {
   coverImage: string
   milestones: Milestone[]
   rewards: Reward[]
+  currentAmount: number
+  targetAmount: number
+  imageUrl?: string
 }
 
 interface CampaignState {
@@ -72,6 +75,9 @@ const mockCampaigns: Campaign[] = [
     backers: 215,
     daysLeft: 12,
     coverImage: "/ocean-cleanup.png",
+    currentAmount: 32500,
+    targetAmount: 50000,
+    imageUrl: "/ocean-cleanup.png",
     milestones: [
       {
         id: "m1",
@@ -160,6 +166,9 @@ const mockCampaigns: Campaign[] = [
     backers: 124,
     daysLeft: 8,
     coverImage: "/sustainable-garden.png",
+    currentAmount: 18750,
+    targetAmount: 25000,
+    imageUrl: "/sustainable-garden.png",
     milestones: [
       {
         id: "m1",
@@ -214,7 +223,7 @@ const mockCampaigns: Campaign[] = [
         location: "456 Garden St, Green City, NY",
         quantity: 50,
         remainingQuantity: 22,
-        image: "/placeholder.svg?height=200&width=200&query=seed starter kit",
+        image: "/placeholder-vyljj.png",
       },
       {
         id: "r3",
@@ -224,7 +233,7 @@ const mockCampaigns: Campaign[] = [
         type: "physical",
         estimatedDeliveryDate: new Date("2024-01-15"),
         location: "Multiple locations across the city",
-        image: "/placeholder.svg?height=200&width=200&query=garden plot",
+        image: "/garden-plot.png",
       },
     ],
   },
@@ -243,6 +252,9 @@ const mockCampaigns: Campaign[] = [
     backers: 310,
     daysLeft: 21,
     coverImage: "/solar-panels-school.png",
+    currentAmount: 45000,
+    targetAmount: 75000,
+    imageUrl: "/solar-panels-school.png",
     milestones: [
       {
         id: "m1",
@@ -292,7 +304,7 @@ const mockCampaigns: Campaign[] = [
         description: "Digital educational materials about solar energy",
         price: 20,
         type: "digital",
-        image: "/placeholder.svg?height=200&width=200&query=solar energy learning",
+        image: "/solar-energy-learning.png",
       },
       {
         id: "r2",
