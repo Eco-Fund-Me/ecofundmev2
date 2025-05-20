@@ -74,10 +74,10 @@ const mockCampaigns: Campaign[] = [
     raisedAmount: 32500,
     backers: 215,
     daysLeft: 12,
-    coverImage: "/ocean-cleanup.png",
+    coverImage: "/ocean-cleanup.jpeg",
     currentAmount: 32500,
     targetAmount: 50000,
-    imageUrl: "/ocean-cleanup.png",
+    imageUrl: "/ocean-cleanup.jpeg",
     milestones: [
       {
         id: "m1",
@@ -165,10 +165,10 @@ const mockCampaigns: Campaign[] = [
     raisedAmount: 18750,
     backers: 124,
     daysLeft: 8,
-    coverImage: "/sustainable-garden.png",
+    coverImage: "/recycling-plant.jpeg",
     currentAmount: 18750,
     targetAmount: 25000,
-    imageUrl: "/sustainable-garden.png",
+    imageUrl: "/recycling-plant.jpeg",
     milestones: [
       {
         id: "m1",
@@ -251,10 +251,10 @@ const mockCampaigns: Campaign[] = [
     raisedAmount: 45000,
     backers: 310,
     daysLeft: 21,
-    coverImage: "/solar-panels-school.png",
+    coverImage: "/solar-panel.jpg",
     currentAmount: 45000,
     targetAmount: 75000,
-    imageUrl: "/solar-panels-school.png",
+    imageUrl: "/solar-panel.jpg",
     milestones: [
       {
         id: "m1",
