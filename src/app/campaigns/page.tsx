@@ -247,6 +247,8 @@ import { Leaf, Droplets, Recycle, Building2, Trash2, Coins, Palette } from "luci
 import Image from "next/image"
 import Link from "next/link"
 import { useCampaignStore } from "@/hooks/useCampignStore"
+import { getUserByAddress } from "../actions/user"
+import { useUserAddress } from "@/hooks/useUserAddress"
 
 // Helper function to capitalize each word
 function capitalizeEachWord(str: string) {
@@ -260,18 +262,30 @@ export default function CampaignsPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { campaigns, selectedCategory, setSelectedCategory, fetchCampaigns, categories } = useCampaignStore()
   const [isLoaded, setIsLoaded] = useState(false)
+  const [userType, setUserType] = useState<"business" | "individual" >()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-
+  const address =  useUserAddress()
   useEffect(() => {
     fetchCampaigns()
     const timer = setTimeout(() => setIsLoaded(true), 500)
     return () => clearTimeout(timer)
   }, [fetchCampaigns])
 
+     useEffect(() => {
+    const getUserType = async () =>  {
+      const userType = await getUserByAddress(address)
+      setUserType(userType.user?.user_type)
+    }
+
+    getUserType()
+  }, [address])
+
   const filteredCampaigns =
     selectedCategory === "All Categories"
       ? campaigns
       : campaigns.filter((campaign) => campaign.category === selectedCategory)
+
+
 
   const categoryIcons = {
     "Renewable Energy": <Leaf className="h-5 w-5" />,
@@ -322,6 +336,9 @@ export default function CampaignsPage() {
             </p>
 
             {/* Create Campaign Button */}
+
+            {
+            userType === "business" &&
             <Link href="/create-campaign">
               <motion.button
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -343,7 +360,7 @@ export default function CampaignsPage() {
                 </svg>
                 Create Campaign
               </motion.button>
-            </Link>
+            </Link>}
           </motion.div>
         </div>
       </div>
@@ -432,6 +449,8 @@ export default function CampaignsPage() {
         )}
         {/* Floating Action Button for Mobile */}
         <div className="md:hidden fixed bottom-6 right-6 z-10">
+          {
+        userType === "business" &&
           <Link href="/create-campaign">
             <motion.button
               initial={{ opacity: 0, scale: 0.9 }}
@@ -451,7 +470,7 @@ export default function CampaignsPage() {
                 <path d="M12 5V19M5 12H19" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </motion.button>
-          </Link>
+          </Link>}
         </div>
       </div>
     </div>
