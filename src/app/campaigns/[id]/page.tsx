@@ -229,7 +229,6 @@
 //   )
 // }
 
-
 "use client"
 
 import { useEffect, useState } from "react"
@@ -259,7 +258,6 @@ export default function CampaignPage() {
   const params = useParams()
   const { campaigns, fetchCampaigns } = useCampaignStore()
   const [campaign, setCampaign] = useState<Campaign | null>(null)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoaded, setIsLoaded] = useState(false)
   const [activeTab, setActiveTab] = useState("story")
 
