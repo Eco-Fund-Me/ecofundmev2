@@ -361,7 +361,7 @@ export default function CampaignPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#F5F2EA]">
+    <div className="min-h-screen mt-10 bg-[#F5F2EA]">
       {/* Hero Section */}
       <div className="relative w-full bg-[#1E3A29] text-white py-12 overflow-hidden">
         <div className="container px-4 mx-auto">
