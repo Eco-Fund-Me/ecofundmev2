@@ -336,7 +336,7 @@ const wallet = useActiveWallet()
                               <Link href="/profile" className="block w-full py-3 text-white hover:text-[#4CAF50]">
                                 Profile
                               </Link>
-                              <Link href="/contributions" className="block w-full py-3 text-white hover:text-[#4CAF50]">
+                              <Link href="/individual/dashboard/campaigns-backed" className="block w-full py-3 text-white hover:text-[#4CAF50]">
                                 My Contributions
                               </Link>
                             </>
@@ -361,7 +361,7 @@ const wallet = useActiveWallet()
                                 Create Campaign
                               </Link>
                               <Link
-                                href="/organization/analytics"
+                                href="/organization/dashboard"
                                 className="block w-full py-3 text-white hover:text-[#4CAF50]"
                               >
                                 Analytics

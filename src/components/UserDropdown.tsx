@@ -338,7 +338,7 @@ export function UserDropdown({
                   <span>Profile</span>
                 </DropdownMenuItem>
               </Link>
-              <Link href="/contributions">
+              <Link href="/individual/dashboard/campaigns-backed">
                 <DropdownMenuItem className="cursor-pointer">
                   <CreditCard className="mr-2 h-4 w-4" />
                   <span>My Contributions</span>
@@ -365,7 +365,7 @@ export function UserDropdown({
                   <span>Create Campaign</span>
                 </DropdownMenuItem>
               </Link>
-              <Link href="/organization/analytics">
+              <Link href="/organization/dashboard">
                 <DropdownMenuItem className="cursor-pointer">
                   <FileText className="mr-2 h-4 w-4" />
                   <span>Analytics</span>
@@ -382,7 +382,7 @@ export function UserDropdown({
           )}
 
           {/* Common menu items */}
-          <Link href="/settings">
+          <Link href="/organization/dashboard">
             <DropdownMenuItem className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
