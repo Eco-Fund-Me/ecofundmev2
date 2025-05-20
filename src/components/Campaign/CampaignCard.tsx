@@ -1,130 +1,69 @@
-// import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-// import Image from "next/image"
-// import Link from "next/link"
-// import { CampaignProgress } from "./CampaignProgress"
-// import { CampaignCreator } from "./CampaignCreator"
-// import { Badge } from "@/components/ui/badge"
-
-// interface CampaignCardProps {
-//   id: string
-//   title: string
-//   category: string
-//   creatorName: string
-//   targetAmount: number
-//   currentAmount: number
-//   daysLeft: number
-//   imageUrl: string
-// }
-
-// export function CampaignCard({
-//   id,
-//   title,
-//   category,
-//   creatorName,
-//   targetAmount,
-//   currentAmount,
-//   daysLeft,
-//   imageUrl,
-// }: CampaignCardProps) {
-//   return (
-//     <Link href={`/campaigns/${id}`}>
-//       <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-[#0A1A12] border-[#0A1A12] text-white h-full flex flex-col">
-//         <CardHeader className="p-0">
-//           <div className="relative h-48 w-full">
-//             <Image src={imageUrl || "/placeholder.svg"} alt={title} fill className="object-cover" />
-//             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[#040B08] to-transparent opacity-50"></div>
-//             <Badge className="absolute top-3 right-3 bg-[#00EE7D] hover:bg-[#00EE7D]/90 text-black">{category}</Badge>
-//           </div>
-//         </CardHeader>
-//         <CardContent className="p-4 flex-grow">
-//           <h3 className="text-xl font-semibold mt-2 mb-4 line-clamp-2">{title}</h3>
-//           <div className="mt-auto">
-//             <CampaignProgress
-//               targetAmount={targetAmount}
-//               currentAmount={currentAmount}
-//               backers={0}
-//               daysLeft={daysLeft}
-//             />
-//           </div>
-//         </CardContent>
-//         <CardFooter className="p-4 pt-0 border-t border-[#1A2A22]">
-//           <CampaignCreator name={creatorName} imageUrl="/creator-avatar.png" />
-//         </CardFooter>
-//       </Card>
-//     </Link>
-//   )
-// }
-
-
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import Image from "next/image"
 import Link from "next/link"
-import { CampaignProgress } from "./CampaignProgress"
-import { CampaignCreator } from "./CampaignCreator"
-import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
+import { Progress } from "@/components/ui/progress"
+import { Campaign } from "@/hooks/useCampignStore"
 
-// Helper function to capitalize each word
-function capitalizeEachWord(str: string) {
-  return str
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ")
-}
-
-interface CampaignCardProps {
-  id: string
-  title: string
-  category: string
-  creatorName: string
-  targetAmount: number
-  currentAmount: number
-  daysLeft: number
-  imageUrl: string
-}
-
-// Update the CampaignCard with a light coffee/beige color inspired by ecohome1
 export function CampaignCard({
   id,
   title,
+  tagline,
   category,
   creatorName,
-  targetAmount,
-  currentAmount,
+  creatorAvatar,
+  goalAmount,
+  raisedAmount,
+  backers,
   daysLeft,
-  imageUrl,
-}: CampaignCardProps) {
+  coverImage,
+}: Campaign) {
+  const percentFunded = Math.min(Math.round((raisedAmount / goalAmount) * 100), 100)
+
   return (
     <Link href={`/campaigns/${id}`}>
-      <Card className="overflow-hidden transition-transform duration-300 bg-[#F5F2EA] border-[#E8E4D8] text-[#1E3A29] h-full flex flex-col group hover:scale-[1.02]">
-        <CardHeader className="p-0">
-          <div className="relative h-48 w-full overflow-hidden">
-            <Image
-              src={imageUrl || "/placeholder.svg"}
-              alt={title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[#1E3A29] to-transparent opacity-50"></div>
-            <Badge className="absolute top-3 right-3 bg-[#4CAF50] hover:bg-[#4CAF50]/90 text-white font-medium">
-              {capitalizeEachWord(category)}
-            </Badge>
+      <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 h-full flex flex-col">
+        <div className="relative aspect-video">
+          <Image
+            src={coverImage || "/placeholder.svg?height=200&width=350&query=nature"}
+            alt={title}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute top-3 left-3">
+            <span className="px-2 py-1 bg-black/60 text-white text-xs rounded-full">{category}</span>
           </div>
-        </CardHeader>
-        <CardContent className="p-4 flex-grow">
-          <h3 className="text-xl font-semibold mt-2 mb-4 line-clamp-2 text-[#1E3A29]">{title}</h3>
+        </div>
+        <div className="p-4 flex-1 flex flex-col">
+          <h3 className="font-semibold text-lg mb-1 line-clamp-2">{title}</h3>
+          <p className="text-gray-600 text-sm mb-4 line-clamp-2">{tagline}</p>
+
           <div className="mt-auto">
-            <CampaignProgress
-              targetAmount={targetAmount}
-              currentAmount={currentAmount}
-              backers={0}
-              daysLeft={daysLeft}
-            />
+            <div className="flex justify-between text-sm mb-1">
+              <span className="font-medium">${raisedAmount.toLocaleString()}</span>
+              <span className="text-gray-600">{percentFunded}%</span>
+            </div>
+            <Progress value={percentFunded} className="h-2 mb-4" />
+
+            <div className="flex justify-between text-xs text-gray-500">
+              <div className="flex items-center">
+                <div className="relative w-5 h-5 rounded-full overflow-hidden mr-1">
+                  <Image
+                    src={creatorAvatar || "/placeholder.svg?height=20&width=20&query=avatar"}
+                    alt={creatorName}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <span>{creatorName}</span>
+              </div>
+              <div className="flex gap-2">
+                <span>{backers} backers</span>
+                <span>•</span>
+                <span>{daysLeft} days left</span>
+              </div>
+            </div>
           </div>
-        </CardContent>
-        <CardFooter className="p-4 pt-0 border-t border-[#E8E4D8]">
-          <CampaignCreator name={creatorName} imageUrl="/creator-avatar.png" />
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </Link>
   )
 }
