@@ -74,10 +74,10 @@ const mockCampaigns: Campaign[] = [
     raisedAmount: 32500,
     backers: 215,
     daysLeft: 12,
-    coverImage: "/ocean-cleanup.jpeg",
+    coverImage: "/clean-ocean.jpeg",
     currentAmount: 32500,
     targetAmount: 50000,
-    imageUrl: "/ocean-cleanup.jpeg",
+    imageUrl: "/clean-ocean.jpeg",
     milestones: [
       {
         id: "m1",
