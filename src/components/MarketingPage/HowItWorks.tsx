@@ -113,7 +113,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <div className="py-24 md:py-32 bg-[#F5F2EA] relative overflow-hidden">
+    <div id="how-it-works" className="py-24 md:py-32 bg-[#F5F2EA] relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-white to-transparent" />

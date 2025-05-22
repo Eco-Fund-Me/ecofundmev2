@@ -25,9 +25,9 @@
 //     </div>
 //   )
 // }
+"use client"
 
-
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
 import Hero from "@/components/MarketingPage/Hero"
 import HeroCampaigns from "@/components/MarketingPage/HeroCampaigns"
 import Loading from "@/components/loading"
@@ -35,8 +35,24 @@ import HowItWorks from "@/components/MarketingPage/HowItWorks"
 import Services from "@/components/MarketingPage/Services"
 import Testimonials from "@/components/MarketingPage/Testimonials"
 import CallToAction from "@/components/MarketingPage/CallToAction"
+import { usePathname } from "next/navigation"
 
 export default function Home() {
+const pathname = usePathname();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const id = window.location.hash.substring(1); // removes the "#"
+      const el = document.getElementById(id);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }, 100); // delay to ensure section is rendered
+      }
+    }
+  }, [pathname]);
+
+
   return (
     <div className="w-full">
       <div className="min-h-[90vh]">

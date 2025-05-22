@@ -110,8 +110,8 @@ const wallet = useActiveWallet()
 
   const navLinks = [
     { href: "/campaigns", label: "Campaigns" },
-    { href: "#how-it-works", label: "How it Works" },
-    { href: "#about", label: "About Us" },
+    { href: "/#how-it-works", label: "How it Works" },
+    { href: "/#testimonials", label: "About Us" },
   ]
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {

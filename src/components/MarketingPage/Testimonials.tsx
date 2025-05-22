@@ -183,7 +183,7 @@ export default function Testimonials() {
   }
 
   return (
-    <div className="py-24 md:py-32 bg-white relative overflow-hidden">
+    <div id="testimonials" className="py-24 md:py-32 bg-white relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-40 -left-40 w-80 h-80 bg-[#4CAF50]/5 rounded-full blur-3xl" />
