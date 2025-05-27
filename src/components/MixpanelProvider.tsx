@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { mixpanel, initMixpanel } from '@/lib/mixpanelClient'; // Import both
+import { mixpanel, initMixpanel } from '../lib/mixpanelClient'; // Import both
 
 interface MixpanelProviderProps {
   children: React.ReactNode;
