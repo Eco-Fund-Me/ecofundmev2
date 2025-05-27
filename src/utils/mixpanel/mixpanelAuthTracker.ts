@@ -14,7 +14,7 @@ interface WalletConnectionProperties {
   userId: string;
   walletAddress: string;
   connectionMethod: 'OAuth Callback Auto-Connect' | 'Email/Password Callback Auto-Connect' | 'Wallet Reconnected';
-  oldWalletAddress?: string; // Optional for reconnected event
+  oldWalletAddress?: string | undefinded; // Optional for reconnected event
 }
 
 
