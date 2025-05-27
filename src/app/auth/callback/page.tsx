@@ -10,6 +10,14 @@ import { useUserAddress } from "@/hooks/useUserAddress"
 import { addUser, getUserByAddress, updateUser } from "@/app/actions/user"
 import { useThirdwebAuth} from "@/hooks/useThirdwebAuth"
 import {  checkUserWallet } from "@/app/actions/wallet";
+import {
+  trackUserLoggedIn,
+  trackUserSignedUp,
+  trackWalletConnected,
+  trackWalletReconnected,
+  trackAuthCallbackError,
+  trackWalletConnectionFailed
+} from '../../../utils/mixpanel/mixpanelAuthTracker';
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -51,51 +59,55 @@ export default function AuthCallback() {
             user_type: "individual", // or dynamically detect later
             address: walletAddress,
             email,
-          })
+          })   
+          trackUserSignedUp({ userId, email, loginMethod, userType });
+        } else {
+          // Mixpanel: Track user login
+          trackUserLoggedIn({ userId, email, loginMethod });
         }
-
         // 3️⃣ Connect to Thirdweb
         await connectWithThirdweb()
-      //   // 4️⃣ Assign wallet address if not already assigned
-      //   console.log(walletAddress)
-      //   const { hasWallet } = await checkUserWallet(userId)
-      //    console.log("haswallet",hasWallet)
-      //   if (!hasWallet && walletAddress) {
-      //       const updateResult = await updateUser({
-      //             address: walletAddress,
-      //             user_id: userId
-      //           })
-      //           if (updateResult.success) {
-      //   console.log("User updated:", updateResult.updatedUser)
-      // } else {
-      //   console.error("Update failed:", updateResult.error)
-      // }
-
-      //   }
+      
 
       console.log("walletAddress",walletAddress)
       console.log("safeAddress",safeAddress)
 
-const hasWallet = await waitForWalletCheck(userId);
-console.log("hasWallet", hasWallet)
+      const hasWallet = await waitForWalletCheck(userId);
+      console.log("hasWallet", hasWallet)
 
-if (!hasWallet && walletAddress) {
-  const updateResult = await updateUser({
-    address: safeAddress,
-    user_id: userId,
-  });
+    if (!hasWallet && safeAddress) {
+          const updateResult = await updateUser({
+            address: safeAddress,
+            user_id: userId,
+          });
 
-  if (updateResult.success) {
-    console.log("User updated:", updateResult.updatedUser);
-  } else {
-    console.error("Update failed:", updateResult.error);
-  }
-}
+          if (updateResult.success) {
+            // Mixpanel: Track wallet connected
+            trackWalletConnected({
+              userId,
+              walletAddress: safeAddress,
+              connectionMethod: 'OAuth Callback Auto-Connect',
+            });
+          } else {
+            console.error("Update failed:", updateResult.error);
+            // Mixpanel: Track wallet connection failed
+            trackWalletConnectionFailed(new Error(updateResult.error), 'OAuth Callback Auto-Connect', userId);
+          }
+        } else if (hasWallet && safeAddress && existing.user && existing.user.address !== safeAddress) {
+            // Mixpanel: Track wallet reconnected
+            trackWalletReconnected({
+                userId,
+                walletAddress: safeAddress,
+                oldWalletAddress: existing.user.address,
+                connectionMethod: 'OAuth Callback Re-Connect',
+            });
+        }
 
         // 4️⃣ Redirect
         router.replace("/campaigns")
       } catch (error) {
         console.error("Auth callback error:", error)
+        trackAuthCallbackError(error as Error, loginMethod, userId);
       }
     }
 

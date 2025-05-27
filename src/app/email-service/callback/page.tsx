@@ -9,6 +9,7 @@ import { useThirdwebAuth} from "@/hooks/useThirdwebAuth"
 import {  checkUserWallet } from "@/app/actions/wallet";
 
 
+
 export default function AuthCallback() {
   const router = useRouter()
   const { session } = useUserAuth()
