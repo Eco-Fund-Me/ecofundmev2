@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 
 import { AuthContextProvider } from "@/context/AuthContext";
 import Web3Provider from "@/components/Web3Provider";
+import MixpanelProvider from '@/components/MixpanelProvider';
 
 
 
@@ -41,11 +42,11 @@ export default function RootLayout({
       >
             <Web3Provider>
          <AuthContextProvider>
-      
+       <MixpanelProvider>
         <NavBar />
         <main className="flex-1">{children}</main>
         <Footer />
-       
+        </MixpanelProvider>
         </AuthContextProvider>
         </Web3Provider>
       </body>
