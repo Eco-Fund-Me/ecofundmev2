@@ -47,6 +47,8 @@ export default function AuthCallback() {
 
       const userId = session.user.id
       const email = session.user.email
+       const loginMethod = 'OAuth';
+      const userType = 'individual'; 
 
       try {
         // 1️⃣ Check if user exists
