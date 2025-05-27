@@ -15,3 +15,5 @@ export const initMixpanel = () => {
     persistence: 'localStorage', // Recommended for more reliable persistence
   });
 }
+
+export { mixpanel}

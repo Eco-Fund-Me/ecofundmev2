@@ -1,9 +1,9 @@
 // components/MixpanelProvider.tsx
-'use client'; // This component must be a Client Component
+'use client'; 
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { mixpanel, initMixpanel } from '../lib/mixpanelClient'; // Import both
+import { mixpanel, initMixpanel } from '../lib/mixpanelClient'; 
 
 interface MixpanelProviderProps {
   children: React.ReactNode;
