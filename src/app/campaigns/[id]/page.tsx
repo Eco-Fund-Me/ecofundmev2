@@ -621,36 +621,32 @@ export default function CampaignPage() {
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-medium mb-4">Back This Project</h3>
-                <div className="space-y-4">
-                  <div className="p-4 border rounded-lg hover:border-[#00EE7D] cursor-pointer transition-colors">
-                    <div className="flex justify-between mb-2">
-                      <h4 className="font-medium">Basic Supporter</h4>
-                      <span className="font-bold">$25</span>
+                                <div className="space-y-4">
+                  <div className="p-4 border rounded-lg">
+                    <label htmlFor="donation-amount" className="block text-sm font-medium text-gray-700 mb-2">
+                      Enter donation amount
+                    </label>
+                    <div className="relative mt-1 rounded-md shadow-sm">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span className="text-gray-500 sm:text-sm">$</span>
+                      </div>
+                      <input
+                        type="number"
+                        name="donation-amount"
+                        id="donation-amount"
+                        className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-[#00EE7D] focus:ring-[#00EE7D] sm:text-sm"
+                        placeholder="0.00"
+                        aria-describedby="donation-amount-currency"
+                      />
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <span className="text-gray-500 sm:text-sm" id="donation-amount-currency">
+                          USD
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Support our project and receive regular updates and a thank you in our documentation.
+                    <p className="mt-4 text-sm text-gray-600">
+                      Your contribution helps us achieve our project goals. Thank you for your support!
                     </p>
-                    <p className="text-xs text-gray-500">Estimated delivery: December 2023</p>
-                  </div>
-                  <div className="p-4 border rounded-lg hover:border-[#00EE7D] cursor-pointer transition-colors">
-                    <div className="flex justify-between mb-2">
-                      <h4 className="font-medium">Premium Supporter</h4>
-                      <span className="font-bold">$100</span>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      All basic rewards plus a limited edition project t-shirt and early access to our results.
-                    </p>
-                    <p className="text-xs text-gray-500">Estimated delivery: January 2024</p>
-                  </div>
-                  <div className="p-4 border rounded-lg hover:border-[#00EE7D] cursor-pointer transition-colors">
-                    <div className="flex justify-between mb-2">
-                      <h4 className="font-medium">Partner Level</h4>
-                      <span className="font-bold">$500</span>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      All previous rewards plus your name/logo on our website and an invitation to our launch event.
-                    </p>
-                    <p className="text-xs text-gray-500">Estimated delivery: February 2024</p>
                   </div>
                 </div>
                 <Button className="w-full mt-6 bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90">Back This Project</Button>
