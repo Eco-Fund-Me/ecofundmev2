@@ -1,19 +1,16 @@
 {
-  "redirects": [
-    {
-      "source": "/.well-known/matrix/:match*",
-      "destination": "/.well-known/matrix/:match*",
-      "statusCode": 200
-    }
-  ],
-  "rewrites": [
+  "headers": [
     {
       "source": "/.well-known/matrix/server",
-      "destination": "/.well-known/matrix/server.json"
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" }
+      ]
     },
     {
       "source": "/.well-known/matrix/client",
-      "destination": "/.well-known/matrix/client.json"
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" }
+      ]
     }
   ]
 }
