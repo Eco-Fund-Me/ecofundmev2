@@ -1,3 +1,5 @@
+
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     eslint: {
@@ -30,6 +32,22 @@ const nextConfig = {
                     {
                         key: 'Access-Control-Allow-Headers',
                         value: 'Content-Type',
+                    },
+                ],
+            },
+        ]
+    },
+    async redirects() {
+        return [
+            // Allow .well-known paths to NOT redirect
+            {
+                source: '/.well-known/:path*',
+                destination: '/.well-known/:path*',
+                permanent: false,
+                has: [
+                    {
+                        type: 'host',
+                        value: 'ecofundme.com',
                     },
                 ],
             },
