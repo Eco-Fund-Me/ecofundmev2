@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/.well-known/matrix/:match*",
+      "destination": "/.well-known/matrix/:match*",
+      "statusCode": 200
+    }
+  ],
   "rewrites": [
     {
       "source": "/.well-known/matrix/server",
@@ -10,3 +17,4 @@
     }
   ]
 }
+
