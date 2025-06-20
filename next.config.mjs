@@ -1,5 +1,3 @@
-
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     eslint: {
@@ -11,47 +9,6 @@ const nextConfig = {
     webpack: (config) => {
         config.externals.push("pino-pretty", "lokijs", "encoding");
         return config;
-    },
-    async headers() {
-        return [
-            {
-                source: '/.well-known/matrix/:path*',
-                headers: [
-                    {
-                        key: 'Content-Type',
-                        value: 'application/json',
-                    },
-                    {
-                        key: 'Access-Control-Allow-Origin',
-                        value: '*',
-                    },
-                    {
-                        key: 'Access-Control-Allow-Methods',
-                        value: 'GET, OPTIONS',
-                    },
-                    {
-                        key: 'Access-Control-Allow-Headers',
-                        value: 'Content-Type',
-                    },
-                ],
-            },
-        ]
-    },
-    async redirects() {
-        return [
-            // Allow .well-known paths to NOT redirect
-            {
-                source: '/.well-known/:path*',
-                destination: '/.well-known/:path*',
-                permanent: false,
-                has: [
-                    {
-                        type: 'host',
-                        value: 'ecofundme.com',
-                    },
-                ],
-            },
-        ]
     },
 };
 
