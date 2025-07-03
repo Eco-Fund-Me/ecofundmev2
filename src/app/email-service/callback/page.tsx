@@ -1,16 +1,18 @@
 
 "use client"
 
-import { useEffect, useRef } from "react"
+import {  useEffect, useRef } from "react"
 import { useRouter,  useSearchParams  } from "next/navigation"
 import { useUserAuth } from "@/context/AuthContext"
 import {  updateUser } from "@/app/actions/user"
 import { useThirdwebAuth} from "@/hooks/useThirdwebAuth"
 import {  checkUserWallet } from "@/app/actions/wallet";
+import { useMatrix } from "@/hooks/useMatrix"
 
 
 
 export default function AuthCallback() {
+  const {register} =useMatrix()
   const router = useRouter()
   const { session } = useUserAuth()
   const searchParams =  useSearchParams()
@@ -48,6 +50,14 @@ export default function AuthCallback() {
        const wallet = await connectWithThirdweb()
        
         const walletAddress = wallet?.getAccount()?.address
+
+         await register({
+          userId,
+          address: walletAddress || "",
+          email: session.user.email,
+          firstName: session.user.user_metadata?.firstName || "",
+          lastName: session.user.user_metadata?.lastName || "",
+        })
       
       
 

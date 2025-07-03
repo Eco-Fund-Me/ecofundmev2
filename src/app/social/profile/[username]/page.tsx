@@ -27,9 +27,9 @@ import {
   DollarSign,
 } from "lucide-react"
 import { SocialNavigation } from "@/components/social/SocialNavigation"
+import { MobileBottomNav } from "@/components/social/MobileBottomNav"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { MobileBottomNav } from "@/components/social/MobileBottomNav"
 
 interface PublicUserProfile {
   username: string
@@ -543,7 +543,7 @@ export default function PublicProfilePage({ params }: { params: { username: stri
                   <CardContent className="p-8 text-center">
                     <Crown className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No Campaigns Yet</h3>
-                    <p className="text-gray-600">This user hasn't created any campaigns yet.</p>
+                    <p className="text-gray-600">This user hasn&apos;t created any campaigns yet.</p>
                   </CardContent>
                 </Card>
               )}

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Home, Compass, Users, MessageCircle, User } from "lucide-react"
+import { Home, Users, Radio, MessageCircle, Bell } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -17,20 +17,20 @@ export function MobileBottomNav({ className }: MobileBottomNavProps) {
   const navItems = [
     {
       href: "/social/feed",
-      label: "Home",
+      label: "Feed",
       icon: Home,
       active: pathname === "/social/feed",
     },
     {
       href: "/social/servers",
-      label: "Campaigns",
+      label: "Communities",
       icon: Users,
       active: pathname.startsWith("/social/servers"),
     },
     {
       href: "/social/spaces",
       label: "Spaces",
-      icon: Compass,
+      icon: Radio,
       active: pathname.startsWith("/social/spaces"),
     },
     {
@@ -41,22 +41,23 @@ export function MobileBottomNav({ className }: MobileBottomNavProps) {
       badge: 3,
     },
     {
-      href: "/social/profile",
-      label: "Profile",
-      icon: User,
-      active: pathname.startsWith("/social/profile"),
+      href: "/social/notifications",
+      label: "Notifications",
+      icon: Bell,
+      active: pathname.startsWith("/social/notifications"),
+      badge: 2,
     },
   ]
 
   return (
     <nav className={cn("fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50", className)}>
-      <div className="flex items-center justify-around py-2">
+      <div className="grid grid-cols-5 py-2">
         {navItems.map((item) => (
-          <Link key={item.href} href={item.href} className="flex-1">
+          <Link key={item.href} href={item.href}>
             <Button
               variant="ghost"
               className={cn(
-                "flex flex-col items-center gap-1 h-auto py-2 px-1 w-full",
+                "flex flex-col items-center gap-1 h-auto py-2 px-1 w-full rounded-none",
                 item.active ? "text-[#00EE7D]" : "text-gray-600",
               )}
             >

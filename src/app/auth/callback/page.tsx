@@ -18,8 +18,10 @@ import {
   trackAuthCallbackError,
   trackWalletConnectionFailed
 } from '../../../utils/mixpanel/mixpanelAuthTracker';
+import { useMatrix } from "@/hooks/useMatrix"
 
 export default function AuthCallback() {
+  const { register } = useMatrix()
   const router = useRouter()
   const { session } = useUserAuth()
   const walletAddress = useUserAddress()
@@ -68,11 +70,31 @@ export default function AuthCallback() {
           trackUserLoggedIn({ userId, email, loginMethod });
         }
         // 3️⃣ Connect to Thirdweb
-        await connectWithThirdweb()
+        const wallet = await connectWithThirdweb()
       
 
       console.log("walletAddress",walletAddress)
       console.log("safeAddress",safeAddress)
+       const userAddress = wallet?.getAccount()?.address
+       const userMetadata = session.user.user_metadata;
+let firstName = userMetadata?.firstName || "";
+let lastName = userMetadata?.lastName || "";
+
+// If a fullName exists but individual names don't, try to parse
+    if (!firstName && !lastName && userMetadata?.fullName) {
+      const nameParts = userMetadata.fullName.split(' ');
+      firstName = nameParts[0] || "";
+      lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : "";
+    }
+
+    // Then use these variables in your register call
+    await register({
+      userId,
+      address: userAddress || walletAddress,
+      email: session.user.email,
+      firstName: firstName,
+      lastName: lastName,
+    });
 
       const hasWallet = await waitForWalletCheck(userId);
       console.log("hasWallet", hasWallet)

@@ -8,9 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, Search, TrendingUp, Star, MessageCircle, Calendar, Target, Crown, Plus } from "lucide-react"
+import { Users, Search, TrendingUp, Star, MessageCircle, Target, Crown, Plus, MapPin } from "lucide-react"
 import { SocialNavigation } from "@/components/social/SocialNavigation"
-import { SocialSidebar } from "@/components/social/SocialSidebar"
 import { MobileBottomNav } from "@/components/social/MobileBottomNav"
 import Link from "next/link"
 
@@ -29,7 +28,7 @@ interface CampaignServer {
   isVerified: boolean
   isTrending: boolean
   isFeatured: boolean
-  tags: string[]
+  location?: string
   creator: {
     name: string
     username: string
@@ -41,7 +40,7 @@ interface CampaignServer {
     text: number
     voice: number
   }
-  memberGrowth: number // percentage
+  memberGrowth: number
 }
 
 const featuredServers: CampaignServer[] = [
@@ -61,7 +60,7 @@ const featuredServers: CampaignServer[] = [
     isVerified: true,
     isTrending: true,
     isFeatured: true,
-    tags: ["OceanCleanup", "PlasticFree", "MarineLife", "Volunteers"],
+    location: "Pacific Ocean",
     creator: {
       name: "Dr. Marina Ocean",
       username: "oceanmaster",
@@ -91,7 +90,7 @@ const featuredServers: CampaignServer[] = [
     isVerified: true,
     isTrending: false,
     isFeatured: true,
-    tags: ["Solar", "Education", "RenewableEnergy", "Schools"],
+    location: "California, USA",
     creator: {
       name: "Solar Solutions Team",
       username: "solarsolutions",
@@ -121,7 +120,7 @@ const featuredServers: CampaignServer[] = [
     isVerified: false,
     isTrending: true,
     isFeatured: true,
-    tags: ["UrbanGardening", "Community", "GreenSpaces", "Sustainability"],
+    location: "San Francisco, CA",
     creator: {
       name: "Green Thumb Collective",
       username: "greenthumb",
@@ -153,7 +152,7 @@ const trendingServers: CampaignServer[] = [
     isVerified: true,
     isTrending: true,
     isFeatured: false,
-    tags: ["Wildlife", "Conservation", "EndangeredSpecies", "Habitat"],
+    location: "Amazon Rainforest",
     creator: {
       name: "Wildlife Guardian",
       username: "wildlifeguardian",
@@ -182,7 +181,7 @@ const trendingServers: CampaignServer[] = [
     isVerified: false,
     isTrending: true,
     isFeatured: false,
-    tags: ["Reforestation", "TreePlanting", "ClimateAction", "Forests"],
+    location: "Global",
     creator: {
       name: "Forest Revival Initiative",
       username: "forestrevival",
@@ -212,7 +211,7 @@ export default function ServersPage() {
       const matchesSearch =
         server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         server.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        server.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        server.creator.name.toLowerCase().includes(searchQuery.toLowerCase())
 
       const matchesCategory = selectedCategory === "all" || server.category === selectedCategory
 
@@ -221,20 +220,20 @@ export default function ServersPage() {
   }
 
   const ServerCard = ({ server }: { server: CampaignServer }) => (
-    <Card className="hover:shadow-lg transition-all duration-200 overflow-hidden">
+    <Card className="hover:shadow-lg transition-all duration-200 overflow-hidden border border-gray-200">
       {server.banner && (
         <div className="h-32 bg-gradient-to-r from-blue-500 to-green-500 relative overflow-hidden">
           <img src={server.banner || "/placeholder.svg"} alt={server.name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute top-2 right-2 flex gap-2">
+          <div className="absolute top-3 right-3 flex gap-2">
             {server.isFeatured && (
-              <Badge className="bg-yellow-500 text-black">
+              <Badge className="bg-yellow-500 text-black font-medium">
                 <Crown className="h-3 w-3 mr-1" />
                 Featured
               </Badge>
             )}
             {server.isTrending && (
-              <Badge className="bg-red-500 text-white">
+              <Badge className="bg-red-500 text-white font-medium">
                 <TrendingUp className="h-3 w-3 mr-1" />
                 Trending
               </Badge>
@@ -243,100 +242,95 @@ export default function ServersPage() {
         </div>
       )}
 
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3 mb-3">
-          <Avatar className="h-12 w-12 border-2 border-white -mt-6 relative z-10">
+      <CardContent className="p-6">
+        <div className="flex items-start gap-4 mb-4">
+          <Avatar className="h-16 w-16 border-4 border-white -mt-8 relative z-10 shadow-lg">
             <AvatarImage src={server.avatar || "/placeholder.svg"} />
-            <AvatarFallback>{server.name[0]}</AvatarFallback>
+            <AvatarFallback className="text-lg font-semibold">{server.name[0]}</AvatarFallback>
           </Avatar>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-bold text-lg truncate">{server.name}</h3>
-              {server.isVerified && <Star className="h-4 w-4 text-blue-500" />}
+          <div className="flex-1 min-w-0 mt-2">
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="font-bold text-lg truncate text-gray-900">{server.name}</h3>
+              {server.isVerified && <Star className="h-5 w-5 text-blue-500" />}
             </div>
 
-            <div className="flex items-center gap-2 mb-2">
-              <Badge variant="outline">{server.category}</Badge>
-              <span className="text-sm text-gray-600">by {server.creator.name}</span>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <Badge variant="outline" className="border-[#00EE7D]/30 text-[#00EE7D] bg-[#00EE7D]/5">
+                {server.category}
+              </Badge>
+              {server.location && (
+                <div className="flex items-center gap-1 text-sm text-gray-500">
+                  <MapPin className="h-3 w-3" />
+                  {server.location}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span>by {server.creator.name}</span>
               {server.creator.verified && <Star className="h-3 w-3 text-blue-500" />}
             </div>
           </div>
         </div>
 
-        <p className="text-sm text-gray-700 mb-4 line-clamp-2">{server.description}</p>
+        <p className="text-gray-700 mb-4 leading-relaxed">{server.description}</p>
 
         {/* Campaign Progress */}
-        <div className="mb-4">
+        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium">Campaign Progress</span>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm font-medium text-gray-900">Campaign Progress</span>
+            <span className="text-sm font-semibold text-gray-900">
               ${server.raisedAmount.toLocaleString()} / ${server.goalAmount.toLocaleString()}
             </span>
           </div>
-          <Progress value={(server.raisedAmount / server.goalAmount) * 100} className="h-2" />
-          <div className="text-xs text-gray-500 mt-1">
-            {((server.raisedAmount / server.goalAmount) * 100).toFixed(1)}% funded
+          <Progress value={(server.raisedAmount / server.goalAmount) * 100} className="h-2 mb-2" />
+          <div className="text-xs text-gray-600">
+            {((server.raisedAmount / server.goalAmount) * 100).toFixed(1)}% funded • {server.members.toLocaleString()}{" "}
+            supporters
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-4 text-center">
-          <div>
-            <div className="font-semibold text-sm">{server.members.toLocaleString()}</div>
-            <div className="text-xs text-gray-600">Members</div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-white border border-gray-100 rounded-lg">
+          <div className="text-center">
+            <div className="font-bold text-lg text-gray-900">{server.members.toLocaleString()}</div>
+            <div className="text-xs text-gray-500">Members</div>
           </div>
-          <div>
-            <div className="font-semibold text-sm text-green-600">{server.onlineMembers}</div>
-            <div className="text-xs text-gray-600">Online</div>
+          <div className="text-center">
+            <div className="font-bold text-lg text-green-600">{server.onlineMembers}</div>
+            <div className="text-xs text-gray-500">Online</div>
           </div>
-          <div>
-            <div className="font-semibold text-sm text-blue-600">{server.channels.text + server.channels.voice}</div>
-            <div className="text-xs text-gray-600">Channels</div>
+          <div className="text-center">
+            <div className="font-bold text-lg text-blue-600">{server.channels.text + server.channels.voice}</div>
+            <div className="text-xs text-gray-500">Channels</div>
           </div>
         </div>
 
-        {/* Activity */}
-        <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
-          <div className="flex items-center gap-1">
+        {/* Activity Info */}
+        <div className="flex items-center justify-between mb-4 text-sm">
+          <div className="flex items-center gap-1 text-gray-600">
             <MessageCircle className="h-4 w-4" />
             {server.totalMessages.toLocaleString()} messages
           </div>
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            {server.lastActivity}
-          </div>
+          <div className="text-gray-500">Active {server.lastActivity}</div>
         </div>
 
         {/* Growth indicator */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-1 text-sm">
             <TrendingUp className="h-4 w-4 text-green-600" />
-            <span className="text-green-600 font-medium">+{server.memberGrowth}%</span>
-            <span className="text-gray-600">this month</span>
+            <span className="text-green-600 font-semibold">+{server.memberGrowth}%</span>
+            <span className="text-gray-600">growth this month</span>
           </div>
         </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1 mb-4">
-          {server.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              #{tag}
-            </Badge>
-          ))}
-          {server.tags.length > 3 && (
-            <Badge variant="secondary" className="text-xs">
-              +{server.tags.length - 3} more
-            </Badge>
-          )}
-        </div>
-
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Link href={`/social/servers/${server.id}`} className="flex-1">
-            <Button className="w-full bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90">Join Server</Button>
+            <Button className="w-full bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 font-medium">Join Community</Button>
           </Link>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="px-3 bg-transparent">
             <Target className="h-4 w-4" />
           </Button>
         </div>
@@ -348,93 +342,102 @@ export default function ServersPage() {
     <div className="min-h-screen bg-gray-50">
       <SocialNavigation />
 
-      <div className="flex">
-        <SocialSidebar className="hidden lg:block" />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">Campaign Communities</h1>
+          <p className="text-gray-600 text-lg">Join communities around environmental campaigns and causes</p>
+        </div>
 
-        <main className="flex-1 max-w-6xl mx-auto px-4 py-6">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold mb-2">Campaign Servers</h1>
-            <p className="text-gray-600">Join communities around environmental campaigns and causes</p>
+        {/* Search and Filters */}
+        <div className="flex flex-col lg:flex-row gap-4 mb-6">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search communities..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white border-gray-200"
+            />
           </div>
 
-          {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search servers, campaigns, or topics..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className={
+                  selectedCategory === category
+                    ? "bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 whitespace-nowrap"
+                    : "whitespace-nowrap"
+                }
+              >
+                {category === "all" ? "All Categories" : category}
+              </Button>
+            ))}
+          </div>
+        </div>
 
-            <div className="flex gap-2 overflow-x-auto">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className={selectedCategory === category ? "bg-[#00EE7D] text-black" : ""}
-                >
-                  {category === "all" ? "All Categories" : category}
-                </Button>
+        {/* Create Community Button */}
+        <div className="mb-6">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Community
+          </Button>
+        </div>
+
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid w-full grid-cols-3 bg-white border border-gray-200">
+            <TabsTrigger
+              value="featured"
+              className="data-[state=active]:bg-[#00EE7D]/10 data-[state=active]:text-[#00EE7D] flex items-center gap-2"
+            >
+              <Crown className="h-4 w-4" />
+              Featured ({filterServers(featuredServers).length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="trending"
+              className="data-[state=active]:bg-[#00EE7D]/10 data-[state=active]:text-[#00EE7D] flex items-center gap-2"
+            >
+              <TrendingUp className="h-4 w-4" />
+              Trending ({filterServers(trendingServers).length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="all"
+              className="data-[state=active]:bg-[#00EE7D]/10 data-[state=active]:text-[#00EE7D] flex items-center gap-2"
+            >
+              <Users className="h-4 w-4" />
+              All ({filterServers(allServers).length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="featured">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filterServers(featuredServers).map((server) => (
+                <ServerCard key={server.id} server={server} />
               ))}
             </div>
-          </div>
+          </TabsContent>
 
-          {/* Create Server Button */}
-          <div className="mb-6">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Campaign Server
-            </Button>
-          </div>
+          <TabsContent value="trending">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filterServers(trendingServers).map((server) => (
+                <ServerCard key={server.id} server={server} />
+              ))}
+            </div>
+          </TabsContent>
 
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="featured" className="flex items-center gap-2">
-                <Crown className="h-4 w-4" />
-                Featured ({filterServers(featuredServers).length})
-              </TabsTrigger>
-              <TabsTrigger value="trending" className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Trending ({filterServers(trendingServers).length})
-              </TabsTrigger>
-              <TabsTrigger value="all" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                All Servers ({filterServers(allServers).length})
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="featured">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filterServers(featuredServers).map((server) => (
-                  <ServerCard key={server.id} server={server} />
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="trending">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filterServers(trendingServers).map((server) => (
-                  <ServerCard key={server.id} server={server} />
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="all">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filterServers(allServers).map((server) => (
-                  <ServerCard key={server.id} server={server} />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </main>
+          <TabsContent value="all">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filterServers(allServers).map((server) => (
+                <ServerCard key={server.id} server={server} />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <MobileBottomNav className="lg:hidden" />

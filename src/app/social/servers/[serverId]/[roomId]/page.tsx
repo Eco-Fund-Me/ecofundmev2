@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { SocialNavigation } from "@/components/social/SocialNavigation"
 import { MobileBottomNav } from "@/components/social/MobileBottomNav"
+
 interface VoiceParticipant {
   id: string
   name: string

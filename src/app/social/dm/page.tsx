@@ -2,177 +2,147 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Search, Plus, MoreVertical, MessageCircle, Users, Archive, Trash2, Pin } from "lucide-react"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Search, Plus, MessageSquare, Leaf, Menu, X } from "lucide-react"
 import Link from "next/link"
-import { SocialNavigation } from "@/components/social/SocialNavigation"
-import { SocialSidebar } from "@/components/social/SocialSidebar"
-import { MobileBottomNav } from "@/components/social/MobileBottomNav"
+import { useMatrix } from "@/hooks/useMatrix"
 
-
-interface Conversation {
+interface DirectMessage {
   id: string
-  type: "direct" | "group"
-  participants: Array<{
-    id: string
+  user: {
     name: string
     username: string
     avatar: string
     status: "online" | "away" | "offline"
-  }>
+  }
   lastMessage: {
     content: string
-    sender: string
     timestamp: string
-    unread: boolean
+    isRead: boolean
   }
   unreadCount: number
-  isPinned: boolean
-  isArchived: boolean
 }
 
-const mockConversations: Conversation[] = [
+const mockDMs: DirectMessage[] = [
   {
     id: "1",
-    type: "direct",
-    participants: [
-      {
-        id: "1",
-        name: "Dr. Marina Ocean",
-        username: "marina_ocean",
-        avatar: "/placeholder.svg",
-        status: "online",
-      },
-    ],
+    user: {
+      name: "Dr. Marina Ocean",
+      username: "oceanmaster",
+      avatar: "/placeholder.svg",
+      status: "online",
+    },
     lastMessage: {
-      content:
-        "Thanks for your support on the ocean cleanup project! Would love to discuss collaboration opportunities.",
-      sender: "Dr. Marina Ocean",
+      content: "Thanks for supporting our ocean cleanup initiative! 🌊",
       timestamp: "2m ago",
-      unread: true,
+      isRead: false,
     },
     unreadCount: 2,
-    isPinned: true,
-    isArchived: false,
   },
   {
     id: "2",
-    type: "group",
-    participants: [
-      {
-        id: "2",
-        name: "Captain Clean",
-        username: "captain_clean",
-        avatar: "/placeholder.svg",
-        status: "online",
-      },
-      {
-        id: "3",
-        name: "Eco Sarah",
-        username: "eco_sarah",
-        avatar: "/placeholder.svg",
-        status: "away",
-      },
-      {
-        id: "4",
-        name: "Green Guardian",
-        username: "green_guardian",
-        avatar: "/placeholder.svg",
-        status: "offline",
-      },
-    ],
+    user: {
+      name: "Solar Solutions Team",
+      username: "solarsolutions",
+      avatar: "/solar-panels-school.png",
+      status: "online",
+    },
     lastMessage: {
-      content: "Let's coordinate the next cleanup session for this weekend",
-      sender: "Captain Clean",
+      content: "Your solar panel installation is scheduled for next week",
       timestamp: "1h ago",
-      unread: false,
+      isRead: true,
     },
     unreadCount: 0,
-    isPinned: false,
-    isArchived: false,
   },
   {
     id: "3",
-    type: "direct",
-    participants: [
-      {
-        id: "5",
-        name: "Solar Sam",
-        username: "solar_sam",
-        avatar: "/placeholder.svg",
-        status: "away",
-      },
-    ],
+    user: {
+      name: "Green Thumb Collective",
+      username: "greenthumb",
+      avatar: "/sustainable-garden.png",
+      status: "away",
+    },
     lastMessage: {
-      content: "The solar panel installation went great! Here are some photos from today.",
-      sender: "Solar Sam",
+      content: "The urban gardening workshop was amazing! When's the next one?",
       timestamp: "3h ago",
-      unread: false,
+      isRead: true,
     },
     unreadCount: 0,
-    isPinned: false,
-    isArchived: false,
   },
   {
     id: "4",
-    type: "direct",
-    participants: [
-      {
-        id: "6",
-        name: "Tree Planter",
-        username: "tree_planter",
-        avatar: "/placeholder.svg",
-        status: "offline",
-      },
-    ],
+    user: {
+      name: "Wildlife Guardian",
+      username: "wildlifeguardian",
+      avatar: "/wildlife-conservation-mosaic.png",
+      status: "offline",
+    },
     lastMessage: {
-      content: "We've planted 500 trees this month! The reforestation project is going amazing.",
-      sender: "Tree Planter",
+      content: "Check out our latest conservation efforts in the Amazon",
       timestamp: "1d ago",
-      unread: false,
+      isRead: true,
     },
     unreadCount: 0,
-    isPinned: false,
-    isArchived: false,
   },
 ]
 
+// Mobile Bottom Navigation Component
+const MobileBottomNav = () => (
+  <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 lg:hidden">
+    <div className="grid grid-cols-5 py-2">
+      <Link href="/social">
+        <div className="flex flex-col items-center gap-1 py-2 px-1">
+          <MessageSquare className="h-5 w-5 text-gray-600" />
+          <span className="text-xs text-gray-600">Feed</span>
+        </div>
+      </Link>
+      <Link href="/social/servers">
+        <div className="flex flex-col items-center gap-1 py-2 px-1">
+          <MessageSquare className="h-5 w-5 text-gray-600" />
+          <span className="text-xs text-gray-600">Communities</span>
+        </div>
+      </Link>
+      <Link href="/social/spaces">
+        <div className="flex flex-col items-center gap-1 py-2 px-1">
+          <MessageSquare className="h-5 w-5 text-gray-600" />
+          <span className="text-xs text-gray-600">Spaces</span>
+        </div>
+      </Link>
+      <Link href="/social/dm">
+        <div className="flex flex-col items-center gap-1 py-2 px-1">
+          <div className="relative">
+            <MessageSquare className="h-5 w-5 text-[#00EE7D]" />
+            <Badge className="absolute -top-2 -right-2 h-4 w-4 p-0 flex items-center justify-center text-xs bg-red-500">
+              3
+            </Badge>
+          </div>
+          <span className="text-xs text-[#00EE7D]">Messages</span>
+        </div>
+      </Link>
+      <Link href="/social/notifications">
+        <div className="flex flex-col items-center gap-1 py-2 px-1">
+          <MessageSquare className="h-5 w-5 text-gray-600" />
+          <span className="text-xs text-gray-600">Notifications</span>
+        </div>
+      </Link>
+    </div>
+  </div>
+)
+
 export default function DirectMessagesPage() {
-  const [conversations, setConversations] = useState<Conversation[]>(mockConversations)
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeFilter, setActiveFilter] = useState("all")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { isConnected, user, rooms } = useMatrix()
 
-  const filteredConversations = conversations.filter((conv) => {
-    const matchesSearch =
-      conv.participants.some(
-        (p) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.username.toLowerCase().includes(searchQuery.toLowerCase()),
-      ) || conv.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase())
-
-    if (activeFilter === "unread") return conv.unreadCount > 0 && matchesSearch
-    if (activeFilter === "pinned") return conv.isPinned && matchesSearch
-    if (activeFilter === "archived") return conv.isArchived && matchesSearch
-    return !conv.isArchived && matchesSearch
-  })
-
-  const getConversationName = (conversation: Conversation) => {
-    if (conversation.type === "group") {
-      return conversation.participants.map((p) => p.name).join(", ")
-    }
-    return conversation.participants[0]?.name || "Unknown"
-  }
-
-  const getConversationAvatar = (conversation: Conversation) => {
-    if (conversation.type === "group") {
-      return conversation.participants[0]?.avatar || "/placeholder.svg"
-    }
-    return conversation.participants[0]?.avatar || "/placeholder.svg"
-  }
+  const filteredDMs = mockDMs.filter(
+    (dm) =>
+      dm.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dm.user.username.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -185,203 +155,159 @@ export default function DirectMessagesPage() {
     }
   }
 
-  const handlePinConversation = (conversationId: string) => {
-    setConversations(
-      conversations.map((conv) => (conv.id === conversationId ? { ...conv, isPinned: !conv.isPinned } : conv)),
-    )
-  }
-
-  const handleArchiveConversation = (conversationId: string) => {
-    setConversations(
-      conversations.map((conv) => (conv.id === conversationId ? { ...conv, isArchived: !conv.isArchived } : conv)),
-    )
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
-      <SocialNavigation />
+      {/* Top Navigation */}
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
 
-      <div className="flex">
-        <SocialSidebar className="hidden lg:block" />
+              <Link href="/social" className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-[#00EE7D] rounded-lg flex items-center justify-center">
+                  <Leaf className="h-5 w-5 text-black" />
+                </div>
+                <span className="font-bold text-xl text-gray-900 hidden sm:block">EcoFundMe</span>
+              </Link>
 
-        <main className="flex-1 max-w-4xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-2xl font-bold">Direct Messages</h1>
-              <p className="text-gray-600">Private conversations with other users</p>
+              <div className="hidden md:flex items-center gap-1">
+                <Link href="/social">
+                  <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                    Feed
+                  </Button>
+                </Link>
+                <Link href="/social/servers">
+                  <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                    Communities
+                  </Button>
+                </Link>
+                <Link href="/social/spaces">
+                  <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                    Spaces
+                  </Button>
+                </Link>
+                <Button variant="ghost" className="bg-[#00EE7D]/10 text-[#00EE7D]">
+                  Messages
+                </Button>
+              </div>
             </div>
 
-            <Button className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90">
-              <Plus className="h-4 w-4 mr-2" />
-              New Message
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button size="sm" className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 hidden sm:flex">
+                <Plus className="h-4 w-4 mr-2" />
+                New Chat
+              </Button>
+              <Button size="sm" className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 sm:hidden p-2">
+                <Plus className="h-4 w-4" />
+              </Button>
+              <Avatar className="h-8 w-8 cursor-pointer">
+                <AvatarImage src="/placeholder.svg" />
+                <AvatarFallback>You</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Messages Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Messages</h1>
+            <p className="text-gray-600">Connect with campaign creators and community members</p>
           </div>
 
-          {/* Search and Filters */}
-          <div className="flex flex-col lg:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Search conversations..."
+                placeholder="Search messages..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-white border-gray-200"
               />
             </div>
-
-            <div className="flex gap-2">
-              <Button
-                variant={activeFilter === "all" ? "default" : "outline"}
-                onClick={() => setActiveFilter("all")}
-                size="sm"
-              >
-                All
-              </Button>
-              <Button
-                variant={activeFilter === "unread" ? "default" : "outline"}
-                onClick={() => setActiveFilter("unread")}
-                size="sm"
-              >
-                Unread
-              </Button>
-              <Button
-                variant={activeFilter === "pinned" ? "default" : "outline"}
-                onClick={() => setActiveFilter("pinned")}
-                size="sm"
-              >
-                Pinned
-              </Button>
-              <Button
-                variant={activeFilter === "archived" ? "default" : "outline"}
-                onClick={() => setActiveFilter("archived")}
-                size="sm"
-              >
-                Archived
-              </Button>
-            </div>
           </div>
 
-          {/* Conversations List */}
-          <div className="space-y-2">
-            {filteredConversations.map((conversation) => (
-              <Card key={conversation.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                <CardContent className="p-0">
-                  <Link href={`/social/dm/${conversation.participants[0]?.id || conversation.id}`}>
-                    <div className="flex items-center gap-4 p-4 hover:bg-gray-50">
-                      {/* Avatar */}
+          {/* Messages List */}
+          <Card className="border border-gray-200 mb-20 lg:mb-6">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl font-semibold flex items-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                Direct Messages
+                {mockDMs.filter((dm) => dm.unreadCount > 0).length > 0 && (
+                  <Badge className="bg-red-500 text-white">{mockDMs.filter((dm) => dm.unreadCount > 0).length}</Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+
+            <ScrollArea className="max-h-[600px]">
+              <div className="divide-y divide-gray-100">
+                {filteredDMs.map((dm) => (
+                  <Link key={dm.id} href={`/social/dm/${dm.id}`}>
+                    <div className="flex items-center gap-3 p-4 hover:bg-gray-50 cursor-pointer transition-colors">
                       <div className="relative">
-                        {conversation.type === "group" ? (
-                          <div className="flex -space-x-2">
-                            {conversation.participants.slice(0, 2).map((participant, index) => (
-                              <Avatar key={index} className="h-12 w-12 border-2 border-white">
-                                <AvatarImage src={participant.avatar || "/placeholder.svg"} />
-                                <AvatarFallback>{participant.name[0]}</AvatarFallback>
-                              </Avatar>
-                            ))}
-                            {conversation.participants.length > 2 && (
-                              <div className="h-12 w-12 bg-gray-200 border-2 border-white rounded-full flex items-center justify-center text-sm font-medium">
-                                +{conversation.participants.length - 2}
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <>
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={getConversationAvatar(conversation) || "/placeholder.svg"} />
-                              <AvatarFallback>{getConversationName(conversation)[0]}</AvatarFallback>
-                            </Avatar>
-                            <div
-                              className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white ${getStatusColor(
-                                conversation.participants[0]?.status || "offline",
-                              )}`}
-                            />
-                          </>
-                        )}
+                        <Avatar className="h-12 w-12 sm:h-14 sm:w-14">
+                          <AvatarImage src={dm.user.avatar || "/placeholder.svg"} />
+                          <AvatarFallback>{dm.user.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <div
+                          className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white ${getStatusColor(
+                            dm.user.status,
+                          )}`}
+                        />
                       </div>
 
-                      {/* Conversation Info */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold truncate">{getConversationName(conversation)}</h3>
-                          {conversation.type === "group" && (
-                            <Badge variant="secondary" className="text-xs">
-                              <Users className="h-3 w-3 mr-1" />
-                              {conversation.participants.length}
-                            </Badge>
-                          )}
-                          {conversation.isPinned && <Pin className="h-4 w-4 text-gray-500" />}
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-semibold text-gray-900 truncate text-sm sm:text-base">
+                            {dm.user.name}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500">{dm.lastMessage.timestamp}</span>
+                            {dm.unreadCount > 0 && (
+                              <Badge className="bg-[#00EE7D] text-black text-xs h-5 w-5 p-0 flex items-center justify-center">
+                                {dm.unreadCount}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
-
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-between">
                           <p
-                            className={`text-sm truncate flex-1 ${
-                              conversation.lastMessage.unread ? "font-medium text-black" : "text-gray-600"
+                            className={`text-sm truncate ${
+                              dm.lastMessage.isRead ? "text-gray-600" : "text-gray-900 font-medium"
                             }`}
                           >
-                            {conversation.type === "group" && (
-                              <span className="font-medium">{conversation.lastMessage.sender}: </span>
-                            )}
-                            {conversation.lastMessage.content}
+                            {dm.lastMessage.content}
                           </p>
-
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <span className="text-xs text-gray-500">{conversation.lastMessage.timestamp}</span>
-                            {conversation.unreadCount > 0 && (
-                              <Badge className="bg-[#00EE7D] text-black text-xs">{conversation.unreadCount}</Badge>
-                            )}
-                          </div>
                         </div>
+                        <p className="text-xs text-gray-500 mt-1">@{dm.user.username}</p>
                       </div>
-
-                      {/* Actions */}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" onClick={(e) => e.preventDefault()}>
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => handlePinConversation(conversation.id)}>
-                            <Pin className="h-4 w-4 mr-2" />
-                            {conversation.isPinned ? "Unpin" : "Pin"} Conversation
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleArchiveConversation(conversation.id)}>
-                            <Archive className="h-4 w-4 mr-2" />
-                            {conversation.isArchived ? "Unarchive" : "Archive"} Conversation
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete Conversation
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
                     </div>
                   </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                ))}
+              </div>
+            </ScrollArea>
 
-          {/* Empty State */}
-          {filteredConversations.length === 0 && (
-            <Card className="text-center py-12">
-              <CardContent>
-                <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No conversations found</h3>
-                <p className="text-gray-600 mb-4">
-                  {searchQuery ? "Try adjusting your search terms" : "Start a new conversation to get started"}
+            {filteredDMs.length === 0 && (
+              <div className="p-8 text-center">
+                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No messages found</h3>
+                <p className="text-gray-600">
+                  {searchQuery ? "Try adjusting your search terms" : "Start a conversation with campaign creators"}
                 </p>
-                <Button className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90">
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Message
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </main>
+              </div>
+            )}
+          </Card>
+        </div>
       </div>
 
-      <MobileBottomNav className="lg:hidden" />
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   )
 }

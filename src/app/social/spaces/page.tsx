@@ -7,9 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Radio, Users, Clock, Calendar, Search, Volume2, Mic, Star, Lock } from "lucide-react"
+import { Radio, Users, Clock, Calendar, Search, Volume2, Mic, Star, Lock, MapPin } from "lucide-react"
 import { SocialNavigation } from "@/components/social/SocialNavigation"
-import { SocialSidebar } from "@/components/social/SocialSidebar"   
 import { MobileBottomNav } from "@/components/social/MobileBottomNav"
 import Link from "next/link"
 
@@ -22,6 +21,7 @@ interface Space {
     username: string
     avatar: string
     verified: boolean
+    location?: string
   }
   status: "live" | "scheduled" | "ended"
   participants: number
@@ -49,6 +49,7 @@ const liveSpaces: Space[] = [
       username: "oceanmaster",
       avatar: "/placeholder.svg",
       verified: true,
+      location: "Pacific Research Station",
     },
     status: "live",
     participants: 234,
@@ -70,6 +71,7 @@ const liveSpaces: Space[] = [
       username: "solarsolutions",
       avatar: "/solar-panels-school.png",
       verified: true,
+      location: "California, USA",
     },
     status: "live",
     participants: 156,
@@ -90,6 +92,7 @@ const liveSpaces: Space[] = [
       username: "wildlifeguardian",
       avatar: "/wildlife-conservation-mosaic.png",
       verified: true,
+      location: "Amazon Rainforest",
     },
     status: "live",
     participants: 45,
@@ -116,6 +119,7 @@ const scheduledSpaces: Space[] = [
       username: "greenthumb",
       avatar: "/sustainable-garden.png",
       verified: false,
+      location: "San Francisco, CA",
     },
     status: "scheduled",
     participants: 0,
@@ -137,6 +141,7 @@ const scheduledSpaces: Space[] = [
       username: "climateaction",
       avatar: "/placeholder.svg",
       verified: true,
+      location: "Global",
     },
     status: "scheduled",
     participants: 0,
@@ -161,6 +166,7 @@ const endedSpaces: Space[] = [
       username: "forestrevival",
       avatar: "/reforestation-effort.png",
       verified: true,
+      location: "Global",
     },
     status: "ended",
     participants: 345,
@@ -195,23 +201,23 @@ export default function SpacesPage() {
   }
 
   const SpaceCard = ({ space }: { space: Space }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <Avatar className="h-12 w-12">
+    <Card className="hover:shadow-lg transition-shadow border border-gray-200">
+      <CardContent className="p-6">
+        <div className="flex items-start gap-4">
+          <Avatar className="h-14 w-14">
             <AvatarImage src={space.host.avatar || "/placeholder.svg"} />
-            <AvatarFallback>{space.host.name[0]}</AvatarFallback>
+            <AvatarFallback className="text-lg font-semibold">{space.host.name[0]}</AvatarFallback>
           </Avatar>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               <Badge
                 className={
                   space.status === "live"
-                    ? "bg-red-500 text-white animate-pulse"
+                    ? "bg-red-500 text-white animate-pulse font-medium"
                     : space.status === "scheduled"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-500 text-white"
+                      ? "bg-blue-500 text-white font-medium"
+                      : "bg-gray-500 text-white font-medium"
                 }
               >
                 {space.status === "live" && <Radio className="h-3 w-3 mr-1" />}
@@ -221,20 +227,31 @@ export default function SpacesPage() {
               </Badge>
 
               {space.isPrivate && (
-                <Badge variant="outline">
+                <Badge variant="outline" className="border-gray-300">
                   <Lock className="h-3 w-3 mr-1" />
                   Private
                 </Badge>
               )}
 
-              <Badge variant="outline">{space.category}</Badge>
+              <Badge variant="outline" className="border-[#00EE7D]/30 text-[#00EE7D] bg-[#00EE7D]/5">
+                {space.category}
+              </Badge>
             </div>
 
-            <h3 className="font-semibold text-lg mb-1 line-clamp-1">{space.title}</h3>
+            <h3 className="font-bold text-xl mb-2 text-gray-900 line-clamp-2">{space.title}</h3>
 
-            <div className="flex items-center gap-2 mb-2 text-sm text-gray-600">
-              <span>{space.host.name}</span>
+            <div className="flex items-center gap-2 mb-3 text-sm text-gray-600 flex-wrap">
+              <span className="font-medium">{space.host.name}</span>
               {space.host.verified && <Star className="h-3 w-3 text-blue-500" />}
+              {space.host.location && (
+                <>
+                  <span>•</span>
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    {space.host.location}
+                  </div>
+                </>
+              )}
               <span>•</span>
               <span>{space.startTime}</span>
               {space.duration && (
@@ -245,48 +262,48 @@ export default function SpacesPage() {
               )}
             </div>
 
-            <p className="text-sm text-gray-700 mb-3 line-clamp-2">{space.description}</p>
+            <p className="text-gray-700 mb-4 leading-relaxed line-clamp-2">{space.description}</p>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-4 text-sm text-gray-600">
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  {space.participants}
-                  {space.maxParticipants && `/${space.maxParticipants}`}
+                  <span className="font-medium">{space.participants}</span>
+                  {space.maxParticipants && <span>/{space.maxParticipants}</span>}
                 </div>
 
                 {space.status === "live" && (
                   <>
                     <div className="flex items-center gap-1">
                       <Volume2 className="h-4 w-4" />
-                      {space.listeners}
+                      <span className="font-medium">{space.listeners}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Mic className="h-4 w-4" />
-                      {space.speakers}
+                      <span className="font-medium">{space.speakers}</span>
                     </div>
                   </>
                 )}
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 {space.requiresDonation && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs border-yellow-300 text-yellow-700 bg-yellow-50">
                     Min ${space.minDonation}
                   </Badge>
                 )}
 
                 <Link href={`/social/spaces/${space.id}`}>
-                  <Button size="sm" className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90">
-                    {space.status === "live" ? "Join" : space.status === "scheduled" ? "Set Reminder" : "Listen"}
+                  <Button size="sm" className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 font-medium">
+                    {space.status === "live" ? "Join Now" : space.status === "scheduled" ? "Set Reminder" : "Listen"}
                   </Button>
                 </Link>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-1 mt-3">
+            <div className="flex flex-wrap gap-1">
               {space.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
+                <Badge key={tag} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
                   #{tag}
                 </Badge>
               ))}
@@ -301,103 +318,112 @@ export default function SpacesPage() {
     <div className="min-h-screen bg-gray-50">
       <SocialNavigation />
 
-      <div className="flex">
-        <SocialSidebar className="hidden lg:block" />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">Live Audio Spaces</h1>
+          <p className="text-gray-600 text-lg">Join live conversations about environmental topics and campaigns</p>
+        </div>
 
-        <main className="flex-1 max-w-4xl mx-auto px-4 py-6">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold mb-2">Live Audio Spaces</h1>
-            <p className="text-gray-600">Join live conversations about environmental topics and campaigns</p>
+        {/* Search and Filters */}
+        <div className="flex flex-col lg:flex-row gap-4 mb-6">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search spaces, topics, or hosts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white border-gray-200"
+            />
           </div>
 
-          {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search spaces, topics, or hosts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            <div className="flex gap-2 overflow-x-auto">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className={selectedCategory === category ? "bg-[#00EE7D] text-black" : ""}
-                >
-                  {category === "all" ? "All Categories" : category}
-                </Button>
-              ))}
-            </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className={
+                  selectedCategory === category
+                    ? "bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 whitespace-nowrap"
+                    : "whitespace-nowrap"
+                }
+              >
+                {category === "all" ? "All Categories" : category}
+              </Button>
+            ))}
           </div>
+        </div>
 
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="live" className="flex items-center gap-2">
-                <Radio className="h-4 w-4" />
-                Live ({filterSpaces(liveSpaces).length})
-              </TabsTrigger>
-              <TabsTrigger value="scheduled" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Scheduled ({filterSpaces(scheduledSpaces).length})
-              </TabsTrigger>
-              <TabsTrigger value="ended" className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Ended ({filterSpaces(endedSpaces).length})
-              </TabsTrigger>
-            </TabsList>
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid w-full grid-cols-3 bg-white border border-gray-200">
+            <TabsTrigger
+              value="live"
+              className="data-[state=active]:bg-[#00EE7D]/10 data-[state=active]:text-[#00EE7D] flex items-center gap-2"
+            >
+              <Radio className="h-4 w-4" />
+              Live ({filterSpaces(liveSpaces).length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="scheduled"
+              className="data-[state=active]:bg-[#00EE7D]/10 data-[state=active]:text-[#00EE7D] flex items-center gap-2"
+            >
+              <Calendar className="h-4 w-4" />
+              Scheduled ({filterSpaces(scheduledSpaces).length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="ended"
+              className="data-[state=active]:bg-[#00EE7D]/10 data-[state=active]:text-[#00EE7D] flex items-center gap-2"
+            >
+              <Clock className="h-4 w-4" />
+              Ended ({filterSpaces(endedSpaces).length})
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="live" className="space-y-4">
-              {filterSpaces(liveSpaces).length > 0 ? (
-                filterSpaces(liveSpaces).map((space) => <SpaceCard key={space.id} space={space} />)
-              ) : (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <Radio className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No live spaces found</h3>
-                    <p className="text-gray-600">Try adjusting your search or check back later for new live spaces.</p>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
+          <TabsContent value="live" className="space-y-4">
+            {filterSpaces(liveSpaces).length > 0 ? (
+              filterSpaces(liveSpaces).map((space) => <SpaceCard key={space.id} space={space} />)
+            ) : (
+              <Card className="border border-gray-200">
+                <CardContent className="p-12 text-center">
+                  <Radio className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No live spaces found</h3>
+                  <p className="text-gray-600">Try adjusting your search or check back later for new live spaces.</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
 
-            <TabsContent value="scheduled" className="space-y-4">
-              {filterSpaces(scheduledSpaces).length > 0 ? (
-                filterSpaces(scheduledSpaces).map((space) => <SpaceCard key={space.id} space={space} />)
-              ) : (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No scheduled spaces found</h3>
-                    <p className="text-gray-600">Check back later for upcoming scheduled spaces.</p>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
+          <TabsContent value="scheduled" className="space-y-4">
+            {filterSpaces(scheduledSpaces).length > 0 ? (
+              filterSpaces(scheduledSpaces).map((space) => <SpaceCard key={space.id} space={space} />)
+            ) : (
+              <Card className="border border-gray-200">
+                <CardContent className="p-12 text-center">
+                  <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No scheduled spaces found</h3>
+                  <p className="text-gray-600">Check back later for upcoming scheduled spaces.</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
 
-            <TabsContent value="ended" className="space-y-4">
-              {filterSpaces(endedSpaces).length > 0 ? (
-                filterSpaces(endedSpaces).map((space) => <SpaceCard key={space.id} space={space} />)
-              ) : (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No ended spaces found</h3>
-                    <p className="text-gray-600">Recordings of past spaces will appear here.</p>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-          </Tabs>
-        </main>
+          <TabsContent value="ended" className="space-y-4">
+            {filterSpaces(endedSpaces).length > 0 ? (
+              filterSpaces(endedSpaces).map((space) => <SpaceCard key={space.id} space={space} />)
+            ) : (
+              <Card className="border border-gray-200">
+                <CardContent className="p-12 text-center">
+                  <Clock className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No ended spaces found</h3>
+                  <p className="text-gray-600">Recordings of past spaces will appear here.</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       <MobileBottomNav className="lg:hidden" />
