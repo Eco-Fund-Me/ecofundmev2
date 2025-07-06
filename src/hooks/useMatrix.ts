@@ -72,7 +72,7 @@ export function useMatrix(): UseMatrixReturn {
         setError(null)
 
         // Call your own Next.js API
-        const res = await fetch("/api/matrix/register", {
+        const res = await fetch("/api/social/register-user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
@@ -115,7 +115,7 @@ export function useMatrix(): UseMatrixReturn {
         setError(null)
 
         // Call your own Next.js API
-        const res = await fetch("/api/matrix/login", {
+        const res = await fetch("/api/social/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
