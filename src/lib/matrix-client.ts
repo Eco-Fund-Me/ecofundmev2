@@ -147,11 +147,13 @@ export class EcoFundMeMatrixClient {
     return this.isInitialized
   }
 
-  onRoomTimeline(callback: (message: MatrixMessage, room: MatrixRoom) => void): void {
-    // Implement Matrix event listeners in real SDK
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onRoomTimeline(_callback: (message: MatrixMessage, room: MatrixRoom) => void): void {
+    // Implement Matrix event. listeners in real SDK
   }
 
-  onRoomMember(callback: (event: any, member: any) => void): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  onRoomMember(_: (event: any, member: any) => void): void {
     // Implement Matrix event listeners in real SDK
   }
 
