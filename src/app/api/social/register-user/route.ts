@@ -150,18 +150,176 @@
 //     }
 // }
 
+// import { NextResponse } from 'next/server';
+// import crypto from 'crypto';
+// import { z } from 'zod';
+// import { db } from '@/lib/db';
+
+// // Encryption function
+// const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex'); // Must be set in .env
+// const ALGORITHM = 'aes-256-gcm';
+
+// function encrypt(text: string): string {
+//   try {
+//     const iv = crypto.randomBytes(12); // GCM recommends 12 bytes for IV
+//     const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+//     let encrypted = cipher.update(text, 'utf8', 'hex');
+//     encrypted += cipher.final('hex');
+//     const authTag = cipher.getAuthTag();
+//     return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
+//   } catch (e) {
+//     console.error('Encryption error:', e);
+//     throw new Error('Encryption failed');
+//   }
+// }
+
+// // Input validation schema
+// const RegisterSchema = z.object({
+//   userId: z.string().min(1, 'userId is required'),
+//   email: z.string().email('Invalid email').optional(),
+//   oauthProvider: z.string().max(50, 'OAuth provider too long').optional(),
+//   firstName: z.string().max(50, 'First name too long').optional(),
+//   lastName: z.string().max(50, 'Last name too long').optional(),
+// });
+
+// interface RegisterUserRequestBody {
+//   userId: string;
+//   email?: string;
+//   oauthProvider?: string;
+//   firstName?: string;
+//   lastName?: string;
+// }
+
+// interface MatrixRegisterResponse {
+//   user_id: string;
+//   access_token: string;
+//   home_server: string;
+//   device_id: string;
+// }
+
+// export async function POST(req: Request): Promise<NextResponse> {
+//   try {
+//     // Parse and validate request body
+//     const body: RegisterUserRequestBody = await req.json();
+//     const result = RegisterSchema.safeParse(body);
+//     if (!result.success) {
+//       return NextResponse.json({ error: result.error.errors }, { status: 400 });
+//     }
+//     const { userId, email, oauthProvider, firstName, lastName } = result.data;
+
+//     // Generate a random wallet address
+//     const walletAddress = '0x' + crypto.randomBytes(20).toString('hex');
+
+//     // Generate random password
+//     const password = crypto.randomBytes(16).toString('hex');
+
+//     // Get nonce from Synapse
+//     const nonceRes = await fetch('https://chat.ecofundme.com/_synapse/admin/v1/register');
+//     if (!nonceRes.ok) {
+//       const err = await nonceRes.text();
+//       return NextResponse.json(
+//         { error: `Failed to get nonce: ${err}` },
+//         { status: 500 }
+//       );
+//     }
+//     const { nonce }: { nonce: string } = await nonceRes.json();
+
+//     // Create MAC signature
+//     const sharedSecret = process.env.MATRIX_SHARED_SECRET;
+//     if (!sharedSecret) {
+//       return NextResponse.json(
+//         { error: 'SYNAPSE_SECRET or MATRIX_SHARED_SECRET environment variable is not set' },
+//         { status: 500 }
+//       );
+//     }
+
+//     const macString = `${nonce}\0${walletAddress}\0${password}\0notadmin`;
+//     const mac = crypto
+//       .createHmac('sha1', sharedSecret)
+//       .update(macString)
+//       .digest('hex');
+
+//     // Register user in Synapse
+//     const registerRes = await fetch(
+//       'https://chat.ecofundme.com/_synapse/admin/v1/register',
+//       {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           nonce,
+//           username: walletAddress,
+//           password,
+//           admin: false,
+//           mac, // Ensure mac is used in the payload
+//           displayname: `${firstName || ''} ${lastName || ''}`.trim(),
+//         }),
+//       }
+//     );
+
+//     if (!registerRes.ok) {
+//       const error = await registerRes.text();
+//       return NextResponse.json(
+//         { error: `Matrix registration failed: ${error}` },
+//         { status: 500 }
+//       );
+//     }
+
+//     const matrixData: MatrixRegisterResponse = await registerRes.json();
+
+//     // Encrypt password and access token before storing
+//     const encryptedPassword = encrypt(password);
+//     const encryptedAccessToken = encrypt(matrixData.access_token);
+
+//     // Store user in database
+//     const { error } = await db
+//       .from('users')
+//       .insert([
+//         {
+//           user_id: userId,
+//           address: walletAddress,
+//           email,
+//           oauth_provider: oauthProvider,
+//           matrix_user_id: matrixData.user_id,
+//           matrix_password: encryptedPassword,
+//           matrix_access_token: encryptedAccessToken,
+//           first_name: firstName,
+//           last_name: lastName,
+//           created_at: new Date().toISOString(),
+//         },
+//       ]);
+
+//     if (error) {
+//       return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
+//     }
+
+//     return NextResponse.json({
+//       success: true,
+//       matrix_user_id: matrixData.user_id,
+//       matrix_access_token: matrixData.access_token,
+//       home_server: matrixData.home_server,
+//       device_id: matrixData.device_id,
+//       wallet_address: walletAddress,
+//     });
+
+//   } catch {
+//     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+//   }
+// }
+
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { z } from 'zod';
 import { db } from '@/lib/db';
 
 // Encryption function
-const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex'); // Must be set in .env
+const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
 const ALGORITHM = 'aes-256-gcm';
 
 function encrypt(text: string): string {
   try {
-    const iv = crypto.randomBytes(12); // GCM recommends 12 bytes for IV
+    const iv = crypto.randomBytes(12);
     const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
@@ -200,9 +358,18 @@ interface MatrixRegisterResponse {
 export async function POST(req: Request): Promise<NextResponse> {
   try {
     // Parse and validate request body
-    const body: RegisterUserRequestBody = await req.json();
+    let body: RegisterUserRequestBody;
+    try {
+      body = await req.json();
+      console.log('Request body:', body);
+    } catch (e) {
+      console.error('JSON parse error:', e);
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+
     const result = RegisterSchema.safeParse(body);
     if (!result.success) {
+      console.error('Validation errors:', result.error.errors);
       return NextResponse.json({ error: result.error.errors }, { status: 400 });
     }
     const { userId, email, oauthProvider, firstName, lastName } = result.data;
@@ -217,18 +384,18 @@ export async function POST(req: Request): Promise<NextResponse> {
     const nonceRes = await fetch('https://chat.ecofundme.com/_synapse/admin/v1/register');
     if (!nonceRes.ok) {
       const err = await nonceRes.text();
-      return NextResponse.json(
-        { error: `Failed to get nonce: ${err}` },
-        { status: 500 }
-      );
+      console.error('Nonce fetch error:', err);
+      return NextResponse.json({ error: `Failed to get nonce: ${err}` }, { status: 500 });
     }
     const { nonce }: { nonce: string } = await nonceRes.json();
+    console.log('Nonce:', nonce);
 
     // Create MAC signature
     const sharedSecret = process.env.MATRIX_SHARED_SECRET;
     if (!sharedSecret) {
+      console.error('MATRIX_SHARED_SECRET not set');
       return NextResponse.json(
-        { error: 'SYNAPSE_SECRET or MATRIX_SHARED_SECRET environment variable is not set' },
+        { error: 'MATRIX_SHARED_SECRET environment variable is not set' },
         { status: 500 }
       );
     }
@@ -238,6 +405,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       .createHmac('sha1', sharedSecret)
       .update(macString)
       .digest('hex');
+    console.log('MAC:', mac);
 
     // Register user in Synapse
     const registerRes = await fetch(
@@ -252,14 +420,15 @@ export async function POST(req: Request): Promise<NextResponse> {
           username: walletAddress,
           password,
           admin: false,
-          mac, // Ensure mac is used in the payload
-          displayname: `${firstName || ''} ${lastName || ''}`.trim(),
+          mac,
+          displayname: `${firstName || ''} ${lastName || ''}`.trim() || walletAddress,
         }),
       }
     );
 
     if (!registerRes.ok) {
       const error = await registerRes.text();
+      console.error('Matrix registration error:', error);
       return NextResponse.json(
         { error: `Matrix registration failed: ${error}` },
         { status: 500 }
@@ -267,10 +436,23 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     const matrixData: MatrixRegisterResponse = await registerRes.json();
+    console.log('Matrix response:', matrixData);
 
-    // Encrypt password and access token before storing
-    const encryptedPassword = encrypt(password);
-    const encryptedAccessToken = encrypt(matrixData.access_token);
+    // Validate Matrix response
+    if (!matrixData.user_id || !matrixData.access_token) {
+      console.error('Invalid Matrix response:', matrixData);
+      return NextResponse.json({ error: 'Invalid Matrix response' }, { status: 500 });
+    }
+
+    // Encrypt password and access token
+    let encryptedPassword: string, encryptedAccessToken: string;
+    try {
+      encryptedPassword = encrypt(password);
+      encryptedAccessToken = encrypt(matrixData.access_token);
+    } catch (e) {
+      console.error('Encryption error:', e);
+      return NextResponse.json({ error: 'Encryption failed' }, { status: 500 });
+    }
 
     // Store user in database
     const { error } = await db
@@ -291,6 +473,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       ]);
 
     if (error) {
+      console.error('Database insert error:', error);
       return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
     }
 
@@ -303,7 +486,15 @@ export async function POST(req: Request): Promise<NextResponse> {
       wallet_address: walletAddress,
     });
 
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error) {
+    console.error('Registration error:', error);
+    return NextResponse.json(
+      { 
+        error: 'Internal server error', 
+        details: error instanceof Error ? error.message : String(error) 
+      },
+      
+      { status: 500 }
+    );
   }
 }
