@@ -84,7 +84,7 @@ const LoginSchema = z.object({
   userId: z.string().min(1, 'userId is required'),
 });
 
-export async function LOGIN_POST(req: Request) {
+export async function POST(req: Request) {
   try {
     // Parse and validate request body
     const body = await req.json();
