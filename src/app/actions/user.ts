@@ -141,6 +141,9 @@ export interface User {
   last_name: string | null
   email: string
   business_name: string | null
+  matrix_user_id?: string | null
+  matrix_password?: string | null
+  matrix_access_token?: string | null
 }
 
 export async function getUserByAddress(address?: string, user_id?: string): Promise<{

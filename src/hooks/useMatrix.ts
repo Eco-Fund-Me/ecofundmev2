@@ -22,7 +22,7 @@ interface UseMatrixReturn {
     firstName?: string
     lastName?: string
   }) => Promise<void>
-  login: (data: { address: string }) => Promise<void>
+  login: (data: { userId: string }) => Promise<void>
   logout: () => Promise<void>
   sendMessage: (roomId: string, message: string) => Promise<void>
   createRoom: (name: string, topic?: string, isPublic?: boolean) => Promise<string>
@@ -62,7 +62,7 @@ export function useMatrix(): UseMatrixReturn {
   const register = useCallback(
     async (data: {
       userId:string
-      address: string
+      // address: string
       email?: string
       firstName?: string
       lastName?: string
@@ -108,48 +108,97 @@ export function useMatrix(): UseMatrixReturn {
     []
   )
 
+  // const login = useCallback(
+  //   async (data: { address: string }) => {
+  //     try {
+  //       setIsLoading(true)
+  //       setError(null)
+
+  //       // Call your own Next.js API
+  //       const res = await fetch("/api/social/login", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(data),
+  //       })
+
+  //       if (!res.ok) {
+  //         const error = await res.text()
+  //         throw new Error(error)
+  //       }
+
+  //       const {
+  //         matrixUserId,
+  //         matrixAccessToken,
+  //       } = await res.json()
+
+  //       const newClient = new EcoFundMeMatrixClient({
+  //         baseUrl: "https://chat.ecofundme.com",
+  //         userId: matrixUserId,
+  //         accessToken: matrixAccessToken,
+  //       })
+
+  //       setClient(newClient)
+  //       setIsConnected(true)
+  //       setUser(newClient.getUser())
+  //       setRooms(newClient.getRooms())
+  //     } catch (err) {
+  //       setError(err instanceof Error ? err.message : "Login failed")
+  //       throw err
+  //     } finally {
+  //       setIsLoading(false)
+  //     }
+  //   },
+  //   []
+  // )
+
   const login = useCallback(
-    async (data: { address: string }) => {
-      try {
-        setIsLoading(true)
-        setError(null)
+  async (data: { userId: string }) => {
+    try {
+      setIsLoading(true)
+      setError(null)
 
-        // Call your own Next.js API
-        const res = await fetch("/api/social/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        })
+      // Call the Next.js API
+      const res = await fetch("/api/social/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
 
-        if (!res.ok) {
-          const error = await res.text()
-          throw new Error(error)
-        }
-
-        const {
-          matrixUserId,
-          matrixAccessToken,
-        } = await res.json()
-
-        const newClient = new EcoFundMeMatrixClient({
-          baseUrl: "https://chat.ecofundme.com",
-          userId: matrixUserId,
-          accessToken: matrixAccessToken,
-        })
-
-        setClient(newClient)
-        setIsConnected(true)
-        setUser(newClient.getUser())
-        setRooms(newClient.getRooms())
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Login failed")
-        throw err
-      } finally {
-        setIsLoading(false)
+      if (!res.ok) {
+        const error = await res.text()
+        throw new Error(error)
       }
-    },
-    []
-  )
+
+      const {
+        success,
+        access_token: matrixAccessToken,
+        user_id: matrixUserId,
+  
+      } = await res.json()
+
+      if (!success) {
+        throw new Error("Login response indicated failure")
+      }
+
+      const newClient = new EcoFundMeMatrixClient({
+        baseUrl: "https://chat.ecofundme.com",
+        userId: matrixUserId,
+        accessToken: matrixAccessToken,
+      })
+
+      setClient(newClient)
+      setIsConnected(true)
+      setUser(newClient.getUser())
+      setRooms(newClient.getRooms())
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed")
+      throw err
+    } finally {
+      setIsLoading(false)
+    }
+  },
+  []
+)
 
   const logout = useCallback(async () => {
     try {
