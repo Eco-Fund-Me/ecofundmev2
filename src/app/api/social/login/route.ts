@@ -45,9 +45,39 @@ import crypto from 'crypto';
 import { z } from 'zod';
 import { db } from '@/lib/db';
 
-// Encryption/Decryption functions
-const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex'); // Must be set in .env
+// Encryption/Decryption functions with better error handling
 const ALGORITHM = 'aes-256-gcm';
+
+function getEncryptionKey(): Buffer {
+  const keyHex = process.env.ENCRYPTION_KEY;
+  
+  if (!keyHex) {
+    throw new Error('ENCRYPTION_KEY environment variable is not set');
+  }
+  
+  if (typeof keyHex !== 'string') {
+    throw new Error('ENCRYPTION_KEY must be a string');
+  }
+  
+  if (!/^[0-9a-fA-F]+$/.test(keyHex)) {
+    throw new Error('ENCRYPTION_KEY must be a valid hexadecimal string');
+  }
+  
+  if (keyHex.length !== 64) {
+    throw new Error('ENCRYPTION_KEY must be 64 hex characters (32 bytes) for AES-256');
+  }
+  
+  return Buffer.from(keyHex, 'hex');
+}
+
+// Initialize encryption key with proper error handling
+let ENCRYPTION_KEY: Buffer;
+try {
+  ENCRYPTION_KEY = getEncryptionKey();
+} catch (error) {
+  console.error('Failed to initialize encryption key:', error);
+  throw error;
+}
 
 function encrypt(text: string): string {
   try {
@@ -65,7 +95,12 @@ function encrypt(text: string): string {
 
 function decrypt(encryptedData: string): string {
   try {
-    const [ivHex, authTagHex, encrypted] = encryptedData.split(':');
+    const parts = encryptedData.split(':');
+    if (parts.length !== 3) {
+      throw new Error('Invalid encrypted data format');
+    }
+    
+    const [ivHex, authTagHex, encrypted] = parts;
     const iv = Buffer.from(ivHex, 'hex');
     const authTag = Buffer.from(authTagHex, 'hex');
     const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);

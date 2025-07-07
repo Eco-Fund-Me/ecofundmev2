@@ -225,10 +225,10 @@ export async function POST(req: Request): Promise<NextResponse> {
     const { nonce }: { nonce: string } = await nonceRes.json();
 
     // Create MAC signature
-    const sharedSecret = process.env.SYNAPSE_SECRET;
+    const sharedSecret = process.env.MATRIX_SHARED_SECRET;
     if (!sharedSecret) {
       return NextResponse.json(
-        { error: 'SYNAPSE_SECRET environment variable is not set' },
+        { error: 'SYNAPSE_SECRET or MATRIX_SHARED_SECRET environment variable is not set' },
         { status: 500 }
       );
     }
