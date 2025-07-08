@@ -66,8 +66,8 @@ export const IndividualSignInForm: React.FC<IndividualSignInFormProps> = ({
     setError(null)
     try {
       await signInWithOAuth("google","/social/oauth/callback") // Use OAuth for Google sign-in
-      // Consider if connectWithThirdweb is needed here after OAuth or handled within signInWithOAuth
-      // await connectWithThirdweb("google","oauth") // If thirdweb connection is handled after OAuth
+      
+   
       onSuccess() // Call success handler, which closes modal and redirects
     } catch (err) {
       console.error("Google signin error:", err)

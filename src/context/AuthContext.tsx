@@ -186,13 +186,12 @@ const signInUser = async (
 const signInWithOAuth = async (
   provider: "google" | "apple" | undefined,
   // Allow the caller to specify a custom callback path, defaulting to '/auth/callback'
-  callbackPath: string = '/oauth/callback'
+  callbackPath: string = '/auth/callback'
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
 
   if (provider === undefined) {
     console.error("OAuth Provider is Undefined");
-    // It's better to return an error object than throw a generic Error here
-    // to match the Promise<{ success: boolean; data?: any; error?: string }> signature.
+   
     return { success: false, error: "OAuth Provider is Undefined" };
   }
 
