@@ -247,6 +247,7 @@ export default function SocialHomePage() {
           Sign In
         </Button>
       )}
+      
       <Modal isOpen={isAuthModalOpen} onClose={handleCloseAuthModal} size="md"> {/* Use size="lg" for larger modal */}
         {/* Render the new AuthFlowModal component */}
         <AuthFlowModal onClose={handleCloseAuthModal} initialView="signin" />

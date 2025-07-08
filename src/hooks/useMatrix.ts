@@ -180,6 +180,11 @@ export function useMatrix(): UseMatrixReturn {
         throw new Error("Login response indicated failure")
       }
 
+      console.log("Matrix login successful:", {
+        matrixUserId, 
+        matrixAccessToken,
+      })
+
       const newClient = new EcoFundMeMatrixClient({
         baseUrl: "https://chat.ecofundme.com",
         userId: matrixUserId,
@@ -191,6 +196,7 @@ export function useMatrix(): UseMatrixReturn {
       setUser(newClient.getUser())
       setRooms(newClient.getRooms())
     } catch (err) {
+      console.error("Matrix login error:", err)
       setError(err instanceof Error ? err.message : "Login failed")
       throw err
     } finally {

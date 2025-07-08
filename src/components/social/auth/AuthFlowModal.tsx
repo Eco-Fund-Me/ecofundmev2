@@ -67,7 +67,7 @@ export const AuthFlowModal: React.FC<AuthFlowModalProps> = ({ onClose, initialVi
         return (
           <IndividualSignInForm
             onClose={onClose}
-            onSuccess={() => handleSuccess("/social")} // Redirect individual to campaigns
+            onSuccess={() => handleSuccess("/social")} 
             onSwitchToBusinessSignIn={() => setCurrentView("business-signin")}
             onSwitchToSignUpFlow={() => setCurrentView("initial-choice-signup")}
           />
