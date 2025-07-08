@@ -94,6 +94,8 @@ export function useMatrix(): UseMatrixReturn {
           accessToken: matrixAccessToken,
         })
 
+          await newClient.loginWithToken(matrixUserId, matrixAccessToken);
+
         setClient(newClient)
         setIsConnected(true)
         setUser(newClient.getUser())
@@ -190,7 +192,7 @@ export function useMatrix(): UseMatrixReturn {
         userId: matrixUserId,
         accessToken: matrixAccessToken,
       })
-
+  await newClient.loginWithToken(matrixUserId, matrixAccessToken);
       setClient(newClient)
       setIsConnected(true)
       setUser(newClient.getUser())
