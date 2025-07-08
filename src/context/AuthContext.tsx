@@ -26,7 +26,7 @@ interface AuthContextType {
     email: string,
     password: string
   ) => Promise<{ success: boolean; data?: any; error?: string }>;
-  signInWithOAuth: (provider: "google" | "apple" | undefined) => Promise<{ success: boolean; data?: any; error?: string }>;
+  signInWithOAuth: (provider: "google" | "apple" | undefined, callbackPath?:string) => Promise<{ success: boolean; data?: any; error?: string }>;
 
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   updatePassword: (password: string) => Promise<{ success: boolean; error?: string }>;
@@ -151,20 +151,57 @@ const signInUser = async (
   };
 
   
-  const signInWithOAuth = async (
-  provider: "google" | "apple" | undefined
-): Promise<{ success: boolean; data?: any; error?: string }> => {
+//   const signInWithOAuth = async (
+//   provider: "google" | "apple" | undefined
+// ): Promise<{ success: boolean; data?: any; error?: string }> => {
   
-  if(provider === undefined){
-    throw Error("Oauth Provider is Undefined")
+//   if(provider === undefined){
+//     throw Error("Oauth Provider is Undefined")
+//   }
+//   try {
+//         // const origin = (await headers()).get("origin");
+//     const { data, error } = await supabase.auth.signInWithOAuth({
+//       provider,
+//       options: {
+//         redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
+//         // redirectTo: `${origin}/auth/callback`, // Handle it after redirect
+//       },
+//     });
+
+//     if (error) {
+//       console.error("OAuth error:", error.message);
+//       return { success: false, error: error.message };
+//     }
+
+//     return { success: true, data };
+//   } catch (err: any) {
+//     console.error("Unexpected OAuth error:", err.message);
+//     return {
+//       success: false,
+//       error: "An unexpected error occurred. Please try again.",
+//     };
+//   }
+// };
+
+const signInWithOAuth = async (
+  provider: "google" | "apple" | undefined,
+  // Allow the caller to specify a custom callback path, defaulting to '/auth/callback'
+  callbackPath: string = '/auth/callback'
+): Promise<{ success: boolean; data?: any; error?: string }> => {
+
+  if (provider === undefined) {
+    console.error("OAuth Provider is Undefined");
+    // It's better to return an error object than throw a generic Error here
+    // to match the Promise<{ success: boolean; data?: any; error?: string }> signature.
+    return { success: false, error: "OAuth Provider is Undefined" };
   }
+
   try {
-        // const origin = (await headers()).get("origin");
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`, // Handle it after redirect
-        // redirectTo: `${origin}/auth/callback`, // Handle it after redirect
+        // It dynamically constructs the redirectTo URL using the provided callbackPath.
+        redirectTo: `${window.location.origin}${callbackPath}`,
       },
     });
 

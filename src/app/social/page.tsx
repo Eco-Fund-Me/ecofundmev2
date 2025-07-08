@@ -28,6 +28,9 @@ import {
   X,
 } from "lucide-react"
 import Link from "next/link"
+import { useMatrix } from "@/hooks/useMatrix"
+import { Modal } from "@/components/ui/Modal"
+import { AuthFlowModal } from "@/components/social/auth/AuthFlowModal"
 
 interface Post {
   id: string
@@ -49,6 +52,7 @@ interface Post {
     progress: number
   }
 }
+
 
 const mockPosts: Post[] = [
   {
@@ -180,8 +184,18 @@ const MobileBottomNav = () => (
 )
 
 export default function SocialHomePage() {
+  const {  isConnected, user} = useMatrix()
   const [filterBy, setFilterBy] = useState("all")
   const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+
+  const handleOpenAuthModal = () => {
+    setIsAuthModalOpen(true)
+  }
+
+  const handleCloseAuthModal = () => {
+    setIsAuthModalOpen(false)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -210,19 +224,34 @@ export default function SocialHomePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 font-medium hidden sm:flex">
-                <Plus className="h-4 w-4 mr-2" />
-                Post
-              </Button>
-              <Button className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 font-medium sm:hidden p-2">
-                <Plus className="h-4 w-4" />
-              </Button>
-              <Avatar className="h-8 w-8 cursor-pointer">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>You</AvatarFallback>
-              </Avatar>
-            </div>
+ {isConnected ? (
+        <div className="flex items-center gap-2">
+          {/* Post Button (visible when connected) */}
+          <Button className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 font-medium hidden sm:flex">
+            <Plus className="h-4 w-4 mr-2" />
+            Post
+          </Button>
+          <Button className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 font-medium sm:hidden p-2">
+            <Plus className="h-4 w-4" />
+          </Button>
+          
+          {/* User Avatar */}
+          <Avatar className="h-8 w-8 cursor-pointer">
+            <AvatarImage src="/placeholder.svg" /> {/* Replace with actual user avatar */}
+            <AvatarFallback>{user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+          </Avatar>
+        </div>
+      ) : (
+        // Sign In Button (visible when not connected)
+        <Button variant="outline" className="hidden sm:flex bg-transparent" onClick={handleOpenAuthModal}>
+          Sign In
+        </Button>
+      )}
+      <Modal isOpen={isAuthModalOpen} onClose={handleCloseAuthModal} size="md"> {/* Use size="lg" for larger modal */}
+        {/* Render the new AuthFlowModal component */}
+        <AuthFlowModal onClose={handleCloseAuthModal} initialView="signin" />
+      </Modal>
+           
           </div>
         </div>
       </nav>
