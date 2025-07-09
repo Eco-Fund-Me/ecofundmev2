@@ -595,6 +595,52 @@ public async sendMessage(roomId: string, message: string): Promise<MatrixOperati
   }
 }
 
+public async createDm(
+  targetUserId: string,
+  name?: string,
+  topic?: string
+): Promise<MatrixOperationResult<string>> {
+  if (!this.matrixClient) {
+    return {
+      success: false,
+      message: "Matrix client not initialized.",
+    };
+  }
+
+  try {
+    const response = await this.matrixClient.createRoom({
+      name,
+      topic,
+      preset: Preset.TrustedPrivateChat,
+      is_direct: true,
+      invite: [targetUserId],
+      visibility: Visibility.Private,
+    });
+
+    const newDm: MatrixRoom = {
+      roomId: response.room_id,
+      name,
+      topic,
+      isSpace: false,
+    };
+
+    this.rooms.push(newDm);
+
+    return {
+      success: true,
+      message: `DM room created with ${targetUserId}.`,
+      data: response.room_id,
+    };
+  } catch (error) {
+    console.error("Failed to create DM:", error);
+    return {
+      success: false,
+      message: "Failed to create DM.",
+    };
+  }
+}
+
+
 
 
 

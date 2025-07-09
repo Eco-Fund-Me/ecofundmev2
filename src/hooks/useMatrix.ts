@@ -3,11 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { EcoFundMeMatrixClient, MatrixRoom } from "@/lib/matrix-client"
 import { removeAllMatrixStorage, storeMatrixToken } from "@/utils/local"
-
-interface MatrixUser {
-  userId: string
-  displayName: string | undefined
-}
+import { MatrixUser } from "@/lib/matrix-client"
 
 interface UseMatrixReturn {
   client: EcoFundMeMatrixClient | null
@@ -99,7 +95,7 @@ export function useMatrix(): UseMatrixReturn {
 
         setClient(newClient)
         setIsConnected(true)
-        setUser(newClient.getUser())
+        setUser((await newClient.getUser()).data)
         setRooms(newClient.getRooms())
       } catch (err) {
         setError(err instanceof Error ? err.message : "Registration failed")
@@ -197,7 +193,7 @@ export function useMatrix(): UseMatrixReturn {
 
         setClient(newClient);
         setIsConnected(true);
-        setUser(newClient.getUser());
+        setUser( (await newClient.getUser()).data);
         setRooms(newClient.getRooms());
       } catch (err) {
         console.error("Matrix login error:", err);
