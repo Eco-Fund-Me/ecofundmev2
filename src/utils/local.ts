@@ -2,26 +2,20 @@ import { encryptToken, decryptToken } from "./crypto";
 
 const SECRET = process.env.NEXT_PUBLIC_MATRIX_TOKEN_SECRET!;
 
-/**
- * Store an encrypted value in localStorage
- */
+
 async function storeEncrypted(key: string, value: string) {
   const encrypted = await encryptToken(SECRET, value);
   localStorage.setItem(key, encrypted);
 }
 
-/**
- * Load and decrypt a value from localStorage
- */
+
 async function loadEncrypted(key: string) {
   const encrypted = localStorage.getItem(key);
   if (!encrypted) return null;
   return decryptToken(SECRET, encrypted);
 }
 
-/**
- * Remove a single item
- */
+
 function removeItem(key: string) {
   localStorage.removeItem(key);
 }
@@ -54,7 +48,7 @@ export function removeMatrixUserId() {
   removeItem("matrix_userId");
 }
 
-// Device ID (not super sensitive — can store plaintext if you prefer)
+
 export function storeMatrixDeviceId(deviceId: string) {
   localStorage.setItem("matrix_deviceId", deviceId);
 }
@@ -67,7 +61,7 @@ export function removeMatrixDeviceId() {
   removeItem("matrix_deviceId");
 }
 
-// Refresh Token (if used)
+
 export async function storeMatrixRefreshToken(refreshToken: string) {
   return storeEncrypted("matrix_refreshToken", refreshToken);
 }
@@ -80,7 +74,6 @@ export function removeMatrixRefreshToken() {
   removeItem("matrix_refreshToken");
 }
 
-// Expires In (ms)
 export function storeMatrixExpiresIn(ms: number) {
   localStorage.setItem("matrix_expiresIn", String(ms));
 }

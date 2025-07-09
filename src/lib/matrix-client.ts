@@ -552,7 +552,7 @@ public async joinSpace(spaceIdOrAlias: string): Promise<MatrixOperationResult<Ma
       name: joinedSpace.name || joinedSpace.getCanonicalAlias() || undefined,
       topic: this.getRoomTopic(joinedSpace),
       isSpace: true,
-      children: [], // will fill later when you fetch children
+      children: [],
     };
 
     this.spaces.push(newSpace);

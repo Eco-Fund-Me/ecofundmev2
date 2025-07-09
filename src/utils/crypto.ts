@@ -1,4 +1,4 @@
-// crypto.ts (frontend)
+
 
 export async function encryptToken(
   secret: string,
