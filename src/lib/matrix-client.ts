@@ -183,7 +183,7 @@
 // }
 
 import * as sdk from "matrix-js-sdk";
-import { MatrixClient } from "matrix-js-sdk";
+import { MatrixClient, Room, EventTimeline, Visibility, Preset } from "matrix-js-sdk";
 
 export interface MatrixClientConfig {
   baseUrl: string;
@@ -201,9 +201,10 @@ export interface MatrixRoom {
   roomId: string;
   name?: string;
   topic?: string;
-  isPublic?: boolean;
-  isSpace?: boolean;
+  isSpace: boolean;
+  membership?: string;
 }
+
 
 
 export interface MatrixSpace extends MatrixRoom {
@@ -274,13 +275,95 @@ public async getUser(): Promise<MatrixOperationResult<MatrixUser>> {
   }
 }
 
+isSpaceRoom(room: Room): boolean {
+  return room.getType() === "m.space";
+}
+
+ getRoomTopic(room: Room): string | undefined {
+  const topicEvent = room
+    .getLiveTimeline()
+    .getState(EventTimeline.FORWARDS)
+    ?.getStateEvents("m.room.topic", "");
+
+  return topicEvent?.getContent()?.topic;
+}
+
+
+
+public getJoinedSpaces(): MatrixSpace[] {
+  if (!this.matrixClient) return [];
+
+  return this.matrixClient
+    .getRooms()
+    .filter((room) => this.isSpaceRoom(room) && room.hasMembershipState(this.userId, "join"))
+    .map((room) => ({
+      roomId: room.roomId,
+      name: room.name || room.getCanonicalAlias() || undefined,
+      topic: this.getRoomTopic(room),
+      isSpace: true,
+      children: [], 
+    }));
+}
+
+
+public getRoomsInSpace(spaceRoomId: string): MatrixRoom[] {
+  if (!this.matrixClient) return [];
+
+  const spaceRoom = this.matrixClient.getRoom(spaceRoomId);
+   
+  if (!spaceRoom) return [];
+
+  const state = spaceRoom
+    .getLiveTimeline()
+    .getState(EventTimeline.FORWARDS);
+
+  const childEvents = state?.getStateEvents("m.space.child") || [];
+
+  const childRoomIds = childEvents.map(e => e.getStateKey());
+
+  const rooms = childRoomIds
+    .map(roomId => this.matrixClient!.getRoom(roomId))
+    .filter((room): room is Room => !!room);
+
+  return rooms.map(room => ({
+    roomId: room.roomId,
+    name: room.name || room.getCanonicalAlias() || undefined,
+    topic: this.getRoomTopic(room),
+    isSpace: room.getType() === "m.space",
+  }));
+}
+
+public async getPublicSpaces(): Promise<MatrixSpace[]> {
+  if (!this.matrixClient) {
+    return [];
+  }
+
+  const result = await this.matrixClient.publicRooms({
+    limit: 100,
+    include_all_networks: true,
+    filter: {
+      generic_search_term: "", 
+    },
+  });
+
+  const spaces = result.chunk
+    .filter(room => room.room_type === "m.space")
+    .map(room => ({
+      roomId: room.room_id,
+      name: room.name,
+      topic: room.topic,
+      isSpace: true,
+      children: [],
+    }));
+
+  return spaces;
+}
+
 
 public getRooms(): MatrixRoom[] {
   return this.rooms;
 }
-public getSpaces(): MatrixSpace[] {
-  return this.spaces; 
-}
+
 public isLoggedIn(): boolean {
   return this.isConnected;
 }
@@ -346,11 +429,172 @@ public async logout(): Promise<MatrixOperationResult> {
   }
 }
 
-public async createRoom(name: string, topic?: string, isPublic?: boolean): Promise<string> {}
-public async createSpace(name: string, topic?: string): Promise<string> {}
-public async joinRoom(roomIdOrAlias: string): Promise<void> {}
-public async joinSpace(spaceIdOrAlias: string): Promise<void> {}
-public async sendMessage(roomId: string, message: string): Promise<void> {}
+public async createRoom(
+  name: string,
+  topic?: string,
+  isPublic: boolean = false
+): Promise<string> {
+  if (!this.matrixClient) {
+    throw new Error("Matrix client not initialized.");
+  }
+
+  const isvisible: Visibility = isPublic ? Visibility.Public : Visibility.Private;
+
+  try {
+    const response = await this.matrixClient.createRoom({
+      name,
+      topic,
+      visibility: isvisible,
+    });
+
+    // Update cached rooms if you wish
+    const newRoom: MatrixRoom = {
+      roomId: response.room_id,
+      name,
+      topic,
+      isSpace: false,
+    };
+
+    this.rooms.push(newRoom);
+
+    return response.room_id;
+  } catch (error) {
+    console.error("Failed to create room:", error);
+    throw new Error("Failed to create room.");
+  }
+}
+
+public async createSpace(
+  name: string,
+  topic?: string
+): Promise<string> {
+  if (!this.matrixClient) {
+    throw new Error("Matrix client not initialized.");
+  }
+
+  try {
+    const response = await this.matrixClient.createRoom({
+      name,
+      topic,
+      creation_content: {
+        type: "m.space",
+      },
+      preset: Preset.PrivateChat, // or public if you want it public
+      visibility: Visibility.Private,
+    });
+
+    // Optionally cache the new space:
+    const newSpace: MatrixSpace = {
+      roomId: response.room_id,
+      name,
+      topic,
+      isSpace: true,
+      children: [],
+    };
+
+    this.spaces.push(newSpace);
+
+    return response.room_id;
+  } catch (error) {
+    console.error("Failed to create space:", error);
+    throw new Error("Failed to create space.");
+  }
+}
+
+public async joinRoom(roomIdOrAlias: string): Promise<MatrixOperationResult<MatrixRoom>> {
+  if (!this.matrixClient) {
+    return {
+      success: false,
+      message: "Matrix client not initialized.",
+    };
+  }
+
+  try {
+    const joinedRoom = await this.matrixClient.joinRoom(roomIdOrAlias);
+
+    // Optional: update cached rooms list
+    const newRoom: MatrixRoom = {
+      roomId: joinedRoom.roomId,
+      name: joinedRoom.name || joinedRoom.getCanonicalAlias() || undefined,
+      topic: this.getRoomTopic(joinedRoom),
+      isSpace: this.isSpaceRoom(joinedRoom),
+    };
+
+    this.rooms.push(newRoom);
+
+    return {
+      success: true,
+      message: `Joined room ${roomIdOrAlias} successfully.`,
+      data: newRoom,
+    };
+  } catch (error) {
+    console.error("Join room failed:", error);
+    return {
+      success: false,
+      message: `Failed to join room: ${roomIdOrAlias}`,
+    };
+  }
+}
+
+public async joinSpace(spaceIdOrAlias: string): Promise<MatrixOperationResult<MatrixSpace>> {
+  if (!this.matrixClient) {
+    return {
+      success: false,
+      message: "Matrix client not initialized.",
+    };
+  }
+
+  try {
+    const joinedSpace = await this.matrixClient.joinRoom(spaceIdOrAlias);
+
+    const newSpace: MatrixSpace = {
+      roomId: joinedSpace.roomId,
+      name: joinedSpace.name || joinedSpace.getCanonicalAlias() || undefined,
+      topic: this.getRoomTopic(joinedSpace),
+      isSpace: true,
+      children: [], // will fill later when you fetch children
+    };
+
+    this.spaces.push(newSpace);
+
+    return {
+      success: true,
+      message: `Joined space ${spaceIdOrAlias} successfully.`,
+      data: newSpace,
+    };
+  } catch (error) {
+    console.error("Join space failed:", error);
+    return {
+      success: false,
+      message: `Failed to join space: ${spaceIdOrAlias}`,
+    };
+  }
+}
+
+
+public async sendMessage(roomId: string, message: string): Promise<MatrixOperationResult> {
+  if (!this.matrixClient) {
+    return {
+      success: false,
+      message: "Matrix client not initialized.",
+    };
+  }
+
+  try {
+    await this.matrixClient.sendTextMessage(roomId, message);
+    return {
+      success: true,
+      message: "Message sent successfully.",
+    };
+  } catch (error) {
+    console.error("Send message failed:", error);
+    return {
+      success: false,
+      message: "Failed to send message.",
+    };
+  }
+}
+
 
 
 
