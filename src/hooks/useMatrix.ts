@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { EcoFundMeMatrixClient, MatrixRoom } from "@/lib/matrix-client"
+import { removeAllMatrixStorage, storeMatrixToken } from "@/utils/local"
 
 interface MatrixUser {
   userId: string
@@ -154,73 +155,85 @@ export function useMatrix(): UseMatrixReturn {
   // )
 
   const login = useCallback(
-  async (data: { userId: string }) => {
-    try {
-      setIsLoading(true)
-      setError(null)
+    async (data: { userId: string }) => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      // Call the Next.js API
-      const res = await fetch("/api/social/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
+        // Call your Next.js API
+        const res = await fetch("/api/social/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
 
-      if (!res.ok) {
-        const error = await res.text()
-        throw new Error(error)
+        if (!res.ok) {
+          const error = await res.text();
+          throw new Error(error);
+        }
+
+        const {
+          success,
+          access_token: matrixAccessToken,
+          user_id: matrixUserId,
+          
+        } = await res.json();
+
+        if (!success) {
+          throw new Error("Login response indicated failure");
+        }
+
+        // Store encrypted token in localStorage
+        await storeMatrixToken(matrixAccessToken);
+
+        // Create Matrix client
+        const newClient = new EcoFundMeMatrixClient({
+          baseUrl: "https://chat.ecofundme.com",
+          userId: matrixUserId,
+          accessToken: matrixAccessToken,
+        });
+
+        await newClient.initialize();
+
+        setClient(newClient);
+        setIsConnected(true);
+        setUser(newClient.getUser());
+        setRooms(newClient.getRooms());
+      } catch (err) {
+        console.error("Matrix login error:", err);
+        setError(err instanceof Error ? err.message : "Login failed");
+        throw err;
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [setIsLoading, setError, setClient, setIsConnected, setUser, setRooms]
+  );
 
-      const {
-        success,
-        access_token: matrixAccessToken,
-        user_id: matrixUserId,
-  
-      } = await res.json()
 
-      if (!success) {
-        throw new Error("Login response indicated failure")
+
+
+const logout = useCallback(async () => {
+  try {
+    if (client) {
+      const result = await client.logout();
+      if (!result.success) {
+        console.error(result.message);
+        setError(result.message!);
       }
-
-      console.log("Matrix login successful:", {
-        matrixUserId, 
-        matrixAccessToken,
-      })
-
-      const newClient = new EcoFundMeMatrixClient({
-        baseUrl: "https://chat.ecofundme.com",
-        userId: matrixUserId,
-        accessToken: matrixAccessToken,
-      })
-  await newClient.loginWithToken(matrixUserId, matrixAccessToken);
-      setClient(newClient)
-      setIsConnected(true)
-      setUser(newClient.getUser())
-      setRooms(newClient.getRooms())
-    } catch (err) {
-      console.error("Matrix login error:", err)
-      setError(err instanceof Error ? err.message : "Login failed")
-      throw err
-    } finally {
-      setIsLoading(false)
     }
-  },
-  []
-)
 
-  const logout = useCallback(async () => {
-    try {
-      if (client) {
-        await client.logout()
-      }
-      setClient(null)
-      setIsConnected(false)
-      setUser(null)
-      setRooms([])
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Logout failed")
-    }
-  }, [client])
+    setClient(null);
+    setIsConnected(false);
+    setUser(null);
+    setRooms([]);
+    removeAllMatrixStorage();
+  } catch (err) {
+    console.error("Logout error:", err);
+    setError(err instanceof Error ? err.message : "Logout failed");
+  }
+}, [client]);
+
 
   const sendMessage = useCallback(
     async (roomId: string, message: string) => {
