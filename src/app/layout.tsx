@@ -3,7 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import { ThirdwebProvider } from "thirdweb/react";
+
+import { AuthContextProvider } from "@/context/AuthContext";
+import Web3Provider from "@/components/Web3Provider";
+import MixpanelProvider from '@/components/MixpanelProvider';
+
 
 
 const geistSans = localFont({
@@ -18,8 +22,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Eco Fund Me",
-  description: "EcofundMe is a Web3-powered, tokenized climate financing platform that connects donors with impactful carbon mitigation projects—ensuring transparency, accountability, and rewards for every contribution.",
+  title: "EcoFundMe",
+  description: "EcoFundMe is a Web3-powered, tokenized climate financing platform that connects donors with impactful carbon mitigation projects—ensuring transparency, accountability, and rewards for every contribution.",
 };
 
 export default function RootLayout({
@@ -27,17 +31,27 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+ 
   return (
     <html lang="en">
-        <ThirdwebProvider>
+  
+    
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
+            <Web3Provider>
+         <AuthContextProvider>
+       <MixpanelProvider>
         <NavBar />
         <main className="flex-1">{children}</main>
         <Footer />
+        </MixpanelProvider>
+        </AuthContextProvider>
+        </Web3Provider>
       </body>
-      </ThirdwebProvider>
+    
+     
     </html>
   );
 }

@@ -2,14 +2,14 @@
 const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
-      },
-      images: {
+    },
+    images: {
         domains: ["res.cloudinary.com"],
-      },
-      webpack: (config) => {
+    },
+    webpack: (config) => {
         config.externals.push("pino-pretty", "lokijs", "encoding");
         return config;
-      },
+    },
 };
 
 export default nextConfig;

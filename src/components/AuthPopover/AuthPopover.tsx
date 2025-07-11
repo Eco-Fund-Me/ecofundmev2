@@ -153,7 +153,7 @@
 //           <div className="space-y-4">
 //             <div className="text-center">
 //               <h3 className="text-lg font-medium text-white mb-2">
-//                 Welcome to EcofundMe
+//                 Welcome to EcoFundMe
 //               </h3>
 //               <p className="text-sm text-gray-400">
 //                 Connect with Plurality to get started

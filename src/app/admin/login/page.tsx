@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
         <div className="px-6 py-8">
           <div className="text-center space-y-1">
             <div className="flex justify-center mb-4">
-              <Image src="/logo.svg" alt="EcofundMe Logo" width={48} height={48} className="w-12 h-12" />
+              <Image src="/logo.svg" alt="EcoFundMe Logo" width={48} height={48} className="w-12 h-12" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900">Admin Login</h2>
             <p className="text-sm text-gray-500">Enter your credentials to access the admin dashboard</p>

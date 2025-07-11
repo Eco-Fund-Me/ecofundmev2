@@ -14,12 +14,12 @@ export default function Footer() {
           >
             <Image
               src="/logo.png"
-              alt="EcofundMe Logo"
+              alt="EcoFundMe Logo"
               width={40}
               height={40}
               className="object-contain"
             />
-            <span className="text-xl font-semibold">EcofundMe</span>
+            <span className="text-xl font-semibold">EcoFundMe</span>
           </Link>
 
           {/* Navigation Links */}
@@ -57,7 +57,7 @@ export default function Footer() {
 
         {/* Copyright Text */}
         <div className="text-center text-sm text-gray-400">
-          copyright © 2023 Greenance. All rights reserved.
+          copyright © 2025 EcoFundMe. All rights reserved.
         </div>
       </div>
     </footer>

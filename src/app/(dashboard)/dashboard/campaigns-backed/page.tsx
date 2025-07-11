@@ -1,6 +1,6 @@
 "use client";
 
-import { DashboardCampaignCard } from "@/components/Dashboard/DashboardCampaignCard";
+import { DashboardCampaignCard } from "@/components/dashboard/DashboardCampaignCard";
 import { Input } from "@/components/ui/input";
 import {
   Select,
