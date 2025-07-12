@@ -628,6 +628,17 @@ public async joinSpace(spaceIdOrAlias: string): Promise<MatrixOperationResult<Ma
   }
 }
 
+public async joinCampaignSpace(spaceId: string): Promise<void> {
+  await this.joinSpace(spaceId);
+
+  const childRooms = this.getRoomsInSpace(spaceId);
+  for (const room of childRooms) {
+    await this.joinRoom(room.roomId);
+  }
+}
+
+
+
 
 public async sendMessage(roomId: string, message: string): Promise<MatrixOperationResult> {
   if (!this.matrixClient) {
