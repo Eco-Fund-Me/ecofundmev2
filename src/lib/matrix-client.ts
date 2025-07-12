@@ -633,7 +633,9 @@ public async joinCampaignSpace(spaceId: string): Promise<void> {
 
   const childRooms = this.getRoomsInSpace(spaceId);
   for (const room of childRooms) {
-    await this.joinRoom(room.roomId);
+    if (room.name !== "Donor Chat") {
+       await this.joinRoom(room.roomId);
+}
   }
 }
 
