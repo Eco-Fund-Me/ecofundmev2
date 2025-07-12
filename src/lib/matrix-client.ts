@@ -182,6 +182,7 @@
 //   }
 // }
 
+import { loadMatrixToken, loadMatrixUserId } from "@/utils/local";
 import * as sdk from "matrix-js-sdk";
 import { MatrixClient, Room, EventTimeline, Visibility, Preset } from "matrix-js-sdk";
 
@@ -236,6 +237,21 @@ export class EcoFundMeMatrixClient {
       this.accessToken = config.accessToken;
   }
 
+  public static async autoLogin(): Promise<EcoFundMeMatrixClient | null> {
+  const token = await loadMatrixToken();
+  const userId = await loadMatrixUserId(); // Make sure you store this during login too
+
+  if (!token || !userId) return null;
+
+  const client = new EcoFundMeMatrixClient({
+    baseUrl: "https://chat.ecofundme.com",
+    userId,
+    accessToken: token,
+  });
+
+  const result = await client.initialize();
+  return result.success ? client : null;
+}
 
 
 public getUserId(): string {
