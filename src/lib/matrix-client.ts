@@ -501,6 +501,63 @@ public async createSpace(
   }
 }
 
+public async createCampaignSpace(
+  campaignName: string,
+  campaignTopic?: string,
+  isPublic: boolean = false
+): Promise<MatrixOperationResult<string>> {
+  if (!this.matrixClient) {
+    return {
+      success: false,
+      message: "Matrix client not initialized.",
+    };
+  }
+
+  try {
+    // Step 1: Create the campaign SPACE
+    const spaceRoomId = await this.createSpace(campaignName, campaignTopic);
+
+    // Step 2: Create the default rooms
+    const defaultRooms = [
+      { name: "General", topic: `${campaignName} General Chat` },
+      { name: "Announcements", topic: `${campaignName} Official Updates` },
+      { name: "Onboarding", topic: `${campaignName} Onboarding and Info` }
+    ];
+
+    for (const room of defaultRooms) {
+      const roomId = await this.createRoom(
+        room.name,
+        room.topic,
+        isPublic
+      );
+
+      await this.matrixClient.sendStateEvent(
+        spaceRoomId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        "m.space.child" as any,
+        {
+          via: [new URL(this.baseUrl).host],
+        },
+     
+        roomId
+      );
+    }
+
+    return {
+      success: true,
+      message: `Campaign space "${campaignName}" created successfully.`,
+      data: spaceRoomId,
+    };
+  } catch (error) {
+    console.error("Failed to create campaign space:", error);
+    return {
+      success: false,
+      message: "Failed to create campaign space.",
+    };
+  }
+}
+
+
 public async joinRoom(roomIdOrAlias: string): Promise<MatrixOperationResult<MatrixRoom>> {
   if (!this.matrixClient) {
     return {
