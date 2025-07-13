@@ -317,6 +317,8 @@ interface UseMatrixReturn {
   joinRoom: (roomIdOrAlias: string) => Promise<void>;
   joinSpace: (spaceIdOrAlias: string) => Promise<void>;
   joinCampaignSpace: (spaceId: string) => Promise<void>;
+    getPublicCampaignSpaces: () => Promise<MatrixSpace[]>;
+  getRoomsInSpace: (spaceRoomId: string) => MatrixRoom[];
 }
 
 export function useMatrix(): UseMatrixReturn {
@@ -565,6 +567,24 @@ const createCampaignSpace: UseMatrixReturn["createCampaignSpace"] = useCallback(
     [client]
   );
 
+  const getPublicCampaignSpaces = useCallback(async () => {
+  if (!client) throw new Error("Not connected to Matrix");
+
+  const spaces = await client.getPublicCampaignSpaces();
+  return spaces;
+}, [client]);
+
+const getRoomsInSpace = useCallback(
+  (spaceRoomId: string) => {
+    if (!client) throw new Error("Not connected to Matrix");
+
+    return client.getRoomsInSpace(spaceRoomId);
+  },
+  [client]
+);
+
+
+
   return {
     client,
     isConnected,
@@ -583,6 +603,8 @@ const createCampaignSpace: UseMatrixReturn["createCampaignSpace"] = useCallback(
     joinRoom,
     joinSpace,
     joinCampaignSpace,
+    getPublicCampaignSpaces,
+    getRoomsInSpace 
   };
 }
 

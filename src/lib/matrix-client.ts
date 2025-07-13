@@ -482,7 +482,8 @@ public async createRoom(
 
 public async createSpace(
   name: string,
-  topic?: string
+  topic?: string,
+  type: "campaign" | "general" = "general"
 ): Promise<string> {
   if (!this.matrixClient) {
     throw new Error("Matrix client not initialized.");
@@ -498,6 +499,14 @@ public async createSpace(
       preset: Preset.PrivateChat, // or public if you want it public
       visibility: Visibility.Private,
     });
+
+        await this.matrixClient.sendStateEvent(
+      response.room_id,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      "eco.social.space.type" as any,
+      { type },
+      ""
+    );
 
     // Optionally cache the new space:
     const newSpace: MatrixSpace = {
@@ -532,7 +541,13 @@ public async createCampaignSpace(
   try {
     // Step 1: Create the campaign SPACE
     const spaceRoomId = await this.createSpace(campaignName, campaignTopic);
-
+    await this.matrixClient.sendStateEvent(
+      spaceRoomId,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      "eco.social.space.type" as any,
+      { campaign: true },
+      ""
+    );
     // Step 2: Create the default rooms
     const defaultRooms = [
       { name: "General", topic: `${campaignName} General Chat` },
@@ -545,12 +560,14 @@ public async createCampaignSpace(
         room.name,
         room.topic,
         isPublic
+
       );
 
       await this.matrixClient.sendStateEvent(
         spaceRoomId,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         "m.space.child" as any,
+        
         {
           via: [new URL(this.baseUrl).host],
         },
@@ -572,6 +589,67 @@ public async createCampaignSpace(
     };
   }
 }
+
+
+
+
+public async getPublicCampaignSpaces(): Promise<MatrixSpace[]> {
+  if (!this.matrixClient) return [];
+
+  const result = await this.matrixClient.publicRooms({
+    limit: 100,
+    include_all_networks: true,
+    filter: {
+      generic_search_term: "",
+    },
+  });
+
+  const campaignSpaces: MatrixSpace[] = [];
+
+for (const room of result.chunk) {
+  if (room.room_type !== "m.space") continue;
+
+  try {
+    await this.matrixClient.peekInRoom(room.room_id);
+
+    const peekedRoom = this.matrixClient.getRoom(room.room_id);
+
+    if (!peekedRoom) {
+      console.warn(`Room ${room.room_id} could not be peeked.`);
+      continue;
+    }
+
+    const state = peekedRoom
+      .getLiveTimeline()
+      .getState(EventTimeline.FORWARDS);
+
+    const event = state?.getStateEvents(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      "eco.social.space.type" as any,
+      ""
+    );
+
+    const spaceType = event?.getContent()?.type;
+
+    if (spaceType === "campaign") {
+      campaignSpaces.push({
+        roomId: room.room_id,
+        name: room.name,
+        topic: room.topic,
+        isSpace: true,
+        children: [],
+      });
+    }
+  } catch (e) {
+    console.warn(`Could not peek into room ${room.room_id}`, e);
+    continue;
+  }
+}
+
+
+  return campaignSpaces;
+}
+
 
 
 public async joinRoom(roomIdOrAlias: string): Promise<MatrixOperationResult<MatrixRoom>> {
