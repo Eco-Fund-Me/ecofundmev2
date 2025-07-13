@@ -291,7 +291,7 @@ import {
   MatrixUser,
  
 } from "@/lib/matrix-client";
-import { removeAllMatrixStorage, storeMatrixToken } from "@/utils/local";
+import { removeAllMatrixStorage, storeMatrixToken, storeMatrixUserId } from "@/utils/local";
 
 interface UseMatrixReturn {
   client: EcoFundMeMatrixClient | null;
@@ -388,6 +388,9 @@ export function useMatrix(): UseMatrixReturn {
         });
 
         await newClient.initialize();
+        await storeMatrixToken(matrixAccessToken);
+        await storeMatrixUserId(matrixUserId);
+
 
         setClient(newClient);
         setIsConnected(true);
@@ -432,6 +435,8 @@ export function useMatrix(): UseMatrixReturn {
         }
 
         await storeMatrixToken(matrixAccessToken);
+        await storeMatrixUserId(matrixUserId);
+
 
         const newClient = new EcoFundMeMatrixClient({
           baseUrl: "https://chat.ecofundme.com",
