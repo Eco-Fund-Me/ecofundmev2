@@ -567,12 +567,22 @@ const createCampaignSpace: UseMatrixReturn["createCampaignSpace"] = useCallback(
     [client]
   );
 
-  const getPublicCampaignSpaces = useCallback(async () => {
-  if (!client) throw new Error("Not connected to Matrix");
+const getPublicCampaignSpaces = useCallback(async () => {
+  if (!client || !client.isLoggedIn()) {
+    console.warn("Not connected to Matrix.");
+    return [];
+  }
 
-  const spaces = await client.getPublicCampaignSpaces();
-  return spaces;
+  try {
+    const spaces = await client.getPublicCampaignSpaces();
+    console.log("useMatrix → getPublicCampaignSpaces result:", spaces);
+    return spaces;
+  } catch (e) {
+    console.error("useMatrix → Error calling getPublicCampaignSpaces:", e);
+    return [];
+  }
 }, [client]);
+
 
 const getRoomsInSpace = useCallback(
   (spaceRoomId: string) => {

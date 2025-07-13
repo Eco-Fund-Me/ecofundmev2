@@ -594,7 +594,12 @@ public async createCampaignSpace(
 
 
 public async getPublicCampaignSpaces(): Promise<MatrixSpace[]> {
-  if (!this.matrixClient) return [];
+  if (!this.matrixClient) {
+    console.log("getPublicCampaignSpaces: No Matrix client");
+    return [];
+  }
+
+  console.log("getPublicCampaignSpaces: Client is ready. UserID:", this.matrixClient.getUserId());
 
   const result = await this.matrixClient.publicRooms({
     limit: 100,
@@ -604,51 +609,59 @@ public async getPublicCampaignSpaces(): Promise<MatrixSpace[]> {
     },
   });
 
+  console.log("getPublicCampaignSpaces: publicRooms result:", result);
+
   const campaignSpaces: MatrixSpace[] = [];
 
-for (const room of result.chunk) {
-  if (room.room_type !== "m.space") continue;
+  for (const room of result.chunk) {
+    console.log("Checking room:", room);
 
-  try {
-    await this.matrixClient.peekInRoom(room.room_id);
-
-    const peekedRoom = this.matrixClient.getRoom(room.room_id);
-
-    if (!peekedRoom) {
-      console.warn(`Room ${room.room_id} could not be peeked.`);
+    if (room.room_type !== "m.space") {
+      console.log(`Skipping room ${room.room_id} — not a space`);
       continue;
     }
 
-    const state = peekedRoom
-      .getLiveTimeline()
-      .getState(EventTimeline.FORWARDS);
+    try {
+      await this.matrixClient.peekInRoom(room.room_id);
 
-    const event = state?.getStateEvents(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      "eco.social.space.type" as any,
-      ""
-    );
+      const peekedRoom = this.matrixClient.getRoom(room.room_id);
+      console.log(`Peeked room ${room.room_id}:`, peekedRoom);
 
-    const spaceType = event?.getContent()?.type;
+      if (!peekedRoom) {
+        console.warn(`Room ${room.room_id} could not be peeked.`);
+        continue;
+      }
 
-    if (spaceType === "campaign") {
-      campaignSpaces.push({
-        roomId: room.room_id,
-        name: room.name,
-        topic: room.topic,
-        isSpace: true,
-        children: [],
-      });
+      const state = peekedRoom.getLiveTimeline().getState(EventTimeline.FORWARDS);
+
+      const event = state?.getStateEvents(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        "eco.social.space.type" as any,
+        ""
+      );
+
+      const spaceType = event?.getContent()?.type;
+      console.log(`Room ${room.room_id} has eco.social.space.type =`, spaceType);
+
+      if (spaceType === "campaign") {
+        campaignSpaces.push({
+          roomId: room.room_id,
+          name: room.name,
+          topic: room.topic,
+          isSpace: true,
+          children: [],
+        });
+      }
+    } catch (e) {
+      console.warn(`Could not peek into room ${room.room_id}`, e);
+      continue;
     }
-  } catch (e) {
-    console.warn(`Could not peek into room ${room.room_id}`, e);
-    continue;
   }
-}
 
-
+  console.log("getPublicCampaignSpaces: Returning campaign spaces:", campaignSpaces);
   return campaignSpaces;
 }
+
 
 
 

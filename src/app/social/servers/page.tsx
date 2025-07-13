@@ -709,15 +709,18 @@ export default function ServersPage() {
   const categories = ["all", "Environment", "Energy", "Gardening", "Wildlife", "Forestry", "Climate", "Technology", "Literature", "Health"]
 
   // Load live campaign spaces when component mounts or when switching to campaign tab
-  useEffect(() => {
-    if (communityType === 'campaign' && getPublicCampaignSpaces) {
-      setIsLoading(true)
-      getPublicCampaignSpaces()
-        .then(spaces => {
-          // Transform the Matrix spaces data to match our CampaignServer interface
+ useEffect(() => {
+  if (communityType === 'campaign' && getPublicCampaignSpaces) {
+    setIsLoading(true)
+
+    getPublicCampaignSpaces()
+      .then((spaces) => {
+        console.log("✅ Raw spaces returned from Matrix:", spaces);
+
+        try {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const transformedSpaces: CampaignServer[] = spaces.map((space: any) => ({
-            id: space.id || space.room_id,
+            id: space.id || space.roomId || space.room_id,
             name: space.name || space.displayName || 'Unnamed Campaign',
             description: space.topic || space.description || 'No description available',
             avatar: space.avatar || '/placeholder.svg',
@@ -746,17 +749,25 @@ export default function ServersPage() {
             memberGrowth: space.memberGrowth || 0,
             type: 'campaign'
           }))
-          setLiveCampaignSpaces(transformedSpaces)
-        })
-        .catch(error => {
-          console.error('Failed to load campaign spaces:', error)
-          setLiveCampaignSpaces([])
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
-    }
-  }, [communityType, getPublicCampaignSpaces])
+
+          console.log("✅ Transformed campaign spaces for UI:", transformedSpaces);
+          setLiveCampaignSpaces(transformedSpaces);
+
+        } catch (transformErr) {
+          console.error("❌ Error transforming campaign spaces:", transformErr);
+          setLiveCampaignSpaces([]);
+        }
+      })
+      .catch((error) => {
+        console.error("❌ Failed to load campaign spaces:", error);
+        setLiveCampaignSpaces([]);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+}, [communityType, getPublicCampaignSpaces])
+
 
   // Get current communities based on type
   const getCurrentCommunities = () => {
