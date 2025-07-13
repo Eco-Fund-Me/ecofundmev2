@@ -19,6 +19,9 @@ export interface Social {
   custom_metadata?: Record<string, unknown>;
   created_at?: string;
   updated_at?: string;
+  created_campaigns?: string[];
+  created_spaces?: string[];
+  created_rooms?: string[];
 }
 
 export interface UpdateSocialParams {

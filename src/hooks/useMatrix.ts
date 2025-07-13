@@ -509,19 +509,25 @@ export function useMatrix(): UseMatrixReturn {
     [client]
   );
 
-  const createCampaignSpace = useCallback(
-    async (campaignName: string, topic?: string, isPublic = false) => {
-      if (!client) throw new Error("Not connected to Matrix");
+const createCampaignSpace: UseMatrixReturn["createCampaignSpace"] = useCallback(
+  async (campaignName, topic, isPublic) => {
+    if (!client) throw new Error("Not connected to Matrix");
 
-      const result = await client.createCampaignSpace(campaignName, topic, isPublic);
-      if (!result.success) throw new Error(result.message || "Failed to create campaign space");
+    const result = await client.createCampaignSpace(
+      campaignName,
+      topic,
+      isPublic ?? false
+    );
 
-      setSpaces(client.getJoinedSpaces());
-      setRooms(client.getRooms());
-      return result.data!;
-    },
-    [client]
-  );
+    if (!result.success) throw new Error(result.message || "Failed to create campaign space");
+
+    setSpaces(client.getJoinedSpaces());
+    setRooms(client.getRooms());
+    return result.data!;
+  },
+  [client]
+);
+
 
   const joinRoom = useCallback(
     async (roomIdOrAlias: string) => {

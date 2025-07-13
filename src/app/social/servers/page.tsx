@@ -12,6 +12,7 @@ import { Users, Search, TrendingUp, Star, MessageCircle, Target, Crown, Plus, Ma
 import { SocialNavigation } from "@/components/social/SocialNavigation"
 import { MobileBottomNav } from "@/components/social/MobileBottomNav"
 import Link from "next/link"
+import { CreateSpaceModal } from "@/components/social/modals/CreateSpaceModal"
 
 interface CampaignServer {
   id: string
@@ -200,10 +201,12 @@ const trendingServers: CampaignServer[] = [
 const allServers = [...featuredServers, ...trendingServers]
 
 export default function ServersPage() {
+
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [activeTab, setActiveTab] = useState("featured")
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isVerifiedBusiness = true;
   const categories = ["all", "Environment", "Energy", "Gardening", "Wildlife", "Forestry", "Climate"]
 
   const filterServers = (servers: CampaignServer[]) => {
@@ -218,6 +221,7 @@ export default function ServersPage() {
       return matchesSearch && matchesCategory
     })
   }
+
 
   const ServerCard = ({ server }: { server: CampaignServer }) => (
     <Card className="hover:shadow-lg transition-all duration-200 overflow-hidden border border-gray-200">
@@ -381,12 +385,23 @@ export default function ServersPage() {
         </div>
 
         {/* Create Community Button */}
-        <div className="mb-6">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
-            <Plus className="h-4 w-4 mr-2" />
-            Create Community
-          </Button>
-        </div>
+<div className="p-6">
+      <div className="mb-6">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-md flex items-center space-x-2 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Create Community</span>
+        </button>
+      </div>
+
+      <CreateSpaceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        isVerifiedBusiness={isVerifiedBusiness}
+      />
+    </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
