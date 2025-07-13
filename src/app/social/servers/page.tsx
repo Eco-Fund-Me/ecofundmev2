@@ -460,10 +460,9 @@
 //   )
 // }
 
-
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -602,6 +601,7 @@ const generalCommunities: CampaignServer[] = [
 ]
 
 // Campaign communities dummy data (keeping your existing data)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const campaignCommunities: CampaignServer[] = [
   {
     id: "ocean-cleanup",
@@ -696,48 +696,72 @@ const campaignCommunities: CampaignServer[] = [
 ]
 
 export default function ServersPage() {
-  const { client } = useMatrix()
+  const { getPublicCampaignSpaces } = useMatrix()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [activeTab, setActiveTab] = useState("featured")
   const [communityType, setCommunityType] = useState<'campaign' | 'general'>('campaign')
   const [isModalOpen, setIsModalOpen] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  const [liveCampaignSpaces, setLiveCampaignSpaces] = useState<any[]>([])
+  const [liveCampaignSpaces, setLiveCampaignSpaces] = useState<CampaignServer[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const isVerifiedBusiness = true
 
   const categories = ["all", "Environment", "Energy", "Gardening", "Wildlife", "Forestry", "Climate", "Technology", "Literature", "Health"]
 
-  const getPublicCampaignSpaces = useCallback(async () => {
-    if (!client) throw new Error("Not connected to Matrix")
-    const spaces = await client.getPublicCampaignSpaces()
-    return spaces
-  }, [client])
-
   // Load live campaign spaces when component mounts or when switching to campaign tab
   useEffect(() => {
-    if (communityType === 'campaign' && client) {
+    if (communityType === 'campaign' && getPublicCampaignSpaces) {
       setIsLoading(true)
       getPublicCampaignSpaces()
         .then(spaces => {
-          setLiveCampaignSpaces(spaces)
+          // Transform the Matrix spaces data to match our CampaignServer interface
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const transformedSpaces: CampaignServer[] = spaces.map((space: any) => ({
+            id: space.id || space.room_id,
+            name: space.name || space.displayName || 'Unnamed Campaign',
+            description: space.topic || space.description || 'No description available',
+            avatar: space.avatar || '/placeholder.svg',
+            banner: space.banner || space.avatar,
+            category: space.category || 'Campaign',
+            members: space.memberCount || space.num_joined_members || 0,
+            onlineMembers: space.onlineMembers || Math.floor((space.memberCount || 0) * 0.1),
+            totalMessages: space.totalMessages || 0,
+            goalAmount: space.goalAmount || 0,
+            raisedAmount: space.raisedAmount || 0,
+            isVerified: space.isVerified || false,
+            isTrending: space.isTrending || false,
+            isFeatured: space.isFeatured || false,
+            location: space.location || 'Global',
+            creator: {
+              name: space.creator?.name || space.creator?.displayName || 'Unknown',
+              username: space.creator?.username || space.creator?.id || 'unknown',
+              avatar: space.creator?.avatar || '/placeholder.svg',
+              verified: space.creator?.verified || false,
+            },
+            lastActivity: space.lastActivity || 'Recently',
+            channels: {
+              text: space.channels?.text || 1,
+              voice: space.channels?.voice || 0,
+            },
+            memberGrowth: space.memberGrowth || 0,
+            type: 'campaign'
+          }))
+          setLiveCampaignSpaces(transformedSpaces)
         })
         .catch(error => {
           console.error('Failed to load campaign spaces:', error)
+          setLiveCampaignSpaces([])
         })
         .finally(() => {
           setIsLoading(false)
         })
     }
-  }, [communityType, client, getPublicCampaignSpaces])
+  }, [communityType, getPublicCampaignSpaces])
 
   // Get current communities based on type
   const getCurrentCommunities = () => {
     if (communityType === 'campaign') {
-      // You can merge live data with dummy data or use only live data
-      // For now, using dummy data but you can replace with liveCampaignSpaces
-      return campaignCommunities
+      return liveCampaignSpaces
     }
     return generalCommunities
   }
@@ -983,14 +1007,23 @@ export default function ServersPage() {
         />
 
         {/* Loading State */}
-        {isLoading && (
+        {isLoading && communityType === 'campaign' && (
           <div className="flex items-center justify-center py-12">
-            <div className="text-gray-500">Loading communities...</div>
+            <div className="text-gray-500">Loading campaign spaces...</div>
+          </div>
+        )}
+
+        {/* Empty State for Campaign */}
+        {communityType === 'campaign' && !isLoading && liveCampaignSpaces.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-12">
+            <div className="text-gray-500 mb-2">No campaign spaces found</div>
+            <div className="text-sm text-gray-400">Check your Matrix connection or try again later</div>
           </div>
         )}
 
         {/* Tabs */}
-        {!isLoading && (
+        {((communityType === 'campaign' && !isLoading && liveCampaignSpaces.length > 0) || 
+          (communityType === 'general')) && (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
             <TabsList className="grid w-full grid-cols-3 bg-white border border-gray-200">
               <TabsTrigger
