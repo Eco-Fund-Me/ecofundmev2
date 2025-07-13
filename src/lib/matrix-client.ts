@@ -483,7 +483,8 @@ public async createRoom(
 public async createSpace(
   name: string,
   topic?: string,
-  type: "campaign" | "general" = "general"
+  type: "campaign" | "general" = "general",
+  isPublic: boolean = false
 ): Promise<string> {
   if (!this.matrixClient) {
     throw new Error("Matrix client not initialized.");
@@ -496,11 +497,17 @@ public async createSpace(
       creation_content: {
         type: "m.space",
       },
-      preset: Preset.PrivateChat, // or public if you want it public
-      visibility: Visibility.Private,
+      preset: isPublic ? Preset.PublicChat : Preset.PrivateChat,
+      visibility: isPublic ? Visibility.Public : Visibility.Private,
     });
 
-        await this.matrixClient.sendStateEvent(
+    // Publish to directory if public
+    if (isPublic) {
+      await this.matrixClient.setRoomDirectoryVisibility(response.room_id, Visibility.Public);
+        
+    }
+
+    await this.matrixClient.sendStateEvent(
       response.room_id,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       "eco.social.space.type" as any,
@@ -508,7 +515,7 @@ public async createSpace(
       ""
     );
 
-    // Optionally cache the new space:
+    // Cache space
     const newSpace: MatrixSpace = {
       roomId: response.room_id,
       name,
@@ -525,6 +532,7 @@ public async createSpace(
     throw new Error("Failed to create space.");
   }
 }
+
 
 public async createCampaignSpace(
   campaignName: string,
