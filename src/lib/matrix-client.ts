@@ -219,6 +219,8 @@ export interface MatrixOperationResult<T = undefined> {
 }
 
 
+
+
 export class EcoFundMeMatrixClient {
   private readonly baseUrl: string;
   private readonly userId: string;
@@ -554,12 +556,21 @@ public async createCampaignSpace(
   "campaign",
   isPublic
 );
+
+if (isPublic) {
+  await this.matrixClient.sendStateEvent(
+    spaceRoomId,
+    sdk.EventType.RoomJoinRules,
+    { join_rule: sdk.JoinRule.Public },
+    ""
+  );
+}
     await this.matrixClient.sendStateEvent(
       spaceRoomId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       "eco.social.space.type" as any,
       { campaign: true },
-      ""
+      "",
     );
     // Step 2: Create the default rooms
     const defaultRooms = [
@@ -578,8 +589,7 @@ public async createCampaignSpace(
 
       await this.matrixClient.sendStateEvent(
         spaceRoomId,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        "m.space.child" as any,
+        sdk.EventType.SpaceChild,
         
         {
           via: [new URL(this.baseUrl).host],
