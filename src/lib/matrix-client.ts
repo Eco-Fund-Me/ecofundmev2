@@ -548,7 +548,12 @@ public async createCampaignSpace(
 
   try {
     // Step 1: Create the campaign SPACE
-    const spaceRoomId = await this.createSpace(campaignName, campaignTopic);
+    const spaceRoomId = await this.createSpace(
+  campaignName,
+  campaignTopic,
+  "campaign",
+  isPublic
+);
     await this.matrixClient.sendStateEvent(
       spaceRoomId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
