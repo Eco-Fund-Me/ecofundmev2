@@ -20,9 +20,13 @@ export const CreateSpaceModal: React.FC<CreateSpaceModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { createSpace, createCampaignSpace } = useMatrix();
+  const { createSpace, createCampaignSpace, isConnected } = useMatrix();
 
   const handleCreateSpace = async (name: string, topic?: string) => {
+      if (!isConnected) {
+    alert("Please log in first.");
+    return;
+  }
     console.log('Creating general space:', { name, topic });
     const result = await createSpace(name, topic);
     console.log('Space created:', result);
@@ -30,6 +34,10 @@ export const CreateSpaceModal: React.FC<CreateSpaceModalProps> = ({
   };
   
   const handleCreateCampaignSpace = async (name: string, topic?: string, isPublic: boolean = false) => {
+      if (!isConnected) {
+    alert("Please log in first.");
+    return;
+  }
     console.log('Creating campaign space:', { name, topic, isPublic });
     const result = await createCampaignSpace(name, topic, isPublic);
     console.log('Campaign space created:', result);

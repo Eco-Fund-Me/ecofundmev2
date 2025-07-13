@@ -10,11 +10,23 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { useMatrix } from "@/hooks/useMatrix"
+import { Modal } from "../ui/Modal"
+import { AuthFlowModal } from "./auth/AuthFlowModal"
 
 export function SocialNavigation() {
+  const { isConnected} = useMatrix()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 
+  const handleOpenAuthModal = () => {
+    setIsAuthModalOpen(true)
+  }
+
+  const handleCloseAuthModal = () => {
+    setIsAuthModalOpen(false)
+  }
   const navItems = [
     { href: "/social/feed", label: "Feed", active: pathname === "/social/feed" },
     { href: "/social/servers", label: "Communities", active: pathname.startsWith("/social/servers") },
@@ -73,8 +85,9 @@ export function SocialNavigation() {
               <Input placeholder="Search EcoFundMe..." className="pl-10 bg-gray-50 border-gray-200 focus:bg-white" />
             </div>
           </div>
-
-          {/* Right side - Actions and Profile */}
+              {/* Right side - Actions and Profile */}
+              {isConnected ?
+      
           <div className="flex items-center gap-3">
             {/* Create button */}
             <Button size="sm" className="bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 hidden sm:flex">
@@ -131,7 +144,16 @@ export function SocialNavigation() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </div>:
+                  <Button variant="outline" className="hidden sm:flex bg-transparent" onClick={handleOpenAuthModal}>
+          Sign In
+        </Button>
+      }
+
+         <Modal isOpen={isAuthModalOpen} onClose={handleCloseAuthModal} size="md"> {/* Use size="lg" for larger modal */}
+              {/* Render the new AuthFlowModal component */}
+              <AuthFlowModal onClose={handleCloseAuthModal} initialView="signin" />
+            </Modal>
         </div>
 
         {/* Mobile Navigation Menu */}

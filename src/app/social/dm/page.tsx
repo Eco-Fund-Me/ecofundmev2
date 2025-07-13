@@ -136,6 +136,7 @@ const MobileBottomNav = () => (
 export default function DirectMessagesPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { isConnected, user, rooms } = useMatrix()
 
   const filteredDMs = mockDMs.filter(
