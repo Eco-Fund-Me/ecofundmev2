@@ -93,8 +93,6 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
@@ -142,7 +140,7 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">
 
-function toast({ ...props }: Toast) {
+function baseToast({ ...props }: Toast) {
   const id = genId()
 
   const update = (props: ToasterToast) =>
@@ -150,7 +148,9 @@ function toast({ ...props }: Toast) {
       type: "UPDATE_TOAST",
       toast: { ...props, id },
     })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+
+  const dismiss = () =>
+    dispatch({ type: "DISMISS_TOAST", toastId: id })
 
   dispatch({
     type: "ADD_TOAST",
@@ -171,6 +171,41 @@ function toast({ ...props }: Toast) {
   }
 }
 
+/**
+ * Add type signatures for helpers like toast.success, toast.error, etc.
+ */
+interface ToastApi {
+  (props: Toast): {
+    id: string
+    dismiss: () => void
+    update: (props: ToasterToast) => void
+  }
+  success(title: string, description?: string): ReturnType<typeof baseToast>
+  error(title: string, description?: string): ReturnType<typeof baseToast>
+  info(title: string, description?: string): ReturnType<typeof baseToast>
+}
+
+const toast = Object.assign(baseToast, {
+  success(title: string, description?: string) {
+    return baseToast({
+      title,
+      description,
+    })
+  },
+  error(title: string, description?: string) {
+    return baseToast({
+      title,
+      description,
+    })
+  },
+  info(title: string, description?: string) {
+    return baseToast({
+      title,
+      description,
+    })
+  },
+}) as ToastApi
+
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
@@ -182,12 +217,13 @@ function useToast() {
         listeners.splice(index, 1)
       }
     }
-  }, [state])
+  }, [])
 
   return {
     ...state,
     toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    dismiss: (toastId?: string) =>
+      dispatch({ type: "DISMISS_TOAST", toastId }),
   }
 }
 

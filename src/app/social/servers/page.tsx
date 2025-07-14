@@ -473,9 +473,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Users, Search, TrendingUp, Star, MessageCircle, Target, Crown, Plus, MapPin, Building, Heart } from "lucide-react"
 import { SocialNavigation } from "@/components/social/SocialNavigation"
 import { MobileBottomNav } from "@/components/social/MobileBottomNav"
-import Link from "next/link"
+// import Link from "next/link"
 import { CreateSpaceModal } from "@/components/social/modals/CreateSpaceModal"
 import { useMatrix } from "@/hooks/useMatrix" // Assuming this is your hook path
+import JoinServerButton from "@/components/social/buttons/JoinServeButton"
 
 interface CampaignServer {
   id: string
@@ -913,11 +914,12 @@ export default function ServersPage() {
 
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <Link href={`/social/servers/${server.id}`} className="flex-1">
+          {/* <Link href={`/social/servers/${server.id}`} className="flex-1">
             <Button className="w-full bg-[#00EE7D] text-black hover:bg-[#00EE7D]/90 font-medium">
               {server.type === 'campaign' ? 'Join Campaign' : 'Join Community'}
             </Button>
-          </Link>
+          </Link> */}
+          <JoinServerButton server={server} />
           <Button variant="outline" size="sm" className="px-3 bg-transparent">
             <Target className="h-4 w-4" />
           </Button>
