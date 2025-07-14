@@ -493,6 +493,7 @@ public async createSpace(
   }
 
   try {
+    const aliasName = type === "campaign" ? `campaign-${name.replace(/\s+/g, '-').toLowerCase()}` : `space-${name.replace(/\s+/g, '-').toLowerCase()}`;
     const response = await this.matrixClient.createRoom({
       name,
       topic,
@@ -501,12 +502,19 @@ public async createSpace(
       },
       preset: isPublic ? Preset.PublicChat : Preset.PrivateChat,
       visibility: isPublic ? Visibility.Public : Visibility.Private,
+      room_alias_name: isPublic ? aliasName : undefined, // e.g., #campaign-my-campaign
     });
 
     // Publish to directory if public
     if (isPublic) {
-      await this.matrixClient.setRoomDirectoryVisibility(response.room_id, Visibility.Public);
-        
+      try {
+        await this.matrixClient.setRoomDirectoryVisibility(response.room_id, Visibility.Public);
+        console.log(`Room ${response.room_id} published to public directory`);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err:any) {
+        console.warn(`Failed to publish room ${response.room_id}: ${err.message}`);
+        // Continue to allow space creation even if publishing fails
+      }
     }
 
     await this.matrixClient.sendStateEvent(
@@ -529,11 +537,65 @@ public async createSpace(
     this.spaces.push(newSpace);
 
     return response.room_id;
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error:any) {
     console.error("Failed to create space:", error);
-    throw new Error("Failed to create space.");
+    throw new Error(`Failed to create space: ${error.message}`);
   }
 }
+
+// public async createSpace(
+//   name: string,
+//   topic?: string,
+//   type: "campaign" | "general" = "general",
+//   isPublic: boolean = false
+// ): Promise<string> {
+//   if (!this.matrixClient) {
+//     throw new Error("Matrix client not initialized.");
+//   }
+
+//   try {
+//     const response = await this.matrixClient.createRoom({
+//       name,
+//       topic,
+//       creation_content: {
+//         type: "m.space",
+//       },
+//       preset: isPublic ? Preset.PublicChat : Preset.PrivateChat,
+//       visibility: isPublic ? Visibility.Public : Visibility.Private,
+//     });
+
+//     // Publish to directory if public
+//     if (isPublic) {
+//       await this.matrixClient.setRoomDirectoryVisibility(response.room_id, Visibility.Public);
+        
+//     }
+
+//     await this.matrixClient.sendStateEvent(
+//       response.room_id,
+//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//       "eco.social.space.type" as any,
+//       { type },
+//       ""
+//     );
+
+//     // Cache space
+//     const newSpace: MatrixSpace = {
+//       roomId: response.room_id,
+//       name,
+//       topic,
+//       isSpace: true,
+//       children: [],
+//     };
+
+//     this.spaces.push(newSpace);
+
+//     return response.room_id;
+//   } catch (error) {
+//     console.error("Failed to create space:", error);
+//     throw new Error("Failed to create space.");
+//   }
+// }
 
 
 public async createCampaignSpace(
