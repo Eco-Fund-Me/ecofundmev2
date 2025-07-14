@@ -475,7 +475,7 @@ import { SocialNavigation } from "@/components/social/SocialNavigation"
 import { MobileBottomNav } from "@/components/social/MobileBottomNav"
 // import Link from "next/link"
 import { CreateSpaceModal } from "@/components/social/modals/CreateSpaceModal"
-import { useMatrix } from "@/hooks/useMatrix" // Assuming this is your hook path
+import { useMatrix } from "@/hooks/useMatrix" 
 import JoinServerButton from "@/components/social/buttons/JoinServeButton"
 
 interface CampaignServer {
