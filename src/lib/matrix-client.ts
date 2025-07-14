@@ -846,3 +846,29 @@ public async createDm(
 
 
 }
+
+
+
+
+/*
+https://chat.ecofundme.com/_matrix/client/v3/directory/list/room/!gCjtWMljMrBZrxnKBV%3Aecofundme.com
+
+shows {"visibility":"private"}
+
+[MatrixRTCSessionManager] Got room state event for unknown room !gCjtWMljMrBZrxnKBV:ecofundme.com!
+(anonymous) @ 9234-85bcc5db15b36317.js:1Understand this error
+chat.ecofundme.com/_matrix/client/v3/directory/list/room/!gCjtWMljMrBZrxnKBV%3Aecofundme.com:1  Failed to load resource: the server responded with a status of 403 (Forbidden)Understand this error
+9234-85bcc5db15b36317.js:1 Failed to create space: M_UNKNOWN: MatrixError: [403] Not allowed to publish room (https://chat.ecofundme.com/_matrix/client/v3/directory/list/room/!gCjtWMljMrBZrxnKBV%3Aecofundme.com)
+    at S (https://ecofundme-five.vercel.app/_next/static/chunks/84003-84c018719f750644.js:1:297512)
+    at https://ecofundme-five.vercel.app/_next/static/chunks/84003-84c018719f750644.js:1:304375
+    at Generator.next (<anonymous>)
+    at n (https://ecofundme-five.vercel.app/_next/static/chunks/84003-84c018719f750644.js:1:168644)
+    at s (https://ecofundme-five.vercel.app/_next/static/chunks/84003-84c018719f750644.js:1:168846)
+(anonymous) @ 9234-85bcc5db15b36317.js:1Understand this error
+9234-85bcc5db15b36317.js:1 Failed to create campaign space: Error: Failed to create space.
+    at f.createSpace (2336-ed32f738ea4f0337.js:1:5579)
+    at async f.createCampaignSpace (2336-ed32f738ea4f0337.js:1:5798)
+    at async 2336-ed32f738ea4f0337.js:1:12602
+    at async C (page-96cfa031894eac4b.js:1:1162)
+    at async E (page-96cfa031894eac4b.js:1:1413)
+*/
