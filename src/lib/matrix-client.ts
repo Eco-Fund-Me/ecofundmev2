@@ -627,13 +627,14 @@ if (isPublic) {
     ""
   );
 }
-    await this.matrixClient.sendStateEvent(
-      spaceRoomId,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      "eco.social.space.type" as any,
-      { campaign: true },
-      "",
-    );
+ await this.matrixClient.sendStateEvent(
+  spaceRoomId,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  "eco.social.space.type" as any,
+  { type: "campaign" },
+  "",
+);
+
     // Step 2: Create the default rooms
     const defaultRooms = [
       { name: "General", topic: `${campaignName} General Chat` },
