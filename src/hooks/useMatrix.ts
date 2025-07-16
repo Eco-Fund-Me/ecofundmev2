@@ -588,7 +588,7 @@ const getRoomsInSpace = useCallback(
   async (spaceRoomId: string) => {
     // if (!client) throw new Error("Not connected to Matrix");
       if (!client || !client.isLoggedIn()) {
-    console.warn("Not connected to Matrix.");
+    console.warn("Not connected to Matrix. Inside useMatrix getRoomsInSpace.");
     return [];
   }
 
