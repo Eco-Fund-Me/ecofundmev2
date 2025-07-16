@@ -586,7 +586,11 @@ const getPublicCampaignSpaces = useCallback(async () => {
 
 const getRoomsInSpace = useCallback(
   (spaceRoomId: string) => {
-    if (!client) throw new Error("Not connected to Matrix");
+    // if (!client) throw new Error("Not connected to Matrix");
+      if (!client || !client.isLoggedIn()) {
+    console.warn("Not connected to Matrix.");
+    return [];
+  }
 
     return client.getRoomsInSpace(spaceRoomId);
   },
