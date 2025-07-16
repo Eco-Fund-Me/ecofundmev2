@@ -325,11 +325,16 @@ public getJoinedSpaces(): MatrixSpace[] {
 
 
 public getRoomsInSpace(spaceRoomId: string): MatrixRoom[] {
-  if (!this.matrixClient) return [];
-
+  if (!this.matrixClient) {
+    console.warn("Inside matrix client file there is no connection reached.");
+    return [];
+  }
   const spaceRoom = this.matrixClient.getRoom(spaceRoomId);
    
-  if (!spaceRoom) return [];
+  if (!spaceRoom) {
+    console.warn(`No space found with ID ${spaceRoomId} right insideq the matrix client file.`);
+    return [];
+  }
 
   const state = spaceRoom
     .getLiveTimeline()
