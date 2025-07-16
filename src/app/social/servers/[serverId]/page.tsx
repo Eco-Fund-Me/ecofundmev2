@@ -516,13 +516,11 @@
 //   )
 // }
 
-
 "use client"
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -652,22 +650,37 @@ export default function ServerPage({ params }: { params: { serverId: string } })
     const fetchRooms = async () => {
       try {
         setLoading(true)
+        console.log("Fetching rooms for server ID:", params.serverId)
+        
         const spaceRooms = getRoomsInSpace(params.serverId)
         setRooms(spaceRooms)
         
         // Log room properties for debugging
+        console.log("Server ID:", params.serverId)
+        console.log("Total rooms found:", spaceRooms.length)
         console.log("Rooms in space:", spaceRooms)
+        
         spaceRooms.forEach((room, index) => {
-          console.log(`Room ${index + 1}:`, room)
-          console.log(`Room ${index + 1} properties:`, Object.keys(room))
+          console.log(`\n--- Room ${index + 1} ---`)
+          console.log("Room object:", room)
+          console.log("Room properties:", Object.keys(room))
+          console.log("Room ID:", room.roomId)
+          console.log("Room name:", room.name)
+          console.log("Room topic:", room.topic)
+          
+          // Log any other properties that might exist
+          Object.entries(room).forEach(([key, value]) => {
+            console.log(`${key}:`, value)
+          })
         })
         
         // Select first room by default
         if (spaceRooms.length > 0) {
           setSelectedRoom(spaceRooms[0].roomId)
+          console.log("Selected room:", spaceRooms[0].roomId)
         }
       } catch (error) {
-        console.error("Error fetching rooms:", error)
+        console.error("Error fetching rooms for server:", params.serverId, error)
       } finally {
         setLoading(false)
       }
@@ -721,7 +734,7 @@ export default function ServerPage({ params }: { params: { serverId: string } })
       <div className="h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading space...</p>
+          <p className="text-gray-600">Loading server {params.serverId}...</p>
         </div>
       </div>
     )
@@ -738,7 +751,7 @@ export default function ServerPage({ params }: { params: { serverId: string } })
           <div className="p-4 bg-gray-800 border-b border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-bold text-lg truncate">Matrix Space</h2>
+                <h2 className="font-bold text-lg truncate">Server: {params.serverId}</h2>
                 <p className="text-sm text-gray-300">{rooms.length} rooms</p>
               </div>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
@@ -902,8 +915,9 @@ export default function ServerPage({ params }: { params: { serverId: string } })
                 <div className="flex-1 flex items-center justify-center">
                   <div className="text-center">
                     <MessageSquare className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold mb-2 text-gray-600">Welcome to Matrix Space</h3>
+                    <h3 className="text-xl font-semibold mb-2 text-gray-600">Welcome to Server</h3>
                     <p className="text-gray-500">Select a room from the sidebar to start chatting</p>
+                    <p className="text-xs text-gray-400 mt-2">Server ID: {params.serverId}</p>
                   </div>
                 </div>
               ) : isVoiceChannel ? (
