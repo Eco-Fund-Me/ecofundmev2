@@ -184,7 +184,7 @@
 
 import { loadMatrixToken, loadMatrixUserId } from "@/utils/local";
 import * as sdk from "matrix-js-sdk";
-import { MatrixClient, Room, EventTimeline, Visibility, Preset } from "matrix-js-sdk";
+import { MatrixClient, Room, EventTimeline, Visibility, Preset ,HierarchyRoom} from "matrix-js-sdk";
 
 export interface MatrixClientConfig {
   baseUrl: string;
@@ -198,6 +198,12 @@ export interface MatrixUser {
   avatarUrl?: string;
 }
 
+export interface IRoomHierarchy {
+    next_batch?: string;
+    rooms: HierarchyRoom[];
+}
+
+
 export interface MatrixRoom {
   roomId: string;
   name?: string;
@@ -206,6 +212,10 @@ export interface MatrixRoom {
   membership?: string;
 }
 
+export interface MatrixRoomInfo extends MatrixRoom{
+  numJoinedMembers: number;
+  canonicalAlias?: string;
+}
 
 
 export interface MatrixSpace extends MatrixRoom {
@@ -323,38 +333,49 @@ public getJoinedSpaces(): MatrixSpace[] {
     }));
 }
 
+public async getRoomsInSpace(
+    spaceId: string,
+    limit = 50,
+    suggestedOnly = false
+  ): Promise<MatrixRoomInfo[]> {
+    let rooms: MatrixRoomInfo[] = [];
+    let fromToken: string | undefined = undefined;
 
-public async getRoomsInSpace(spaceRoomId: string): Promise<MatrixRoom[]> {
-  if (!this.matrixClient) {
-    console.warn("Inside matrix client file there is no connection reached.");
-    return [];
+    do {
+      const result: IRoomHierarchy =
+        await this.matrixClient!.getRoomHierarchy(
+          spaceId,
+          limit,
+          undefined,
+          suggestedOnly,
+          fromToken
+        );
+
+      const batch: MatrixRoomInfo[] = result.rooms.map((child: HierarchyRoom) => {
+        const sdkRoom: Room | null =
+          this.matrixClient!.getRoom(child.room_id) || null;
+
+        const isSpace =
+          sdkRoom?.isSpaceRoom?.() ??
+          child.room_type === "m.space";
+
+        return {
+          roomId: child.room_id,
+          name: child.name,
+          topic: child.topic,
+          isSpace,
+          numJoinedMembers: child.num_joined_members,
+          canonicalAlias: child.canonical_alias,
+        };
+      });
+
+      rooms = rooms.concat(batch);
+      fromToken = result.next_batch;
+    } while (fromToken);
+
+    return rooms;
   }
-  const spaceRoom = this.matrixClient.getRoom(spaceRoomId);
-   
-  if (!spaceRoom) {
-    console.warn(`No space found with ID ${spaceRoomId} right insideq the matrix client file.`);
-    return [];
-  }
 
-  const state = spaceRoom
-    .getLiveTimeline()
-    .getState(EventTimeline.FORWARDS);
-
-  const childEvents = state?.getStateEvents("m.space.child") || [];
-
-  const childRoomIds = childEvents.map(e => e.getStateKey());
-
-  const rooms = childRoomIds
-    .map(roomId => this.matrixClient!.getRoom(roomId))
-    .filter((room): room is Room => !!room);
-
-  return rooms.map(room => ({
-    roomId: room.roomId,
-    name: room.name || room.getCanonicalAlias() || undefined,
-    topic: this.getRoomTopic(room),
-    isSpace: room.getType() === "m.space",
-  }));
-}
 
 public async getPublicSpaces(): Promise<MatrixSpace[]> {
   if (!this.matrixClient) {
