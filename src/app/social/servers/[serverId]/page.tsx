@@ -647,55 +647,43 @@ export default function ServerPage({ params }: { params: { serverId: string } })
   const [rooms, setRooms] = useState<MatrixRoom[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        setLoading(true)
-        console.log("Fetching rooms for server ID:", params.serverId)
-        if (!isConnected) {
-          console.error("Matrix client is not connected")
-          return
-        }
-        
-        
-        const spaceRooms = getRoomsInSpace(params.serverId)
-        setRooms(spaceRooms)
-        
-        // Log room properties for debugging
-        console.log("Server ID:", params.serverId)
-        console.log("Total rooms found:", spaceRooms.length)
-        console.log("Rooms in space:", spaceRooms)
-        
-        spaceRooms.forEach((room, index) => {
-          console.log(`\n--- Room ${index + 1} ---`)
-          console.log("Room object:", room)
-          console.log("Room properties:", Object.keys(room))
-          console.log("Room ID:", room.roomId)
-          console.log("Room name:", room.name)
-          console.log("Room topic:", room.topic)
-          
-          // Log any other properties that might exist
-          Object.entries(room).forEach(([key, value]) => {
-            console.log(`${key}:`, value)
-          })
-        })
-        
-        // Select first room by default
-        if (spaceRooms.length > 0) {
-          setSelectedRoom(spaceRooms[0].roomId)
-          console.log("Selected room:", spaceRooms[0].roomId)
-        }
-      } catch (error) {
-        console.error("Error fetching rooms for server:", params.serverId, error)
-      } finally {
-        setLoading(false)
-      }
-    }
+ useEffect(() => {
+  if (!params.serverId || !isConnected) {
+    console.log("Skipping fetch: No server ID or Matrix client not connected");
+    setLoading(false);
+    return;
+  }
 
-    if (params.serverId) {
-      fetchRooms()
+  const fetchRooms = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching rooms for server ID:", params.serverId);
+      const spaceRooms = await getRoomsInSpace(params.serverId); // Ensure async
+      setRooms(spaceRooms);
+      console.log("Server ID:", params.serverId);
+      console.log("Total rooms found:", spaceRooms.length);
+      console.log("Rooms in space:", spaceRooms);
+
+      spaceRooms.forEach((room, index) => {
+        console.log(`\n--- Room ${index + 1} ---`);
+        console.log("Room ID:", room.roomId);
+        console.log("Room name:", room.name);
+        console.log("Room topic:", room.topic);
+      });
+
+      if (spaceRooms.length > 0) {
+        setSelectedRoom(spaceRooms[0].roomId);
+        console.log("Selected room:", spaceRooms[0].roomId);
+      }
+    } catch (error) {
+      console.error("Error fetching rooms for server:", params.serverId, error);
+    } finally {
+      setLoading(false);
     }
-  }, [params.serverId, getRoomsInSpace,isConnected])
+  };
+
+  fetchRooms();
+}, [params.serverId, getRoomsInSpace, isConnected]);
 
   const currentRoom = rooms.find(room => room.roomId === selectedRoom)
   const isVoiceChannel = currentRoom?.name?.toLowerCase().includes('voice') || false
