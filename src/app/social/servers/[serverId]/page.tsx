@@ -638,7 +638,8 @@ const mockMessages: Message[] = [
 ]
 
 export default function ServerPage({ params }: { params: { serverId: string } }) {
-  const { getRoomsInSpace } = useMatrix()
+
+  const { getRoomsInSpace, isConnected} = useMatrix()
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
   const [newMessage, setNewMessage] = useState("")
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -651,6 +652,11 @@ export default function ServerPage({ params }: { params: { serverId: string } })
       try {
         setLoading(true)
         console.log("Fetching rooms for server ID:", params.serverId)
+        if (!isConnected) {
+          console.error("Matrix client is not connected")
+          return
+        }
+        
         
         const spaceRooms = getRoomsInSpace(params.serverId)
         setRooms(spaceRooms)
@@ -689,7 +695,7 @@ export default function ServerPage({ params }: { params: { serverId: string } })
     if (params.serverId) {
       fetchRooms()
     }
-  }, [params.serverId, getRoomsInSpace])
+  }, [params.serverId, getRoomsInSpace,isConnected])
 
   const currentRoom = rooms.find(room => room.roomId === selectedRoom)
   const isVoiceChannel = currentRoom?.name?.toLowerCase().includes('voice') || false
