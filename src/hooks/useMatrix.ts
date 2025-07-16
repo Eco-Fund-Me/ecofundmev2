@@ -318,7 +318,7 @@ interface UseMatrixReturn {
   joinSpace: (spaceIdOrAlias: string) => Promise<void>;
   joinCampaignSpace: (spaceId: string) => Promise<void>;
     getPublicCampaignSpaces: () => Promise<MatrixSpace[]>;
-  getRoomsInSpace: (spaceRoomId: string) => MatrixRoom[];
+  getRoomsInSpace: (spaceRoomId: string) => Promise<MatrixRoom[]>;
 }
 
 export function useMatrix(): UseMatrixReturn {
@@ -585,14 +585,14 @@ const getPublicCampaignSpaces = useCallback(async () => {
 
 
 const getRoomsInSpace = useCallback(
-  (spaceRoomId: string) => {
+  async (spaceRoomId: string) => {
     // if (!client) throw new Error("Not connected to Matrix");
       if (!client || !client.isLoggedIn()) {
     console.warn("Not connected to Matrix.");
     return [];
   }
 
-    return client.getRoomsInSpace(spaceRoomId);
+    return await client.getRoomsInSpace(spaceRoomId);
   },
   [client]
 );

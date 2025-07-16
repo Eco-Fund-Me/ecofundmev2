@@ -324,7 +324,7 @@ public getJoinedSpaces(): MatrixSpace[] {
 }
 
 
-public getRoomsInSpace(spaceRoomId: string): MatrixRoom[] {
+public async getRoomsInSpace(spaceRoomId: string): Promise<MatrixRoom[]> {
   if (!this.matrixClient) {
     console.warn("Inside matrix client file there is no connection reached.");
     return [];
@@ -829,7 +829,7 @@ public async joinSpace(spaceIdOrAlias: string): Promise<MatrixOperationResult<Ma
 public async joinCampaignSpace(spaceId: string): Promise<void> {
   await this.joinSpace(spaceId);
 
-  const childRooms = this.getRoomsInSpace(spaceId);
+  const childRooms =await this.getRoomsInSpace(spaceId);
   for (const room of childRooms) {
     if (room.name !== "Donor Chat") {
        await this.joinRoom(room.roomId);
