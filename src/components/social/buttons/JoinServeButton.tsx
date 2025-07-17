@@ -13,6 +13,7 @@ const handleJoin = async () => {
   setJoining(true);
   try {
     if (server.type === "campaign") {
+      console.log("Joining campaign space:", server.id);
       await joinCampaignSpace(server.id);
     } else {
       await joinSpace(server.id);

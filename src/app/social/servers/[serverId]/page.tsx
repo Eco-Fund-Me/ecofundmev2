@@ -646,9 +646,10 @@ export default function ServerPage({ params }: { params: { serverId: string } })
   const [showMembers, setShowMembers] = useState(true)
   const [rooms, setRooms] = useState<MatrixRoom[]>([])
   const [loading, setLoading] = useState(true)
+  const spaceId = decodeURIComponent(params.serverId)
 
  useEffect(() => {
-  if (!params.serverId || !isConnected) {
+  if (!spaceId || !isConnected) {
     console.log("Skipping fetch: No server ID or Matrix client not connected");
     setLoading(false);
     return;
@@ -657,10 +658,10 @@ export default function ServerPage({ params }: { params: { serverId: string } })
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      console.log("Fetching rooms for server ID:", params.serverId);
-      const spaceRooms = await getRoomsInSpace(params.serverId); // Ensure async
+      console.log("Fetching rooms for server ID:", spaceId);
+      const spaceRooms = await getRoomsInSpace(spaceId); // Ensure async
       setRooms(spaceRooms);
-      console.log("Server ID:", params.serverId);
+      console.log("Server ID:", spaceId);
       console.log("Total rooms found:", spaceRooms.length);
       console.log("Rooms in space:", spaceRooms);
 
@@ -676,14 +677,14 @@ export default function ServerPage({ params }: { params: { serverId: string } })
         console.log("Selected room:", spaceRooms[0].roomId);
       }
     } catch (error) {
-      console.error("Error fetching rooms for server:", params.serverId, error);
+      console.error("Error fetching rooms for server:", spaceId, error);
     } finally {
       setLoading(false);
     }
   };
 
   fetchRooms();
-}, [params.serverId, getRoomsInSpace, isConnected]);
+}, [spaceId, getRoomsInSpace, isConnected]);
 
   const currentRoom = rooms.find(room => room.roomId === selectedRoom)
   const isVoiceChannel = currentRoom?.name?.toLowerCase().includes('voice') || false
