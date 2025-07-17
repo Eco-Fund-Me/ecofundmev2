@@ -334,47 +334,58 @@ public getJoinedSpaces(): MatrixSpace[] {
 }
 
 public async getRoomsInSpace(
-    spaceId: string,
-    limit = 50,
-    suggestedOnly = false
-  ): Promise<MatrixRoomInfo[]> {
-    let rooms: MatrixRoomInfo[] = [];
-    let fromToken: string | undefined = undefined;
-
-    do {
-      const result: IRoomHierarchy =
-        await this.matrixClient!.getRoomHierarchy(
-          spaceId,
-          limit,
-          undefined,
-          suggestedOnly,
-          fromToken
-        );
-
-      const batch: MatrixRoomInfo[] = result.rooms.map((child: HierarchyRoom) => {
-        const sdkRoom: Room | null =
-          this.matrixClient!.getRoom(child.room_id) || null;
-
-        const isSpace =
-          sdkRoom?.isSpaceRoom?.() ??
-          child.room_type === "m.space";
-
-        return {
-          roomId: child.room_id,
-          name: child.name,
-          topic: child.topic,
-          isSpace,
-          numJoinedMembers: child.num_joined_members,
-          canonicalAlias: child.canonical_alias,
-        };
-      });
-
-      rooms = rooms.concat(batch);
-      fromToken = result.next_batch;
-    } while (fromToken);
-
-    return rooms;
+  spaceId: string,
+  limit = 50,
+  suggestedOnly = false
+): Promise<MatrixRoomInfo[]> {
+  const membership = this.matrixClient!.getRoom(spaceId)?.getMyMembership();
+  if (membership !== "join") {
+    await this.matrixClient!.joinRoom(spaceId);
   }
+
+  let rooms: MatrixRoomInfo[] = [];
+  let fromToken: string | undefined = undefined;
+
+  do {
+    const result: IRoomHierarchy =
+      await this.matrixClient!.getRoomHierarchy(
+        spaceId,
+        limit,
+        undefined,
+        suggestedOnly,
+        fromToken
+      );
+
+    const batch: MatrixRoomInfo[] = result.rooms.map((child: HierarchyRoom) => {
+      const sdkRoom: Room | null =
+        this.matrixClient!.getRoom(child.room_id) || null;
+
+      const isSpace = !!(
+        sdkRoom?.isSpaceRoom?.() ||
+        child.room_type === "m.space"
+      );
+
+      return {
+        roomId: child.room_id,
+        name: child.name,
+        topic: child.topic,
+        isSpace,
+        numJoinedMembers: child.num_joined_members,
+        canonicalAlias: child.canonical_alias,
+        avatarUrl: child.avatar_url,
+        joinRule: child.join_rule,
+        worldReadable: child.world_readable,
+        guestCanJoin: child.guest_can_join,
+      };
+    });
+
+    rooms = rooms.concat(batch);
+    fromToken = result.next_batch;
+  } while (fromToken);
+
+  return rooms;
+}
+
 
 
 public async getPublicSpaces(): Promise<MatrixSpace[]> {
