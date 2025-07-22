@@ -1,190 +1,24 @@
 
-// export interface MatrixConfig {
-//   baseUrl: string
-//   userId: string
-//   accessToken: string
-// }
-
-// export interface MatrixRoom {
-//   roomId: string
-//   name: string
-//   topic?: string
-//   memberCount: number
-//   lastMessage?: string
-//   lastActivity: Date
-//   isPublic: boolean
-// }
-
-// export interface MatrixMessage {
-//   eventId: string
-//   sender: string
-//   content: string
-//   timestamp: Date
-//   type: string
-// }
-
-// export class EcoFundMeMatrixClient {
-//   private config: MatrixConfig
-//   private isInitialized = false
-//   private rooms: MatrixRoom[] = []
-//   private messages: Map<string, MatrixMessage[]> = new Map()
-
-//   constructor(config: MatrixConfig) {
-//     this.config = config
-//   }
-
-//   async initialize(): Promise<void> {
-//     if (this.isInitialized) return
-
-//     // Simulate loading rooms, etc.
-//     this.isInitialized = true
-//     this.rooms = [
-//       {
-//         roomId: "!ocean-cleanup:ecofundme.com",
-//         name: "Ocean Cleanup Initiative",
-//         topic: "Cleaning our oceans together",
-//         memberCount: 1247,
-//         lastMessage: "Great progress on the Pacific cleanup!",
-//         lastActivity: new Date(),
-//         isPublic: true,
-//       },
-//       {
-//         roomId: "!solar-schools:ecofundme.com",
-//         name: "Solar Schools Project",
-//         topic: "Bringing renewable energy to education",
-//         memberCount: 834,
-//         lastMessage: "Installation complete at Lincoln Elementary",
-//         lastActivity: new Date(Date.now() - 3600000),
-//         isPublic: true,
-//       },
-//     ]
-//   }
-
-//   async loginWithToken(userId: string, accessToken: string): Promise<void> {
-//     this.config.userId = userId
-//     this.config.accessToken = accessToken
-
-//     localStorage.setItem("matrix_user_id", userId)
-//     localStorage.setItem("matrix_access_token", accessToken)
-
-//     await this.initialize()
-//   }
-
-//   async logout(): Promise<void> {
-//     localStorage.removeItem("matrix_access_token")
-//     localStorage.removeItem("matrix_user_id")
-//     this.isInitialized = false
-//     this.rooms = []
-//     this.messages.clear()
-//   }
-
-//   async sendMessage(roomId: string, message: string): Promise<void> {
-//     if (!this.isInitialized) {
-//       throw new Error("Matrix client not initialized")
-//     }
-
-//     const newMessage: MatrixMessage = {
-//       eventId: `$${Date.now()}`,
-//       sender: this.config.userId,
-//       content: message,
-//       timestamp: new Date(),
-//       type: "m.text",
-//     }
-
-//     const roomMessages = this.messages.get(roomId) || []
-//     roomMessages.push(newMessage)
-//     this.messages.set(roomId, roomMessages)
-//   }
-
-//   async createRoom(name: string, topic?: string, isPublic = false): Promise<string> {
-//     if (!this.isInitialized) {
-//       throw new Error("Matrix client not initialized")
-//     }
-
-//     const roomId = `!${name.toLowerCase().replace(/\s+/g, "-")}:ecofundme.com`
-
-//     const newRoom: MatrixRoom = {
-//       roomId,
-//       name,
-//       topic,
-//       memberCount: 1,
-//       lastActivity: new Date(),
-//       isPublic,
-//     }
-
-//     this.rooms.push(newRoom)
-//     return roomId
-//   }
-
-//   async joinRoom(roomIdOrAlias: string): Promise<void> {
-//     if (!this.isInitialized) {
-//       throw new Error("Matrix client not initialized")
-//     }
-
-//     const room = this.rooms.find((r) => r.roomId === roomIdOrAlias)
-//     if (room) {
-//       room.memberCount += 1
-//     }
-//   }
-
-//   getRooms(): MatrixRoom[] {
-//     return this.rooms
-//   }
-
-//   getMessages(roomId: string): MatrixMessage[] {
-//     return this.messages.get(roomId) || []
-//   }
-
-//   getUser() {
-//     return {
-//       userId: this.config.userId,
-//       displayName: this.config.userId?.split(":")[0].substring(1),
-//     }
-//   }
-
-//   isConnected(): boolean {
-//     return this.isInitialized
-//   }
-
-//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-//   onRoomTimeline(_callback: (message: MatrixMessage, room: MatrixRoom) => void): void {
-//     // Implement Matrix event. listeners in real SDK
-//   }
-
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-//   onRoomMember(_: (event: any, member: any) => void): void {
-//     // Implement Matrix event listeners in real SDK
-//   }
-
-//   static async autoLogin(): Promise<EcoFundMeMatrixClient | null> {
-//     const accessToken = localStorage.getItem("matrix_access_token")
-//     const userId = localStorage.getItem("matrix_user_id")
-
-//     if (!accessToken || !userId) {
-//       return null
-//     }
-
-//     const client = new EcoFundMeMatrixClient({
-//       baseUrl: "https://chat.ecofundme.com",
-//       userId,
-//       accessToken,
-//     })
-
-//     try {
-//       await client.initialize()
-//       return client
-//     } catch (error) {
-//       console.error("Auto-login failed:", error)
-//       localStorage.removeItem("matrix_access_token")
-//       localStorage.removeItem("matrix_user_id")
-//       return null
-//     }
-//   }
-// }
 
 import { loadMatrixToken, loadMatrixUserId } from "@/utils/local";
 import * as sdk from "matrix-js-sdk";
 import { MatrixClient, Room, EventTimeline, Visibility, Preset ,HierarchyRoom} from "matrix-js-sdk";
+import { MatrixEvent, ReceiptType, RoomMessageEventContent } from "matrix-js-sdk";
+
+// Interface for messages
+export interface MatrixMessage {
+  eventId: string;
+  sender: string;
+  content: string;
+  timestamp: number;
+  type: string;
+}
+
+
+
+// Callback type for message listener
+export type MessageListenerCallback = (roomId: string, message: MatrixMessage) => void;
+export type TypingListenerCallback = (roomId: string, userIds: string[]) => void;
 
 export interface MatrixClientConfig {
   baseUrl: string;
@@ -228,8 +62,30 @@ export interface MatrixOperationResult<T = undefined> {
   data?: T;
 }
 
+export interface MatrixMessageContent {
+  body: string;
+  msgtype: "m.text" | "m.image" | "m.file";
+  format?: "org.matrix.custom.html"; // For formatted messages
+  formatted_body?: string; // For HTML content
+  url?: string; // For media (e.g., images, files)
+  info?: {
+    // Optional metadata for media
+    mimetype?: string;
+    size?: number;
+  };
+}
 
-
+export interface FallbackMessageEventContent {
+  body: string;
+  msgtype: string;
+  format?: string;
+  formatted_body?: string;
+  url?: string;
+  info?: {
+    mimetype?: string;
+    size?: number;
+  };
+}
 
 export class EcoFundMeMatrixClient {
   private readonly baseUrl: string;
@@ -239,6 +95,8 @@ export class EcoFundMeMatrixClient {
   private spaces: MatrixSpace[] = [];
   private isConnected = false;
   private matrixClient: MatrixClient | null = null;
+  private messageListeners: MessageListenerCallback[] = [];
+  private typingListeners: TypingListenerCallback[] = [];
 
 
 
@@ -264,6 +122,61 @@ export class EcoFundMeMatrixClient {
   const result = await client.initialize();
   return result.success ? client : null;
 }
+
+private setupEventListeners(): void {
+    if (!this.matrixClient) return;
+
+    // Listen for new messages
+    this.matrixClient.on("Room.timeline", (event: MatrixEvent, room: Room, toStartOfTimeline: boolean) => {
+      if (toStartOfTimeline || event.getType() !== "m.room.message") return;
+
+      const message: MatrixMessage = {
+        eventId: event.getId() || "",
+        sender: event.getSender() || "",
+        content: event.getContent().body || "",
+        timestamp: event.getTs(),
+        type: event.getContent().msgtype || "m.text",
+      };
+
+      this.messageListeners.forEach((callback) => callback(room.roomId, message));
+    });
+
+    // Listen for typing events
+    this.matrixClient.on("Room.typing", (event: MatrixEvent, room: Room) => {
+      const typingUsers = room.getUsersTyping();
+      this.typingListeners.forEach((callback) => callback(room.roomId, typingUsers));
+    });
+  }
+
+public async initialize(): Promise<MatrixOperationResult> {
+    this.matrixClient = sdk.createClient({
+      baseUrl: this.baseUrl,
+      accessToken: this.accessToken,
+      userId: this.userId,
+    });
+
+    try {
+      const whoami = await this.matrixClient.whoami();
+      console.log("Logged in as", whoami.user_id);
+
+      // Set up event listeners
+      this.setupEventListeners();
+
+      await this.matrixClient.startClient();
+      this.isConnected = true;
+
+      return {
+        success: true,
+        message: "Matrix client initialized successfully.",
+      };
+    } catch (error) {
+      console.error("Matrix client initialization failed", error);
+      return {
+        success: false,
+        message: "Matrix client initialization failed.",
+      };
+    }
+  }
 
 
 public getUserId(): string {
@@ -423,66 +336,42 @@ public isLoggedIn(): boolean {
   return this.isConnected;
 }
 
-public async initialize(): Promise<MatrixOperationResult> {
-  this.matrixClient = sdk.createClient({
-    baseUrl: this.baseUrl,
-    accessToken: this.accessToken,
-    userId: this.userId,
-  });
 
-  try {
-    const whoami = await this.matrixClient.whoami();
-    console.log("Logged in as", whoami.user_id);
 
-    await this.matrixClient.startClient();
-    this.isConnected = true;
 
-    return {
-      success: true,
-      message: "Matrix client initialized successfully.",
-    };
-  } catch (error) {
-    console.error("Matrix client initialization failed", error);
 
-    return {
-      success: false,
-      message: "Matrix client initialization failed.",
-    };
+
+
+  public async logout(): Promise<MatrixOperationResult> {
+    if (!this.matrixClient) {
+      return {
+        success: false,
+        message: "Matrix client not initialized.",
+      };
+    }
+
+    try {
+      await this.matrixClient.logout();
+      await this.matrixClient.stopClient();
+      this.isConnected = false;
+      this.matrixClient = null;
+      this.rooms = [];
+      this.spaces = [];
+      this.messageListeners = [];
+      this.typingListeners = [];
+
+      return {
+        success: true,
+        message: "Logged out successfully.",
+      };
+    } catch (error) {
+      console.error("Logout failed", error);
+      return {
+        success: false,
+        message: "Logout failed.",
+      };
+    }
   }
-}
-
-
-
-
-
-public async logout(): Promise<MatrixOperationResult> {
-  if (!this.matrixClient) {
-    return {
-      success: false,
-      message: "Matrix client not initialized.",
-    };
-  }
-
-  try {
-    await this.matrixClient.logout(); 
-    await this.matrixClient.stopClient();
-    this.isConnected = false;
-    this.matrixClient = null;
-    this.rooms = [];
-    this.spaces = [];
-
-    return {
-      success: true,
-      message: "Logged out successfully.",
-    };
-  } catch (error) {
-    console.error("Logout failed", error);
-    return {
-      success: false,
-      message: "Logout failed.",
-    };
-  }
-}
 
 public async createRoom(
   name: string,
@@ -581,58 +470,6 @@ public async createSpace(
   }
 }
 
-// public async createSpace(
-//   name: string,
-//   topic?: string,
-//   type: "campaign" | "general" = "general",
-//   isPublic: boolean = false
-// ): Promise<string> {
-//   if (!this.matrixClient) {
-//     throw new Error("Matrix client not initialized.");
-//   }
-
-//   try {
-//     const response = await this.matrixClient.createRoom({
-//       name,
-//       topic,
-//       creation_content: {
-//         type: "m.space",
-//       },
-//       preset: isPublic ? Preset.PublicChat : Preset.PrivateChat,
-//       visibility: isPublic ? Visibility.Public : Visibility.Private,
-//     });
-
-//     // Publish to directory if public
-//     if (isPublic) {
-//       await this.matrixClient.setRoomDirectoryVisibility(response.room_id, Visibility.Public);
-        
-//     }
-
-//     await this.matrixClient.sendStateEvent(
-//       response.room_id,
-//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//       "eco.social.space.type" as any,
-//       { type },
-//       ""
-//     );
-
-//     // Cache space
-//     const newSpace: MatrixSpace = {
-//       roomId: response.room_id,
-//       name,
-//       topic,
-//       isSpace: true,
-//       children: [],
-//     };
-
-//     this.spaces.push(newSpace);
-
-//     return response.room_id;
-//   } catch (error) {
-//     console.error("Failed to create space:", error);
-//     throw new Error("Failed to create space.");
-//   }
-// }
 
 
 public async createCampaignSpace(
@@ -872,28 +709,66 @@ public async joinCampaignSpace(spaceId: string): Promise<void> {
 
 
 
-public async sendMessage(roomId: string, message: string): Promise<MatrixOperationResult> {
-  if (!this.matrixClient) {
-    return {
-      success: false,
-      message: "Matrix client not initialized.",
-    };
-  }
+public async sendMessage(
+    roomId: string,
+    content: MatrixMessageContent
+  ): Promise<MatrixOperationResult<string>> {
+    if (!this.matrixClient) {
+      return {
+        success: false,
+        message: "Matrix client not initialized.",
+      };
+    }
 
-  try {
-    await this.matrixClient.sendTextMessage(roomId, message);
-    return {
-      success: true,
-      message: "Message sent successfully.",
-    };
-  } catch (error) {
-    console.error("Send message failed:", error);
-    return {
-      success: false,
-      message: "Failed to send message.",
-    };
+    try {
+      // Validate room existence
+      const room = this.matrixClient.getRoom(roomId);
+      if (!room) {
+        return {
+          success: false,
+          message: `Room ${roomId} not found.`,
+        };
+      }
+
+      // Ensure user is in the room
+      if (!room.hasMembershipState(this.userId, "join")) {
+        await this.matrixClient.joinRoom(roomId);
+      }
+
+      // Prepare message content
+      const messageContent: FallbackMessageEventContent = {
+        body: content.body,
+        msgtype: content.msgtype,
+      };
+
+      // Handle formatted messages (e.g., HTML)
+      if (content.format && content.formatted_body) {
+        messageContent.format = content.format;
+        messageContent.formatted_body = content.formatted_body;
+      }
+
+      // Handle media (e.g., images, files)
+      if (content.url && content.info) {
+        messageContent.url = content.url;
+        messageContent.info = content.info;
+      }
+
+      // Send the message
+      const response = await this.matrixClient.sendMessage(roomId, messageContent);
+
+      return {
+        success: true,
+        message: "Message sent successfully.",
+        data: response.event_id, // Return the event ID of the sent message
+      };
+    } catch (error) {
+      console.error("Send message failed:", error);
+      return {
+        success: false,
+        message: `Failed to send message: ${(error as Error).message}`,
+      };
+    }
   }
-}
 
 public async createDm(
   targetUserId: string,
@@ -939,6 +814,133 @@ public async createDm(
     };
   }
 }
+
+
+public onMessage(callback: MessageListenerCallback): void {
+    this.messageListeners.push(callback);
+  }
+
+  // Register a callback for typing events
+  public onTyping(callback: TypingListenerCallback): void {
+    this.typingListeners.push(callback);
+  }
+
+  // Send a typing indicator
+  public async sendTyping(roomId: string, isTyping: boolean): Promise<MatrixOperationResult> {
+    if (!this.matrixClient) {
+      return {
+        success: false,
+        message: "Matrix client not initialized.",
+      };
+    }
+
+    try {
+      await this.matrixClient.sendTyping(roomId, isTyping, 30000); // 30s timeout
+      return {
+        success: true,
+        message: `Typing indicator ${isTyping ? "sent" : "stopped"} successfully.`,
+      };
+    } catch (error) {
+      console.error("Failed to send typing indicator:", error);
+      return {
+        success: false,
+        message: "Failed to send typing indicator.",
+      };
+    }
+  }
+
+  // Send a read receipt for a message
+  public async sendReadReceipt(roomId: string, eventId: string): Promise<MatrixOperationResult> {
+    if (!this.matrixClient) {
+      return {
+        success: false,
+        message: "Matrix client not initialized.",
+      };
+    }
+
+    try {
+      const room = this.matrixClient.getRoom(roomId);
+      if (!room) {
+        return {
+          success: false,
+          message: `Room ${roomId} not found.`,
+        };
+      }
+
+      const event = room.getLiveTimeline().getEvents().find((e) => e.getId() === eventId);
+      if (!event) {
+        return {
+          success: false,
+          message: `Event ${eventId} not found in room ${roomId}.`,
+        };
+      }
+
+      await this.matrixClient.sendReceipt(event, ReceiptType.Read);
+      return {
+        success: true,
+        message: "Read receipt sent successfully.",
+      };
+    } catch (error) {
+      console.error("Failed to send read receipt:", error);
+      return {
+        success: false,
+        message: "Failed to send read receipt.",
+      };
+    }
+  }
+
+  // Fetch message history for a room
+  public async getMessageHistory(
+    roomId: string,
+    limit: number = 50
+  ): Promise<MatrixOperationResult<MatrixMessage[]>> {
+    if (!this.matrixClient) {
+      return {
+        success: false,
+        message: "Matrix client not initialized.",
+      };
+    }
+
+    try {
+      const room = this.matrixClient.getRoom(roomId);
+      if (!room) {
+        return {
+          success: false,
+          message: `Room ${roomId} not found.`,
+        };
+      }
+
+      // Ensure timeline is populated
+      await this.matrixClient.scrollback(room, limit);
+
+      const messages: MatrixMessage[] = room
+        .getLiveTimeline()
+        .getEvents()
+        .filter((event) => event.getType() === "m.room.message")
+        .map((event) => ({
+          eventId: event.getId() || "",
+          sender: event.getSender() || "",
+          content: event.getContent().body || "",
+          timestamp: event.getTs(),
+          type: event.getContent().msgtype || "m.text",
+        }))
+        .slice(-limit); // Limit to the most recent messages
+
+      return {
+        success: true,
+        message: "Message history fetched successfully.",
+        data: messages,
+      };
+    } catch (error) {
+      console.error("Failed to fetch message history:", error);
+      return {
+        success: false,
+        message: "Failed to fetch message history.",
+      };
+    }
+  }
+
+  // Clean up listeners on logout
 
 
 
